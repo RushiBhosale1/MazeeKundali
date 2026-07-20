@@ -343,6 +343,8 @@ export default function MatchingResultPage() {
 
         <p className="disclaimer">
           {mr('हे परिणाम मार्गदर्शनासाठी आहेत. वैयक्तिक सल्ल्यासाठी तज्ञ ज्योतिषांचा सल्ला घ्या.', 'Results are for guidance only. Consult an expert astrologer for personal advice.')}
+          <br/>
+          {mr('वापरलेला अयनांश: लाहिरी (चित्रपक्ष)', 'Ayanamsha used: Lahiri (Chitrapaksha)')}
         </p>
       </div>
     </div>

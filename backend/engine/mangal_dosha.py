@@ -61,16 +61,16 @@ def _check_cancellation_rules(
     if mars_rashi in OWN_SIGNS.get(Planet.MARS, []):
         return (
             True,
-            "मंगळ स्वराशीत (मेष/वृश्चिक) असल्याने मंगळ दोष रद्द होतो. "
-            "(Mars in own sign cancels Mangal Dosha.)"
+            "मंगळ स्वराशीत (मेष/वृश्चिक) असल्याने मंगळ दोष मोठ्या प्रमाणात कमी होतो / निवारित होतो. "
+            "(Mars in own sign mitigates Mangal Dosha.)"
         )
 
     # Rule 2: Mars in exaltation (Capricorn)
     if mars_rashi == EXALTATION_SIGN.get(Planet.MARS):
         return (
             True,
-            "मंगळ उच्चस्थ (मकर राशी) असल्याने मंगळ दोष रद्द होतो. "
-            "(Mars in exaltation — Capricorn — cancels Mangal Dosha.)"
+            "मंगळ उच्चस्थ (मकर राशी) असल्याने मंगळ दोष मोठ्या प्रमाणात कमी होतो / निवारित होतो. "
+            "(Mars in exaltation — Capricorn — mitigates Mangal Dosha.)"
         )
 
     # Rule 4: Jupiter aspects Mars (Whole Sign 4th, 7th, 10th from Mars)
@@ -83,8 +83,8 @@ def _check_cancellation_rules(
         if jupiter_house_from_mars in aspect_houses:
             return (
                 True,
-                "गुरूची मंगळावर दृष्टी असल्याने मंगळ दोष रद्द होतो. "
-                "(Jupiter's aspect on Mars cancels Mangal Dosha.)"
+                "गुरूची मंगळावर दृष्टी असल्याने मंगळ दोष मोठ्या प्रमाणात कमी होतो / निवारित होतो. "
+                "(Jupiter's aspect on Mars mitigates Mangal Dosha.)"
             )
 
     return False, None
@@ -156,8 +156,8 @@ def compute_mangal_dosha(
             mars_house=mars_house_lagna,
             cancellation_applied=True,
             cancellation_rule=cancellation_rule,
-            explanation_mr=f"मंगळ दोष आढळला, पण रद्द होतो: {cancellation_rule}",
-            explanation_en=f"Dosha present, but cancelled: {cancellation_rule}",
+            explanation_mr=f"मंगळ दोष आढळला, पण खालील कारणाने तो निवारित होतो: {cancellation_rule}",
+            explanation_en=f"Dosha present, but mitigated: {cancellation_rule}",
         )
 
     # Determine Severity

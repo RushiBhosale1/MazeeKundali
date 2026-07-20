@@ -259,8 +259,8 @@ def _compute_gana(bride_nakshatra: Nakshatra, groom_nakshatra: Nakshatra, graha_
         notes_mr = f"मुलगी: {bride_gana.name_mr}, मुलगा: {groom_gana.name_mr}. कमी अनुकूल."
         notes_en = f"Bride: {bride_gana.value}, Groom: {groom_gana.value}. Low compatibility."
     else:
-        notes_mr = f"मुलगी: {bride_gana.name_mr}, मुलगा: {groom_gana.name_mr}. अत्यंत प्रतिकूल."
-        notes_en = f"Bride: {bride_gana.value}, Groom: {groom_gana.value}. Highly incompatible."
+        notes_mr = f"मुलगी: {bride_gana.name_mr}, मुलगा: {groom_gana.name_mr}. ० गुण (शास्त्रात हे अत्यंत प्रतिकूल मानले जाते)."
+        notes_en = f"Bride: {bride_gana.value}, Groom: {groom_gana.value}. 0 points (Highly incompatible in classical texts)."
 
     return KootaResult("Gana", "गण", float(score), 6, notes_mr, notes_en)
 
@@ -304,10 +304,10 @@ def _compute_bhakoot(
         if cancelled:
             score = 7
             notes_mr = (
-                f"भकूट दोष ({dosha_type}) रद्द: {cancellation_rule_mr} ७ गुण दिले."
+                f"भकूट दोष ({dosha_type}) निवारित: {cancellation_rule_mr} पूर्ण ७ गुण दिले."
             )
             notes_en = (
-                f"Bhakoot Dosha ({dosha_type}) cancelled: {cancellation_rule_en} 7 points awarded."
+                f"Bhakoot Dosha ({dosha_type}) mitigated: {cancellation_rule_en} Full 7 points awarded."
             )
         else:
             score = 0

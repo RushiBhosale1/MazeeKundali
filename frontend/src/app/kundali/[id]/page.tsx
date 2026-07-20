@@ -460,6 +460,8 @@ export default function KundaliResultPage() {
         {/* Disclaimer */}
         <p className="disclaimer">
           {mr('हा अहवाल मार्गदर्शनासाठी आहे. वैयक्तिक सल्ल्यासाठी तज्ञ ज्योतिषांचा सल्ला घ्या.', 'This report is for guidance only. Consult an expert astrologer for personal advice.')}
+          <br/>
+          {mr('वापरलेला अयनांश: लाहिरी (चित्रपक्ष)', 'Ayanamsha used: Lahiri (Chitrapaksha)')}
         </p>
       </div>
     </div>
