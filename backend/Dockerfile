@@ -13,4 +13,4 @@ COPY . .
 EXPOSE 10000
 
 # Start the FastAPI application
-CMD bash -c "alembic upgrade head && uvicorn main:app --host 0.0.0.0 --port ${PORT:-10000}"
+CMD bash -c "python prestart.py && alembic upgrade head && uvicorn main:app --host 0.0.0.0 --port ${PORT:-10000}"
