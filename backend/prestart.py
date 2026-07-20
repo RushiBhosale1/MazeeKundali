@@ -20,16 +20,21 @@ async def main():
         )
         has_tables = result.scalar()
         
-        # Check if alembic_version exists
-        result = await conn.execute(
-            text("SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'alembic_version');")
-        )
-        has_alembic = result.scalar()
+        # Check if alembic_version has any rows
+        has_alembic_rows = False
+        if has_tables:
+            result = await conn.execute(
+                text("SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'alembic_version');")
+            )
+            if result.scalar():
+                row_res = await conn.execute(text("SELECT count(*) FROM alembic_version"))
+                if row_res.scalar() > 0:
+                    has_alembic_rows = True
         
     await engine.dispose()
     
-    if has_tables and not has_alembic:
-        print("Existing database detected without alembic_version. Stamping initial schema...")
+    if has_tables and not has_alembic_rows:
+        print("Existing database detected without alembic_version rows. Stamping initial schema...")
         # Stamp with the initial schema revision so alembic knows it's already applied
         os.system("alembic stamp 2b735dc1e338")
     else:
