@@ -158,6 +158,8 @@ class Matching(Base):
     total_max: Mapped[int] = mapped_column(Integer, default=36, nullable=False)
     bride_manglik: Mapped[Optional[bool]] = mapped_column(Boolean, nullable=True)
     groom_manglik: Mapped[Optional[bool]] = mapped_column(Boolean, nullable=True)
+    bride_manglik_severity: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
+    groom_manglik_severity: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
 
     # Paid-tier (JSONB)
     paid: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False, index=True)

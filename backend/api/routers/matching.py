@@ -76,6 +76,8 @@ class MatchingFreeResponse(BaseModel):
     total_max: float
     bride_manglik: Optional[bool]
     groom_manglik: Optional[bool]
+    bride_manglik_severity: Optional[str] = None
+    groom_manglik_severity: Optional[str] = None
     paid: bool
     resume_token: str
     created_at: str
@@ -208,6 +210,9 @@ async def create_matching(request: MatchingCreateRequest, db: AsyncSession = Dep
 
     bride_manglik = bride_result.mangal_dosha.is_manglik if bride_result.mangal_dosha else None
     groom_manglik = groom_result.mangal_dosha.is_manglik if groom_result.mangal_dosha else None
+    
+    bride_manglik_sev = bride_result.mangal_dosha.severity if bride_result.mangal_dosha else None
+    groom_manglik_sev = groom_result.mangal_dosha.severity if groom_result.mangal_dosha else None
 
     # Call AI or basic logic for verdicts - we can just stub it for now
     verdict_mr = "एकूण गुण: " + str(match_result.total_score) + "/३६"
@@ -218,6 +223,8 @@ async def create_matching(request: MatchingCreateRequest, db: AsyncSession = Dep
         total_score=match_result.total_score,
         bride_manglik=bride_manglik,
         groom_manglik=groom_manglik,
+        bride_manglik_severity=bride_manglik_sev,
+        groom_manglik_severity=groom_manglik_sev,
         koota_breakdown=koota_breakdown,
         dosha_analysis=dosha_analysis,
         verdict_mr=verdict_mr,
@@ -234,6 +241,8 @@ async def create_matching(request: MatchingCreateRequest, db: AsyncSession = Dep
         total_max=36,
         bride_manglik=bride_manglik,
         groom_manglik=groom_manglik,
+        bride_manglik_severity=bride_manglik_sev,
+        groom_manglik_severity=groom_manglik_sev,
         paid=False,
         resume_token=matching_db.resume_token,
         created_at=str(matching_db.created_at),
@@ -313,6 +322,8 @@ async def get_matching(matching_id: str = Path(...), db: AsyncSession = Depends(
             total_max=36,
             bride_manglik=record.bride_manglik,
             groom_manglik=record.groom_manglik,
+            bride_manglik_severity=record.bride_manglik_severity,
+            groom_manglik_severity=record.groom_manglik_severity,
             paid=True,
             resume_token=record.resume_token,
             created_at=str(record.created_at),
@@ -338,6 +349,8 @@ async def get_matching(matching_id: str = Path(...), db: AsyncSession = Depends(
             total_max=36,
             bride_manglik=record.bride_manglik,
             groom_manglik=record.groom_manglik,
+            bride_manglik_severity=record.bride_manglik_severity,
+            groom_manglik_severity=record.groom_manglik_severity,
             paid=False,
             resume_token=record.resume_token,
             created_at=str(record.created_at),

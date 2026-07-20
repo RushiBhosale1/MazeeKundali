@@ -548,15 +548,21 @@ def compute_match(bride_kundali: KundaliResult, groom_kundali: KundaliResult) ->
     bride_mangal = bride_kundali.mangal_dosha
     groom_mangal = groom_kundali.mangal_dosha
     
-    bride_is_manglik = bride_mangal.is_manglik and not bride_mangal.cancellation_applied if bride_mangal else False
-    groom_is_manglik = groom_mangal.is_manglik and not groom_mangal.cancellation_applied if groom_mangal else False
+    bride_sev = bride_mangal.severity if bride_mangal else "NONE"
+    groom_sev = groom_mangal.severity if groom_mangal else "NONE"
 
-    if bride_is_manglik and groom_is_manglik:
-        mangal_note = "दोन्ही मंगळ दोषी — एकमेकांना रद्द करतात. ✅"
-    elif bride_is_manglik or groom_is_manglik:
-        mangal_note = "एकाला मंगळ दोष आहे, दुसऱ्याला नाही — तज्ञांचा सल्ला घ्या. ⚠️"
-    else:
+    if bride_sev == "NONE" and groom_sev == "NONE":
         mangal_note = "दोघांनाही मंगळ दोष नाही (किंवा मंगळ दोष रद्द झाला आहे). ✅"
+    elif bride_sev == groom_sev:
+        mangal_note = f"दोन्हींचा मंगळ दोष '{bride_sev}' तीव्रतेचा आहे — एकमेकांना रद्द करतात. ✅"
+    elif "HIGH" in (bride_sev, groom_sev) and "NONE" in (bride_sev, groom_sev):
+        mangal_note = "एकाला कडक मंगळ दोष आहे आणि दुसऱ्याला नाही — अत्यंत काळजीपूर्वक विचार करावा. ❌"
+    elif "HIGH" in (bride_sev, groom_sev) and "MILD" in (bride_sev, groom_sev):
+        mangal_note = "एकाला कडक तर दुसऱ्याला सौम्य मंगळ दोष आहे — तज्ञांचा सल्ला घ्या. ⚠️"
+    elif "MILD" in (bride_sev, groom_sev) and "NONE" in (bride_sev, groom_sev):
+        mangal_note = "एकाला सौम्य मंगळ दोष आहे — साधारणपणे चालते, पण तज्ञांचा सल्ला घ्या. ⚠️"
+    else:
+        mangal_note = "मंगळ दोषाबाबत तज्ञांचा सल्ला घ्या. ⚠️"
 
     verdict_mr, verdict_en = _generate_verdict(total_score, active_doshas_mr)
 

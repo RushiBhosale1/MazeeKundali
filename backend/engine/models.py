@@ -246,6 +246,7 @@ class DashaResult:
 @dataclass
 class MangalDoshaResult:
     is_manglik: bool
+    severity: str                  # "HIGH" | "MILD" | "NONE"
     reference_point: str           # "Lagna" | "Moon" | "Venus"
     mars_house: Optional[int]      # which house Mars is in from the reference point
     cancellation_applied: bool

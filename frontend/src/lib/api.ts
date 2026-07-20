@@ -54,6 +54,7 @@ export interface DashaInfo {
 
 export interface MangalDoshaInfo {
   is_manglik: boolean;
+  severity?: string;
   reference_point: string;
   mars_house: number | null;
   cancellation_applied: boolean;

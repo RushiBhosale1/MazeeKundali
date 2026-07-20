@@ -32,6 +32,8 @@ interface MatchResult {
   total_max: number;
   bride_manglik: boolean | null;
   groom_manglik: boolean | null;
+  bride_manglik_severity?: string;
+  groom_manglik_severity?: string;
   paid: boolean;
   resume_token: string;
   locked: Record<string, boolean>;
@@ -171,15 +173,15 @@ export default function MatchingResultPage() {
           <div style={{ display: 'flex', gap: 12 }}>
             <div style={{ flex: 1, textAlign: 'center' }}>
               <div style={{ fontFamily: 'var(--font-devanagari)', fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: 4 }}>👰 {result.bride_name}</div>
-              <span className={`chip ${result.bride_manglik ? 'chip-red' : 'chip-green'}`} style={{ fontSize: '0.8rem' }}>
-                {result.bride_manglik === null ? mr('अज्ञात', 'Unknown') : result.bride_manglik ? mr('मंगळ दोष ⚠️', 'Manglik ⚠️') : mr('दोष नाही ✅', 'No Dosha ✅')}
+              <span className={`chip ${result.bride_manglik_severity === 'HIGH' ? 'chip-red' : result.bride_manglik_severity === 'MILD' ? 'chip-orange' : result.bride_manglik === false ? 'chip-green' : 'chip-green'}`} style={{ fontSize: '0.8rem' }}>
+                {result.bride_manglik === null ? mr('अज्ञात', 'Unknown') : result.bride_manglik_severity === 'HIGH' ? mr('कडक मंगळ दोष ⚠️', 'High Manglik ⚠️') : result.bride_manglik_severity === 'MILD' ? mr('अंशिक/सौम्य मंगळ ⚠️', 'Mild Manglik ⚠️') : mr('दोष नाही ✅', 'No Dosha ✅')}
               </span>
             </div>
             <div style={{ width: 1, background: 'var(--border-subtle)' }} />
             <div style={{ flex: 1, textAlign: 'center' }}>
               <div style={{ fontFamily: 'var(--font-devanagari)', fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: 4 }}>🤵 {result.groom_name}</div>
-              <span className={`chip ${result.groom_manglik ? 'chip-red' : 'chip-green'}`} style={{ fontSize: '0.8rem' }}>
-                {result.groom_manglik === null ? mr('अज्ञात', 'Unknown') : result.groom_manglik ? mr('मंगळ दोष ⚠️', 'Manglik ⚠️') : mr('दोष नाही ✅', 'No Dosha ✅')}
+              <span className={`chip ${result.groom_manglik_severity === 'HIGH' ? 'chip-red' : result.groom_manglik_severity === 'MILD' ? 'chip-orange' : result.groom_manglik === false ? 'chip-green' : 'chip-green'}`} style={{ fontSize: '0.8rem' }}>
+                {result.groom_manglik === null ? mr('अज्ञात', 'Unknown') : result.groom_manglik_severity === 'HIGH' ? mr('कडक मंगळ दोष ⚠️', 'High Manglik ⚠️') : result.groom_manglik_severity === 'MILD' ? mr('अंशिक/सौम्य मंगळ ⚠️', 'Mild Manglik ⚠️') : mr('दोष नाही ✅', 'No Dosha ✅')}
               </span>
             </div>
           </div>

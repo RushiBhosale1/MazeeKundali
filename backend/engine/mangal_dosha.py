@@ -96,22 +96,16 @@ def compute_mangal_dosha(
     reference_point: str = "Lagna",
 ) -> MangalDoshaResult:
     """
-    Compute Mangal Dosha status.
-
-    Args:
-        all_planets: List of all planetary positions.
-        lagna_rashi: Ascendant Rashi.
-        reference_point: "Lagna" (default for MVP). Can also be "Moon" or "Venus".
-
-    Returns:
-        MangalDoshaResult with full transparency on status and cancellation.
+    Compute Mangal Dosha status from Lagna, Moon, and Venus.
+    Determines severity (HIGH, MILD, NONE).
     """
     mars_pos = next((p for p in all_planets if p.planet == Planet.MARS), None)
     if mars_pos is None:
         logger.error("Mars not found in planet positions — cannot compute Mangal Dosha")
         return MangalDoshaResult(
             is_manglik=False,
-            reference_point=reference_point,
+            severity="NONE",
+            reference_point="All",
             mars_house=None,
             cancellation_applied=False,
             cancellation_rule=None,
@@ -119,80 +113,76 @@ def compute_mangal_dosha(
             explanation_en="Mars position not available.",
         )
 
-    # Determine reference rashi
-    if reference_point == "Lagna":
-        ref_rashi = lagna_rashi
-    elif reference_point == "Moon":
-        moon_pos = next((p for p in all_planets if p.planet == Planet.MOON), None)
-        ref_rashi = moon_pos.rashi if moon_pos else lagna_rashi
-    elif reference_point == "Venus":
-        venus_pos = next((p for p in all_planets if p.planet == Planet.VENUS), None)
-        ref_rashi = venus_pos.rashi if venus_pos else lagna_rashi
-    else:
-        ref_rashi = lagna_rashi
+    moon_pos = next((p for p in all_planets if p.planet == Planet.MOON), None)
+    venus_pos = next((p for p in all_planets if p.planet == Planet.VENUS), None)
 
-    mars_house = _mars_house_from_reference(mars_pos.rashi, ref_rashi)
-    is_dosha = mars_house in MANGAL_DOSHA_HOUSES
+    ref_rashis = {
+        "Lagna": lagna_rashi,
+        "Moon": moon_pos.rashi if moon_pos else lagna_rashi,
+        "Venus": venus_pos.rashi if venus_pos else lagna_rashi,
+    }
 
-    if not is_dosha:
-        return MangalDoshaResult(
-            is_manglik=False,
-            reference_point=reference_point,
-            mars_house=mars_house,
-            cancellation_applied=False,
-            cancellation_rule=None,
-            explanation_mr=(
-                f"मंगळ {reference_point} पासून {mars_house}व्या घरात आहे. "
-                f"मंगळ दोष नाही."
-            ),
-            explanation_en=(
-                f"Mars is in house {mars_house} from {reference_point}. "
-                f"No Mangal Dosha."
-            ),
-        )
+    dosha_from = []
+    mars_house_lagna = None
+    for ref_name, rashi in ref_rashis.items():
+        house = _mars_house_from_reference(mars_pos.rashi, rashi)
+        if ref_name == "Lagna":
+            mars_house_lagna = house
+        if house in MANGAL_DOSHA_HOUSES:
+            dosha_from.append(ref_name)
 
-    # Dosha exists — check cancellations
+    # Check cancellations
     cancelled, cancellation_rule = _check_cancellation_rules(
         mars_pos, lagna_rashi, all_planets
     )
 
-    if cancelled:
+    if not dosha_from:
         return MangalDoshaResult(
-            is_manglik=False,   # Cancelled = not effectively Manglik
-            reference_point=reference_point,
-            mars_house=mars_house,
-            cancellation_applied=True,
-            cancellation_rule=cancellation_rule,
-            explanation_mr=(
-                f"मंगळ {reference_point} पासून {mars_house}व्या घरात आहे "
-                f"(दोष आहे), पण रद्द होतो: {cancellation_rule}"
-            ),
-            explanation_en=(
-                f"Mars is in house {mars_house} from {reference_point} "
-                f"(dosha present), but cancelled: {cancellation_rule}"
-            ),
+            is_manglik=False,
+            severity="NONE",
+            reference_point="All",
+            mars_house=mars_house_lagna,
+            cancellation_applied=False,
+            cancellation_rule=None,
+            explanation_mr="लग्न, चंद्र किंवा शुक्र कुंडलीत मंगळ दोष आढळला नाही.",
+            explanation_en="No Mangal Dosha found from Lagna, Moon, or Venus.",
         )
 
-    # Dosha confirmed, not cancelled
+    if cancelled:
+        return MangalDoshaResult(
+            is_manglik=False,
+            severity="NONE",
+            reference_point="All",
+            mars_house=mars_house_lagna,
+            cancellation_applied=True,
+            cancellation_rule=cancellation_rule,
+            explanation_mr=f"मंगळ दोष आढळला, पण रद्द होतो: {cancellation_rule}",
+            explanation_en=f"Dosha present, but cancelled: {cancellation_rule}",
+        )
+
+    # Determine Severity
+    if "Lagna" in dosha_from and ("Moon" in dosha_from or "Venus" in dosha_from):
+        severity = "HIGH"
+        desc_mr = "कडक मंगळ दोष (लग्न आणि चंद्र/शुक्र कुंडलीतून दोष)"
+        desc_en = "High severity Mangal Dosha (from Lagna and Moon/Venus)"
+    else:
+        severity = "MILD"
+        desc_mr = "सौम्य / अंशिक मंगळ दोष (फक्त एका कुंडलीतून दोष)"
+        desc_en = "Mild/Partial Mangal Dosha"
+
     house_names = {
         1: "पहिल्या", 2: "दुसऱ्या", 4: "चौथ्या",
         7: "सातव्या", 8: "आठव्या", 12: "बाराव्या",
     }
-    house_name_mr = house_names.get(mars_house, f"{mars_house}व्या")
-    mars_rashi_mr = mars_pos.rashi.name_mr
+    house_name_mr = house_names.get(mars_house_lagna, f"{mars_house_lagna}व्या") if mars_house_lagna else ""
 
     return MangalDoshaResult(
         is_manglik=True,
-        reference_point=reference_point,
-        mars_house=mars_house,
+        severity=severity,
+        reference_point=", ".join(dosha_from),
+        mars_house=mars_house_lagna,
         cancellation_applied=False,
         cancellation_rule=None,
-        explanation_mr=(
-            f"मंगळ {mars_rashi_mr} राशीत, {reference_point} पासून {house_name_mr} "
-            f"घरात आहे. मंगळ दोष आहे. कोणताही रद्द नियम लागू नाही."
-        ),
-        explanation_en=(
-            f"Mars is in {mars_pos.rashi.name_en}, house {mars_house} from "
-            f"{reference_point}. Mangal Dosha confirmed. No cancellation rule applies."
-        ),
+        explanation_mr=f"{desc_mr}: मंगळ {mars_pos.rashi.name_mr} राशीत, लग्नापासून {house_name_mr} घरात आहे.",
+        explanation_en=f"{desc_en}: Mars is in {mars_pos.rashi.name_en}, house {mars_house_lagna} from Lagna.",
     )

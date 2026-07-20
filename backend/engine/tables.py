@@ -229,89 +229,87 @@ def get_yoni_score(n1: Nakshatra, n2: Nakshatra) -> int:
 # ---------------------------------------------------------------------------
 # 6. Graha Maitri — Classical planet friendship table
 # ---------------------------------------------------------------------------
-# Values: "F"=Friend, "N"=Neutral, "E"=Enemy
-# Source: Classical Vedic texts (Parasara)
-PLANET_FRIENDSHIP: dict[tuple[Planet, Planet], str] = {
-    # Sun's relationships
-    (Planet.SUN, Planet.MOON): "F",
-    (Planet.SUN, Planet.MARS): "F",
-    (Planet.SUN, Planet.JUPITER): "F",
-    (Planet.SUN, Planet.MERCURY): "N",
-    (Planet.SUN, Planet.VENUS): "E",
-    (Planet.SUN, Planet.SATURN): "E",
-    # Moon's relationships
-    (Planet.MOON, Planet.SUN): "F",
-    (Planet.MOON, Planet.MERCURY): "F",
-    (Planet.MOON, Planet.MARS): "N",
-    (Planet.MOON, Planet.JUPITER): "N",
-    (Planet.MOON, Planet.VENUS): "N",
-    (Planet.MOON, Planet.SATURN): "N",
-    # Mars's relationships
-    (Planet.MARS, Planet.SUN): "F",
-    (Planet.MARS, Planet.MOON): "F",
-    (Planet.MARS, Planet.JUPITER): "F",
-    (Planet.MARS, Planet.MERCURY): "E",
-    (Planet.MARS, Planet.VENUS): "N",
-    (Planet.MARS, Planet.SATURN): "N",
-    # Mercury's relationships
-    (Planet.MERCURY, Planet.SUN): "N",
-    (Planet.MERCURY, Planet.MOON): "E",
-    (Planet.MERCURY, Planet.MARS): "N",
-    (Planet.MERCURY, Planet.JUPITER): "N",
-    (Planet.MERCURY, Planet.VENUS): "F",
-    (Planet.MERCURY, Planet.SATURN): "F",
-    # Jupiter's relationships
-    (Planet.JUPITER, Planet.SUN): "F",
-    (Planet.JUPITER, Planet.MOON): "F",
-    (Planet.JUPITER, Planet.MARS): "F",
-    (Planet.JUPITER, Planet.MERCURY): "E",
-    (Planet.JUPITER, Planet.VENUS): "E",
-    (Planet.JUPITER, Planet.SATURN): "N",
-    # Venus's relationships
-    (Planet.VENUS, Planet.SUN): "E",
-    (Planet.VENUS, Planet.MOON): "N",
-    (Planet.VENUS, Planet.MARS): "N",
-    (Planet.VENUS, Planet.MERCURY): "F",
-    (Planet.VENUS, Planet.JUPITER): "E",
-    (Planet.VENUS, Planet.SATURN): "F",
-    # Saturn's relationships
-    (Planet.SATURN, Planet.SUN): "E",
-    (Planet.SATURN, Planet.MOON): "E",
-    (Planet.SATURN, Planet.MARS): "E",
-    (Planet.SATURN, Planet.MERCURY): "F",
-    (Planet.SATURN, Planet.JUPITER): "N",
-    (Planet.SATURN, Planet.VENUS): "F",
+# Values: Exact score (0, 0.5, 1, 3, 4, 5) for Graha Maitri
+# Source: Traditional Maharashtrian Panchang / Muhurtha Chintamani
+# Rows: Bride's Lord, Cols: Groom's Lord (Symmetric)
+GRAHA_MAITRI_SCORES: dict[tuple[Planet, Planet], float] = {
+    # Sun
+    (Planet.SUN, Planet.SUN): 5.0,
+    (Planet.SUN, Planet.MOON): 5.0,
+    (Planet.SUN, Planet.MARS): 5.0,
+    (Planet.SUN, Planet.MERCURY): 4.0,
+    (Planet.SUN, Planet.JUPITER): 5.0,
+    (Planet.SUN, Planet.VENUS): 0.0,
+    (Planet.SUN, Planet.SATURN): 0.0,
+    # Moon
+    (Planet.MOON, Planet.SUN): 5.0,
+    (Planet.MOON, Planet.MOON): 5.0,
+    (Planet.MOON, Planet.MARS): 4.0,
+    (Planet.MOON, Planet.MERCURY): 1.0,
+    (Planet.MOON, Planet.JUPITER): 4.0,
+    (Planet.MOON, Planet.VENUS): 0.5,
+    (Planet.MOON, Planet.SATURN): 0.5,
+    # Mars
+    (Planet.MARS, Planet.SUN): 5.0,
+    (Planet.MARS, Planet.MOON): 4.0,
+    (Planet.MARS, Planet.MARS): 5.0,
+    (Planet.MARS, Planet.MERCURY): 0.5,
+    (Planet.MARS, Planet.JUPITER): 5.0,
+    (Planet.MARS, Planet.VENUS): 3.0,
+    (Planet.MARS, Planet.SATURN): 0.5,
+    # Mercury
+    (Planet.MERCURY, Planet.SUN): 4.0,
+    (Planet.MERCURY, Planet.MOON): 1.0,
+    (Planet.MERCURY, Planet.MARS): 0.5,
+    (Planet.MERCURY, Planet.MERCURY): 5.0,
+    (Planet.MERCURY, Planet.JUPITER): 0.5,
+    (Planet.MERCURY, Planet.VENUS): 5.0,
+    (Planet.MERCURY, Planet.SATURN): 4.0,
+    # Jupiter
+    (Planet.JUPITER, Planet.SUN): 5.0,
+    (Planet.JUPITER, Planet.MOON): 4.0,
+    (Planet.JUPITER, Planet.MARS): 5.0,
+    (Planet.JUPITER, Planet.MERCURY): 0.5,
+    (Planet.JUPITER, Planet.JUPITER): 5.0,
+    (Planet.JUPITER, Planet.VENUS): 0.5,
+    (Planet.JUPITER, Planet.SATURN): 3.0,
+    # Venus
+    (Planet.VENUS, Planet.SUN): 0.0,
+    (Planet.VENUS, Planet.MOON): 0.5,
+    (Planet.VENUS, Planet.MARS): 3.0,
+    (Planet.VENUS, Planet.MERCURY): 5.0,
+    (Planet.VENUS, Planet.JUPITER): 0.5,
+    (Planet.VENUS, Planet.VENUS): 5.0,
+    (Planet.VENUS, Planet.SATURN): 5.0,
+    # Saturn
+    (Planet.SATURN, Planet.SUN): 0.0,
+    (Planet.SATURN, Planet.MOON): 0.5,
+    (Planet.SATURN, Planet.MARS): 0.5,
+    (Planet.SATURN, Planet.MERCURY): 4.0,
+    (Planet.SATURN, Planet.JUPITER): 3.0,
+    (Planet.SATURN, Planet.VENUS): 5.0,
+    (Planet.SATURN, Planet.SATURN): 5.0,
 }
 
 
-def get_graha_maitri_score(rashi1: Rashi, rashi2: Rashi) -> int:
+def get_graha_maitri_score(rashi1: Rashi, rashi2: Rashi) -> float:
     """
-    Graha Maitri score (0–5) based on the lords of the two Moon rashis.
-    engine spec §2.5 graded scale.
+    Graha Maitri score (0-5) based on the lords of the two Moon rashis.
+    Uses exact lookup table from traditional Jyotisha texts.
     """
     lord1 = RASHI_LORD[rashi1]
     lord2 = RASHI_LORD[rashi2]
 
-    if lord1 == lord2:
-        # Same lord (same rashi or same-lord rashis like Gemini/Virgo both Mercury)
-        return 5
-
-    rel_12 = PLANET_FRIENDSHIP.get((lord1, lord2), "N")
-    rel_21 = PLANET_FRIENDSHIP.get((lord2, lord1), "N")
-
-    # Classical graded scoring (5 levels)
-    if rel_12 == "F" and rel_21 == "F":
-        return 5   # mutual friends
-    elif (rel_12 == "F" and rel_21 == "N") or (rel_12 == "N" and rel_21 == "F"):
-        return 4   # one friend, one neutral
-    elif rel_12 == "N" and rel_21 == "N":
-        return 3   # both neutral
-    elif (rel_12 == "F" and rel_21 == "E") or (rel_12 == "E" and rel_21 == "F"):
-        return 2   # one friend, one enemy
-    elif (rel_12 == "N" and rel_21 == "E") or (rel_12 == "E" and rel_21 == "N"):
-        return 1   # one neutral, one enemy
-    else:  # both enemy
-        return 0
+    # Symmetric lookup
+    score = GRAHA_MAITRI_SCORES.get((lord1, lord2))
+    if score is not None:
+        return score
+    
+    score = GRAHA_MAITRI_SCORES.get((lord2, lord1))
+    if score is not None:
+        return score
+        
+    return 0.0
 
 
 # ---------------------------------------------------------------------------

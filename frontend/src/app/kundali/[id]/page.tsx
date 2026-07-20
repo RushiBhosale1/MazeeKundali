@@ -252,8 +252,8 @@ export default function KundaliResultPage() {
               🔴 {mr('मंगळ दोष', 'Mangal Dosha')}
             </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 10 }}>
-              <span className={`chip ${kundali.mangal_dosha.is_manglik ? 'chip-red' : 'chip-green'}`} style={{ fontSize: '0.9rem' }}>
-                {kundali.mangal_dosha.is_manglik ? mr('मंगळ दोष आहे ⚠️', 'Manglik ⚠️') : kundali.mangal_dosha.cancellation_applied ? mr('दोष रद्द ✅', 'Dosha Cancelled ✅') : mr('मंगळ दोष नाही ✅', 'Not Manglik ✅')}
+              <span className={`chip ${kundali.mangal_dosha.severity === 'HIGH' ? 'chip-red' : kundali.mangal_dosha.severity === 'MILD' ? 'chip-orange' : kundali.mangal_dosha.is_manglik ? 'chip-red' : 'chip-green'}`} style={{ fontSize: '0.9rem' }}>
+                {kundali.mangal_dosha.severity === 'HIGH' ? mr('कडक मंगळ दोष ⚠️', 'High Manglik ⚠️') : kundali.mangal_dosha.severity === 'MILD' ? mr('अंशिक/सौम्य मंगळ ⚠️', 'Mild Manglik ⚠️') : kundali.mangal_dosha.cancellation_applied ? mr('दोष रद्द ✅', 'Dosha Cancelled ✅') : mr('मंगळ दोष नाही ✅', 'Not Manglik ✅')}
               </span>
               {kundali.mangal_dosha.mars_house && (
                 <span style={{ fontFamily: 'var(--font-devanagari)', fontSize: '0.82rem', color: 'var(--text-muted)' }}>
