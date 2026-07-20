@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+    <meta charset="UTF-8">
+    <title>Biodata</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Marathi:ital@0;1&family=Noto+Sans+Devanagari:wght@400;500;600;700&family=Yatra+One&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #fff; width: 794px; height: 1123px; overflow: hidden; position: relative; }
+        .container { width: 794px; height: 1123px; position: absolute; top: 0; left: 0; display: flex; flex-direction: column; }
+        
+        .watermark-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(4px);
+        }
+        .watermark-text {
+            font-size: 6rem;
+            color: rgba(0, 0, 0, 0.15);
+            font-weight: 800;
+            transform: rotate(-30deg);
+            text-align: center;
+            line-height: 1.2;
+            font-family: sans-serif;
+            text-shadow: 2px 2px 4px rgba(255,255,255,0.5);
+        }
+
+        /* ─── BASE STYLES ───────────────────────────────── */
+        .layout { display: flex; flex-direction: column; height: 100%; padding: 40px; }
+        .header { text-align: center; margin-bottom: 24px; position: relative; }
+        .ganesh { font-size: 18px; margin-bottom: 8px; font-weight: 600; }
+        .title { font-family: 'Yatra One', serif; font-size: 38px; margin-bottom: 12px; }
+        
+        .photo-wrapper { margin: 0 auto 16px auto; width: 130px; height: 130px; }
+        .photo { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
+        
+        .content { flex: 1; display: flex; flex-direction: column; gap: 14px; }
+        
+        .section { margin-bottom: 6px; }
+        .section-title { 
+            font-size: 17px; font-weight: 700; margin-bottom: 8px; 
+            display: inline-block; padding-bottom: 4px;
+        }
+        
+        .grid { display: grid; grid-template-columns: 1fr 1fr; column-gap: 30px; row-gap: 6px; }
+        .row { display: flex; font-size: 14.5px; line-height: 1.4; align-items: flex-start; }
+        .lbl { font-weight: 600; width: 130px; flex-shrink: 0; }
+        .val { flex: 1; }
+        
+        .full-grid { display: grid; grid-template-columns: 1fr; row-gap: 6px; }
+
+        /* ─── THEME: ROYAL GOLD (Premium Dark & Gold) ───── */
+        .theme-royal_gold {
+            background: #0f172a;
+            border: 14px solid #D4AF37;
+            color: #f8fafc;
+        }
+        .theme-royal_gold::after {
+            content: ''; position: absolute; top: 6px; left: 6px; right: 6px; bottom: 6px;
+            border: 1px solid #FDE047; pointer-events: none; opacity: 0.5;
+        }
+        .theme-royal_gold .ganesh, .theme-royal_gold .title, .theme-royal_gold .section-title { color: #FDE047; }
+        .theme-royal_gold .lbl { color: #FEF08A; font-weight: 500; }
+        .theme-royal_gold .val { color: #f8fafc; }
+        .theme-royal_gold .title { font-family: 'Tiro Devanagari Marathi', serif; text-shadow: 1px 1px 4px rgba(0,0,0,0.5); }
+        .theme-royal_gold .section-title { border-bottom: 1px solid #D4AF37; width: 100%; text-align: center; letter-spacing: 1px; }
+        .theme-royal_gold .photo { border: 4px solid #D4AF37; box-shadow: 0 0 15px rgba(212, 175, 55, 0.3); }
+
+        /* ─── THEME: MARATHI CLASSIC (Saffron Pride) ────── */
+        .theme-marathi_classic {
+            background: #fff;
+            border: 16px solid #FF7A00;
+        }
+        .theme-marathi_classic::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 120px;
+            background: linear-gradient(180deg, rgba(255,122,0,0.15) 0%, transparent 100%);
+            pointer-events: none;
+        }
+        .theme-marathi_classic .ganesh { color: #FF7A00; font-size: 22px; }
+        .theme-marathi_classic .title { color: #E65100; font-family: 'Yatra One', cursive; text-shadow: 2px 2px 0px rgba(255,122,0,0.2); }
+        .theme-marathi_classic .section-title { 
+            background: #FF7A00; color: white; padding: 4px 12px; border-radius: 4px;
+            display: inline-block; box-shadow: 2px 2px 0px #E65100;
+        }
+        .theme-marathi_classic .lbl { color: #D84315; }
+        .theme-marathi_classic .photo { border: 4px solid #FF7A00; padding: 4px; background: white; border-radius: 12px; }
+
+        /* ─── THEME 1: TRADITIONAL (Ganesha Gold) ───────── */
+        .theme-traditional {
+            background: #fffdf5;
+            border: 14px solid #8B0000;
+        }
+        .theme-traditional::after {
+            content: ''; position: absolute; top: 4px; left: 4px; right: 4px; bottom: 4px;
+            border: 2px solid #D4AF37; pointer-events: none;
+        }
+        .theme-traditional .ganesh, .theme-traditional .title, .theme-traditional .section-title, .theme-traditional .lbl {
+            color: #8B0000;
+        }
+        .theme-traditional .title { font-family: 'Tiro Devanagari Marathi', serif; font-size: 42px; }
+        .theme-traditional .section-title { border-bottom: 2px solid #D4AF37; width: 100%; }
+        .theme-traditional .photo { border: 3px solid #D4AF37; border-radius: 4px; }
+
+        /* ─── THEME 2: SHAHI (Royal Saffron) ────────────── */
+        .theme-shahi {
+            background: #FFFAF0;
+            border: 20px solid #E65100;
+            border-image: repeating-linear-gradient(45deg, #E65100, #E65100 10px, #FF6D00 10px, #FF6D00 20px) 20;
+        }
+        .theme-shahi .ganesh, .theme-shahi .title, .theme-shahi .section-title { color: #E65100; }
+        .theme-shahi .lbl { color: #BF360C; }
+        .theme-shahi .section-title { 
+            background: #FFF3E0; padding: 4px 12px; border-left: 5px solid #E65100; border-radius: 0 4px 4px 0; width: 100%;
+        }
+        .theme-shahi .photo { border: 4px solid #E65100; }
+
+        /* ─── THEME 3: RUBY (Wedding Red) ───────────────── */
+        .theme-ruby {
+            background: white;
+            border: 8px double #B71C1C;
+        }
+        .theme-ruby .ganesh, .theme-ruby .title { color: #B71C1C; font-family: 'Tiro Devanagari Marathi', serif; }
+        .theme-ruby .lbl { color: #C62828; }
+        .theme-ruby .section-title {
+            color: #B71C1C; border-bottom: 1px dashed #B71C1C; width: 100%; text-align: center;
+        }
+        .theme-ruby .photo { border-radius: 50%; border: 4px solid #B71C1C; }
+
+        /* ─── THEME 4: MODERN (Elegant Blue) ────────────── */
+        .theme-modern {
+            background: white;
+            border-top: 16px solid #1E3A8A;
+            border-bottom: 16px solid #1E3A8A;
+        }
+        .theme-modern .layout { flex-direction: row; padding: 0; }
+        .theme-modern .sidebar {
+            width: 260px; background: #F1F5F9; padding: 40px 24px; border-right: 1px solid #E2E8F0;
+        }
+        .theme-modern .main-content {
+            flex: 1; padding: 40px;
+        }
+        .theme-modern .header { text-align: left; }
+        .theme-modern .title { color: #1E3A8A; font-family: 'Noto Sans Devanagari', sans-serif; font-weight: 700; font-size: 32px; }
+        .theme-modern .ganesh { color: #64748B; font-size: 14px; text-align: left; font-weight: normal; }
+        .theme-modern .section-title { color: #1E3A8A; border-bottom: 2px solid #BFDBFE; width: 100%; }
+        .theme-modern .lbl { color: #475569; }
+        .theme-modern .grid { grid-template-columns: 1fr; } /* Stack rows in modern layout due to less space */
+        .theme-modern .photo-wrapper { margin: 0 0 24px 0; }
+        .theme-modern .photo { border-radius: 12px; }
+
+        /* ─── THEME 5: PEACOCK (Teal Green) ─────────────── */
+        .theme-peacock {
+            background: #F0FDFA;
+            border: 12px solid #0F766E;
+            border-radius: 20px;
+            margin: 10px; width: 774px; height: 1103px;
+        }
+        .theme-peacock .ganesh, .theme-peacock .title, .theme-peacock .section-title { color: #0F766E; }
+        .theme-peacock .lbl { color: #115E59; }
+        .theme-peacock .section-title { border-bottom: 2px solid #5EEAD4; width: max-content; }
+        .theme-peacock .photo { border-radius: 16px 4px 16px 4px; border: 3px solid #0F766E; }
+
+        /* ─── THEME 6: FLORAL (Minimalist) ──────────────── */
+        .theme-floral {
+            background: #FFFAF0;
+            border: 1px solid #E5E7EB;
+        }
+        .theme-floral::before {
+            content: '🌸'; position: absolute; top: 16px; left: 16px; font-size: 32px; opacity: 0.6;
+        }
+        .theme-floral::after {
+            content: '🌸'; position: absolute; bottom: 16px; right: 16px; font-size: 32px; opacity: 0.6;
+        }
+        .theme-floral .ganesh, .theme-floral .title, .theme-floral .section-title { color: #4B5563; }
+        .theme-floral .lbl { color: #6B7280; font-weight: 500; }
+        .theme-floral .section-title { text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid #D1D5DB; width: 100%; text-align: center; }
+        .theme-floral .photo { border-radius: 50%; box-shadow: none; border: 1px solid #D1D5DB; }
+
+    </style>
+</head>
+<body>
+    {% macro render_sections(grid_class, hide_personal_header) %}
+        
+        <div class="section">
+            {% if not hide_personal_header %}
+            <div class="section-title">वैयक्तिक माहिती</div>
+            {% endif %}
+            <div class="{{ grid_class }}">
+                {% if personal_info.get('full_name') and not hide_personal_header %}<div class="row"><div class="lbl">पूर्ण नाव</div><div class="val">: {{ personal_info.get('full_name') }}</div></div>{% endif %}
+                {% if personal_info.get('dob') and not hide_personal_header %}<div class="row"><div class="lbl">जन्म तारीख</div><div class="val">: {{ personal_info.get('dob') }}</div></div>{% endif %}
+                {% if personal_info.get('birth_time') %}<div class="row"><div class="lbl">जन्म वेळ</div><div class="val">: {{ personal_info.get('birth_time') }}</div></div>{% endif %}
+                {% if personal_info.get('birth_place') %}<div class="row"><div class="lbl">जन्म ठिकाण</div><div class="val">: {{ personal_info.get('birth_place') }}</div></div>{% endif %}
+                {% if personal_info.get('height') and not hide_personal_header %}<div class="row"><div class="lbl">उंची</div><div class="val">: {{ personal_info.get('height') }}</div></div>{% endif %}
+                {% if personal_info.get('blood_group') and not hide_personal_header %}<div class="row"><div class="lbl">रक्तगट</div><div class="val">: {{ personal_info.get('blood_group') }}</div></div>{% endif %}
+                {% if personal_info.get('complexion') %}<div class="row"><div class="lbl">वर्ण / त्वचा</div><div class="val">: {{ personal_info.get('complexion') }}</div></div>{% endif %}
+                {% if personal_info.get('caste') %}<div class="row"><div class="lbl">जात / पोटजात</div><div class="val">: {{ personal_info.get('caste') }}</div></div>{% endif %}
+                {% if personal_info.get('diet') %}<div class="row"><div class="lbl">आहार</div><div class="val">: {{ personal_info.get('diet') }}</div></div>{% endif %}
+                {% if personal_info.get('spectacles') %}<div class="row"><div class="lbl">चष्मा</div><div class="val">: {{ personal_info.get('spectacles') }}</div></div>{% endif %}
+                {% if personal_info.get('native_place') %}<div class="row"><div class="lbl">मूळ गाव</div><div class="val">: {{ personal_info.get('native_place') }}</div></div>{% endif %}
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">कौटुंबिक माहिती</div>
+            <div class="{{ grid_class }}">
+                {% if family_info.get('father_name') %}<div class="row"><div class="lbl">वडिलांचे नाव</div><div class="val">: {{ family_info.get('father_name') }}</div></div>{% endif %}
+                {% if family_info.get('father_occupation') %}<div class="row"><div class="lbl">वडिलांचा व्यवसाय</div><div class="val">: {{ family_info.get('father_occupation') }}</div></div>{% endif %}
+                {% if family_info.get('mother_name') %}<div class="row"><div class="lbl">आईचे नाव</div><div class="val">: {{ family_info.get('mother_name') }}</div></div>{% endif %}
+                {% if family_info.get('mother_occupation') %}<div class="row"><div class="lbl">आईचा व्यवसाय</div><div class="val">: {{ family_info.get('mother_occupation') }}</div></div>{% endif %}
+                {% if family_info.get('brothers') %}<div class="row"><div class="lbl">भाऊ</div><div class="val">: {{ family_info.get('brothers') }}</div></div>{% endif %}
+                {% if family_info.get('sisters') %}<div class="row"><div class="lbl">बहीण</div><div class="val">: {{ family_info.get('sisters') }}</div></div>{% endif %}
+                {% if family_info.get('mama_surname') %}<div class="row"><div class="lbl">मामांचे नाव/आडनाव</div><div class="val">: {{ family_info.get('mama_surname') }}</div></div>{% endif %}
+                {% if family_info.get('mama_gotra') %}<div class="row"><div class="lbl">मामांचे गोत्र / देवक</div><div class="val">: {{ family_info.get('mama_gotra') }}</div></div>{% endif %}
+                {% if family_info.get('relatives_surnames') %}<div class="row"><div class="lbl">नातेसंबंध</div><div class="val">: {{ family_info.get('relatives_surnames') }}</div></div>{% endif %}
+                {% if family_info.get('address') %}<div class="row"><div class="lbl">कायमचा पत्ता</div><div class="val">: {{ family_info.get('address') }}</div></div>{% endif %}
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">शिक्षण व करिअर</div>
+            <div class="{{ grid_class }}">
+                {% if education_info.get('education') %}<div class="row"><div class="lbl">शिक्षण</div><div class="val">: {{ education_info.get('education') }}</div></div>{% endif %}
+                {% if education_info.get('college') %}<div class="row"><div class="lbl">महाविद्यालय</div><div class="val">: {{ education_info.get('college') }}</div></div>{% endif %}
+                {% if education_info.get('occupation') %}<div class="row"><div class="lbl">नोकरी / व्यवसाय</div><div class="val">: {{ education_info.get('occupation') }}</div></div>{% endif %}
+                {% if education_info.get('employer') %}<div class="row"><div class="lbl">कंपनी</div><div class="val">: {{ education_info.get('employer') }}</div></div>{% endif %}
+                {% if education_info.get('annual_income') %}<div class="row"><div class="lbl">वार्षिक उत्पन्न</div><div class="val">: {{ education_info.get('annual_income') }}</div></div>{% endif %}
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">कुंडली माहिती</div>
+            <div class="{{ grid_class }}">
+                {% if horoscope_info.get('rashi_mr') %}<div class="row"><div class="lbl">रास</div><div class="val">: {{ horoscope_info.get('rashi_mr') }}</div></div>{% endif %}
+                {% if horoscope_info.get('nakshatra_mr') %}<div class="row"><div class="lbl">नक्षत्र व चरण</div><div class="val">: {{ horoscope_info.get('nakshatra_mr') }}{% if horoscope_info.get('pada') %} (चरण {{ horoscope_info.get('pada') }}){% endif %}</div></div>{% endif %}
+                {% if horoscope_info.get('gana_mr') %}<div class="row"><div class="lbl">गण</div><div class="val">: {{ horoscope_info.get('gana_mr') }}</div></div>{% endif %}
+                {% if horoscope_info.get('nadi_mr') %}<div class="row"><div class="lbl">नाडी</div><div class="val">: {{ horoscope_info.get('nadi_mr') }}</div></div>{% endif %}
+                {% if horoscope_info.get('varna_mr') %}<div class="row"><div class="lbl">वर्ण</div><div class="val">: {{ horoscope_info.get('varna_mr') }}</div></div>{% endif %}
+                {% if horoscope_info.get('devak') %}<div class="row"><div class="lbl">देवक</div><div class="val">: {{ horoscope_info.get('devak') }}</div></div>{% endif %}
+                {% if horoscope_info.get('gotra') %}<div class="row"><div class="lbl">गोत्र</div><div class="val">: {{ horoscope_info.get('gotra') }}</div></div>{% endif %}
+                {% if horoscope_info.get('kuldaivat') %}<div class="row"><div class="lbl">कुलदैवत</div><div class="val">: {{ horoscope_info.get('kuldaivat') }}</div></div>{% endif %}
+                {% if horoscope_info.get('mangal_dosha') %}<div class="row"><div class="lbl">मंगळ दोष</div><div class="val">: {{ horoscope_info.get('mangal_dosha') }}</div></div>{% endif %}
+            </div>
+        </div>
+        
+        {% if expectations %}
+        <div class="section" style="margin-top: 8px;">
+            <div class="section-title">अपेक्षा</div>
+            <p style="font-size: 14.5px; line-height: 1.5; color: inherit;">{{ expectations }}</p>
+        </div>
+        {% endif %}
+
+    {% endmacro %}
+
+    {% if is_preview %}
+    <div class="watermark-overlay">
+        <div class="watermark-text">PREVIEW<br/><span style="font-size: 3rem">Unpaid Biodata</span></div>
+    </div>
+    {% endif %}
+
+    <div class="container theme-{{ template_id }}">
+        
+        {% if template_id == 'modern' %}
+        <div class="layout">
+            <div class="sidebar">
+                <div class="header">
+                    <div class="ganesh">|| श्री गणेशाय नमः ||</div>
+                    <div class="title">परिचय पत्र</div>
+                    {% if photo_url %}
+                    <div class="photo-wrapper"><img class="photo" src="{{ photo_url }}" /></div>
+                    {% endif %}
+                </div>
+                
+                <h2 style="font-size: 20px; color: #1E3A8A; margin-bottom: 4px;">{{ personal_info.get('full_name', '') }}</h2>
+                <p style="font-size: 14px; color: #64748B; margin-bottom: 24px; font-weight: 500;">
+                    {{ education_info.get('occupation', '') }}
+                </p>
+
+                <div style="font-size: 14.5px; line-height: 1.6; color: #334155;">
+                    {% if personal_info.get('dob') %}
+                    <strong>जन्म:</strong> {{ personal_info.get('dob') }}<br/><br/>
+                    {% endif %}
+                    
+                    {% if personal_info.get('height') %}
+                    <strong>उंची:</strong> {{ personal_info.get('height') }}<br/><br/>
+                    {% endif %}
+
+                    {% if personal_info.get('blood_group') %}
+                    <strong>रक्तगट:</strong> {{ personal_info.get('blood_group') }}<br/><br/>
+                    {% endif %}
+
+                    {% if family_info.get('contact_number') %}
+                    <strong>संपर्क:</strong><br/>
+                    {{ family_info.get('contact_number') }}
+                    {% endif %}
+                </div>
+            </div>
+            <div class="main-content">
+                <div class="content">
+                    <!-- Sections included below via macro -->
+                    {{ render_sections(grid_class='full-grid', hide_personal_header=True) }}
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="layout">
+            <div class="header">
+                <div class="ganesh">|| श्री गणेशाय नमः ||</div>
+                <div class="title">परिचय पत्र</div>
+                {% if photo_url %}
+                <div class="photo-wrapper"><img class="photo" src="{{ photo_url }}" /></div>
+                {% endif %}
+            </div>
+            <div class="content">
+                <!-- Sections included below via macro -->
+                {{ render_sections(grid_class='grid', hide_personal_header=False) }}
+            </div>
+        </div>
+        {% endif %}
+
+    </div>
+
+</body>
+</html>

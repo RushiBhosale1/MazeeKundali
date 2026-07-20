@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ name }} — जन्मकुंडली</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Marathi&family=Noto+Sans+Devanagari:wght@400;600;700&family=Inter:wght@400;600;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Noto Sans Devanagari', 'Tiro Devanagari Marathi', serif;
+    background: #fefdf8;
+    color: #1a1a2e;
+    width: 210mm;
+    min-height: 297mm;
+    padding: 12mm 14mm;
+    font-size: 10pt;
+    line-height: 1.5;
+  }
+
+  /* Header */
+  .header {
+    border-bottom: 3px solid #f07c00;
+    padding-bottom: 10px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .header-brand {
+    font-size: 11pt;
+    color: #f07c00;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+  .header-title {
+    font-size: 18pt;
+    font-weight: 700;
+    color: #0d1b2a;
+    text-align: center;
+    flex: 1;
+  }
+  .header-date {
+    font-family: 'Inter', sans-serif;
+    font-size: 8pt;
+    color: #7a7268;
+    text-align: right;
+  }
+
+  /* Person info card */
+  .person-card {
+    background: linear-gradient(135deg, #fff8f0 0%, #faf7ec 100%);
+    border: 1.5px solid rgba(240,124,0,0.3);
+    border-radius: 10px;
+    padding: 12px 16px;
+    margin-bottom: 14px;
+  }
+  .person-name {
+    font-size: 15pt;
+    font-weight: 700;
+    color: #0d1b2a;
+    margin-bottom: 4px;
+  }
+  .person-meta {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px 16px;
+    font-size: 9pt;
+    color: #4a4540;
+  }
+  .person-meta span { display: block; }
+  .person-meta .label { color: #7a7268; font-size: 8pt; }
+
+  /* Free tier summary */
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .summary-box {
+    background: #fff;
+    border: 1px solid rgba(240,124,0,0.2);
+    border-radius: 8px;
+    padding: 8px 10px;
+    text-align: center;
+  }
+  .summary-box .val {
+    font-size: 12pt;
+    font-weight: 700;
+    color: #f07c00;
+    display: block;
+  }
+  .summary-box .lbl {
+    font-size: 7.5pt;
+    color: #7a7268;
+    display: block;
+    margin-top: 2px;
+  }
+
+  /* Chart area */
+  .chart-section {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 14px;
+    align-items: flex-start;
+  }
+  .chart-svg-wrap {
+    flex: 0 0 190px;
+  }
+  .chart-svg-wrap img, .chart-svg-wrap svg {
+    width: 190px;
+    height: 190px;
+    border-radius: 8px;
+  }
+  .chart-aside {
+    flex: 1;
+  }
+
+  /* Planet table */
+  .section-title {
+    font-size: 11pt;
+    font-weight: 700;
+    color: #0d1b2a;
+    border-left: 4px solid #f07c00;
+    padding-left: 8px;
+    margin-bottom: 8px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 9pt;
+    margin-bottom: 14px;
+  }
+  th {
+    background: #0d1b2a;
+    color: #f07c00;
+    padding: 5px 8px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 8pt;
+  }
+  td {
+    padding: 4px 8px;
+    border-bottom: 1px solid #f0ebe0;
+    color: #2d2826;
+  }
+  tr:nth-child(even) td { background: #faf7ec; }
+
+  .retro { color: #ef4444; font-size: 7pt; }
+  .exalted { color: #22c55e; font-size: 7pt; }
+  .debilitated { color: #f97316; font-size: 7pt; }
+
+  /* Dasha */
+  .dasha-box {
+    background: #0d1b2a;
+    color: #f0ebe0;
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 14px;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+  }
+  .dasha-item .dasha-title { font-size: 8pt; color: #b8b0a0; }
+  .dasha-item .dasha-val   { font-size: 12pt; font-weight: 700; color: #f07c00; }
+  .dasha-item .dasha-period{ font-size: 7.5pt; color: #7a7268; font-family: 'Inter', sans-serif; }
+
+  /* Mangal Dosha */
+  .dosha-box {
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 14px;
+  }
+  .dosha-box.manglik { background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.3); }
+  .dosha-box.not-manglik { background: rgba(34,197,94,0.06); border: 1px solid rgba(34,197,94,0.2); }
+  .dosha-title { font-weight: 700; font-size: 10pt; color: #0d1b2a; margin-bottom: 4px; }
+  .dosha-text { font-size: 9pt; color: #4a4540; line-height: 1.5; }
+
+  /* Written analysis */
+  .analysis-section p {
+    font-size: 9pt;
+    color: #3d3830;
+    line-height: 1.7;
+    margin-bottom: 10px;
+    text-align: justify;
+  }
+  .analysis-section .sub-title {
+    font-size: 10pt;
+    font-weight: 700;
+    color: #f07c00;
+    margin-bottom: 4px;
+  }
+
+  /* Footer */
+  .footer {
+    margin-top: 16px;
+    border-top: 1px solid rgba(240,124,0,0.2);
+    padding-top: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .footer-brand { font-size: 8pt; color: #f07c00; font-weight: 700; }
+  .footer-note  { font-size: 7pt; color: #b8b0a0; font-family: 'Inter', sans-serif; }
+  .footer-url   { font-size: 7.5pt; color: #7a7268; font-family: 'Inter', sans-serif; }
+
+  .gold-divider {
+    border: none;
+    border-top: 1.5px solid rgba(240,124,0,0.25);
+    margin: 12px 0;
+  }
+
+  .chip {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 7.5pt;
+    font-weight: 600;
+    margin-right: 4px;
+  }
+  .chip-g  { background: rgba(34,197,94,0.12);  color: #15803d; border: 1px solid rgba(34,197,94,0.3); }
+  .chip-r  { background: rgba(239,68,68,0.12);  color: #dc2626; border: 1px solid rgba(239,68,68,0.3); }
+  .chip-s  { background: rgba(240,124,0,0.12);  color: #c2410c; border: 1px solid rgba(240,124,0,0.3); }
+
+  @media print {
+    body { width: 100%; padding: 10mm 12mm; }
+    .no-print { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-brand">🪐 माझी कुंडली</div>
+  <div class="header-title">जन्मकुंडली</div>
+  <div class="header-date">
+    तयार केले: {{ generated_date }}<br>
+    <span style="color:#f07c00">mazeekundali.in</span>
+  </div>
+</div>
+
+<!-- Person Info -->
+<div class="person-card">
+  <div class="person-name">{{ name }}</div>
+  <div class="person-meta">
+    <span><span class="label">जन्म तारीख</span>{{ dob }}</span>
+    <span><span class="label">जन्म वेळ</span>{{ time_of_birth or "अज्ञात" }}{% if not lagna_reliable %} (अंदाजे){% endif %}</span>
+    <span><span class="label">जन्म ठिकाण</span>{{ place_text }}</span>
+    <span><span class="label">लिंग</span>{{ "पुरुष" if gender == "male" else "स्त्री" }}</span>
+    <span><span class="label">अक्षांश/रेखांश</span>{{ "%.4f"|format(latitude) }}, {{ "%.4f"|format(longitude) }}</span>
+    <span><span class="label">Timezone</span>{{ tz_iana }}</span>
+  </div>
+</div>
+
+<!-- Summary boxes -->
+<div class="summary-grid">
+  <div class="summary-box">
+    <span class="val">{{ rashi_mr }}</span>
+    <span class="lbl">चंद्र राशी</span>
+  </div>
+  <div class="summary-box">
+    <span class="val">{{ nakshatra_mr }}</span>
+    <span class="lbl">नक्षत्र (पद {{ pada }})</span>
+  </div>
+  <div class="summary-box">
+    <span class="val">{{ lagna_mr or "—" }}</span>
+    <span class="lbl">लग्न राशी{% if not lagna_reliable %} ⚠️{% endif %}</span>
+  </div>
+  <div class="summary-box">
+    <span class="val">{{ gana_mr }}</span>
+    <span class="lbl">गण</span>
+  </div>
+  <div class="summary-box">
+    <span class="val">{{ nadi_mr }}</span>
+    <span class="lbl">नाडी</span>
+  </div>
+  <div class="summary-box">
+    <span class="val">{{ varna_mr or "—" }}</span>
+    <span class="lbl">वर्ण</span>
+  </div>
+</div>
+
+<hr class="gold-divider">
+
+<!-- Chart + Planet Table -->
+<div class="chart-section">
+  <div class="chart-svg-wrap">
+    <h3 class="section-title" style="margin-bottom:8px;font-size:10pt">D1 कुंडली</h3>
+    {{ chart_svg | safe }}
+  </div>
+  <div class="chart-aside">
+    <h3 class="section-title">ग्रह स्थिती</h3>
+    {% if planet_positions %}
+    <table>
+      <thead>
+        <tr>
+          <th>ग्रह</th>
+          <th>राशी</th>
+          <th>घर</th>
+          <th>अंश</th>
+          <th>स्थिती</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for pp in planet_positions %}
+        <tr>
+          <td>{{ pp.planet_mr }}</td>
+          <td>{{ pp.rashi.name_mr }}</td>
+          <td>{{ pp.house }}</td>
+          <td style="font-family:'Inter',sans-serif">{{ "%.2f"|format(pp.degree_in_rashi) }}°</td>
+          <td>
+            {% if pp.retrograde %}<span class="retro chip chip-r">वक्री</span>{% endif %}
+            {% if pp.is_exalted %}<span class="exalted chip chip-g">उच्च</span>{% endif %}
+            {% if pp.is_debilitated %}<span class="debilitated chip chip-s">नीच</span>{% endif %}
+            {% if not pp.retrograde and not pp.is_exalted and not pp.is_debilitated %}—{% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p style="color:#7a7268;font-size:9pt">ग्रह माहिती उपलब्ध नाही.</p>
+    {% endif %}
+  </div>
+</div>
+
+<hr class="gold-divider">
+
+<!-- Vimshottari Dasha -->
+{% if dasha %}
+<div class="dasha-box">
+  <div>
+    <div style="font-size:9pt;color:#b8b0a0;margin-bottom:6px">🕐 विंशोत्तरी दशा (Vimshottari Dasha)</div>
+    <div style="display:flex;gap:32px">
+      <div class="dasha-item">
+        <div class="dasha-title">महादशा</div>
+        <div class="dasha-val">{{ dasha.mahadasha_lord_mr }}</div>
+        <div class="dasha-period">{{ dasha.mahadasha_start }} → {{ dasha.mahadasha_end }}</div>
+      </div>
+      <div class="dasha-item">
+        <div class="dasha-title">अंतर्दशा</div>
+        <div class="dasha-val">{{ dasha.antardasha_lord_mr }}</div>
+        <div class="dasha-period">{{ dasha.antardasha_start }} → {{ dasha.antardasha_end }}</div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<!-- Mangal Dosha -->
+{% if mangal_dosha %}
+<div class="dosha-box {{ 'manglik' if mangal_dosha.is_manglik and not mangal_dosha.cancellation_applied else 'not-manglik' }}">
+  <div class="dosha-title">
+    🔴 मंगळ दोष —
+    {% if mangal_dosha.is_manglik and not mangal_dosha.cancellation_applied %}
+      <span class="chip chip-r">आहे</span>
+    {% elif mangal_dosha.cancellation_applied %}
+      <span class="chip chip-g">रद्द झाला</span>
+    {% else %}
+      <span class="chip chip-g">नाही</span>
+    {% endif %}
+  </div>
+  <div class="dosha-text">{{ mangal_dosha.explanation_mr }}</div>
+  {% if mangal_dosha.cancellation_rule %}
+  <div style="margin-top:4px;font-size:8pt;color:#15803d">📌 {{ mangal_dosha.cancellation_rule }}</div>
+  {% endif %}
+</div>
+{% endif %}
+
+<!-- Written Analysis -->
+{% if written_analysis %}
+<hr class="gold-divider">
+<div class="analysis-section">
+  <h2 class="section-title">विश्लेषण</h2>
+  {% if written_analysis.rashi_description %}
+  <div class="sub-title">राशी स्वभाव</div>
+  <p>{{ written_analysis.rashi_description }}</p>
+  {% endif %}
+  {% if written_analysis.nakshatra_description %}
+  <div class="sub-title">नक्षत्र विशेषता</div>
+  <p>{{ written_analysis.nakshatra_description }}</p>
+  {% endif %}
+  {% if written_analysis.lagna_description %}
+  <div class="sub-title">लग्न प्रभाव</div>
+  <p>{{ written_analysis.lagna_description }}</p>
+  {% endif %}
+  {% if written_analysis.dasha_description %}
+  <div class="sub-title">दशा काळ</div>
+  <p>{{ written_analysis.dasha_description }}</p>
+  {% endif %}
+  {% if written_analysis.overall_summary %}
+  <div class="sub-title">एकूण सारांश</div>
+  <p>{{ written_analysis.overall_summary }}</p>
+  {% endif %}
+</div>
+{% endif %}
+
+<!-- Footer -->
+<div class="footer">
+  <div class="footer-brand">🪐 माझी कुंडली</div>
+  <div class="footer-note">हे परिणाम मार्गदर्शनासाठी आहेत. वैयक्तिक सल्ल्यासाठी तज्ञ ज्योतिषांचा सल्ला घ्या.</div>
+  <div class="footer-url">mazeekundali.in</div>
+</div>
+
+</body>
+</html>
