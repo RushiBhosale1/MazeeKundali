@@ -51,6 +51,7 @@ ALLOWED_ORIGINS = [
     "http://localhost:3001",
     "https://mazeekundali.in",       # production — update before launch
     "https://www.mazeekundali.in",
+    "https://mazee-kundali-lemon.vercel.app", # Vercel deployment
 ]
 
 app.add_middleware(
