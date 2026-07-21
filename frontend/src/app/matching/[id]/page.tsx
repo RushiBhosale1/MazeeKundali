@@ -155,12 +155,10 @@ export default function MatchingResultPage() {
             <ScoreRing score={result.total_score} max={result.total_max} />
           </div>
           <div style={{ fontFamily: 'var(--font-devanagari)', fontSize: '1rem', fontWeight: 600, color: verdictColor, marginBottom: 4 }}>
-            {result.paid && result.verdict_mr ? (lang === 'mr' ? result.verdict_mr : (result.verdict_en ?? result.verdict_mr)) : (
-              pct >= 0.88 ? mr('उत्तम जुळणी 🌟', 'Excellent Match 🌟') :
-              pct >= 0.69 ? mr('चांगली जुळणी ✅', 'Good Match ✅') :
-              pct >= 0.5  ? mr('साधारण जुळणी ⚠️', 'Average Match ⚠️') :
-              mr('अल्प जुळणी ❗', 'Low Compatibility ❗')
-            )}
+            {pct >= 0.88 ? mr('उत्तम जुळणी 🌟', 'Excellent Match 🌟') :
+             pct >= 0.69 ? mr('चांगली जुळणी ✅', 'Good Match ✅') :
+             pct >= 0.5  ? mr('साधारण जुळणी ⚠️', 'Average Match ⚠️') :
+             mr('अल्प जुळणी ❗', 'Low Compatibility ❗')}
           </div>
           <div style={{ fontFamily: 'var(--font-devanagari)', fontSize: '0.82rem', color: 'var(--text-muted)' }}>
             {mr(`${result.total_score} गुण / ३६ पैकी`, `${result.total_score} points out of 36`)}
@@ -280,6 +278,18 @@ export default function MatchingResultPage() {
                 )}
               </div>
             ))}
+          </div>
+        )}
+        
+        {/* ─── Paid: Conclusion ──────────────────────────────── */}
+        {result.paid && (result.verdict_mr || result.verdict_en) && (
+          <div className="card animate-fade-up" style={{ padding: '20px', marginBottom: 20, background: 'linear-gradient(135deg, rgba(20,40,70,0.9) 0%, rgba(10,20,40,0.95) 100%)', borderColor: 'rgba(240,124,0,0.4)', color: '#fff' }}>
+            <h2 style={{ fontFamily: 'var(--font-devanagari)', fontSize: '1.2rem', fontWeight: 700, marginBottom: 12, color: 'var(--saffron-400)', textAlign: 'center' }}>
+              {mr('निष्कर्ष (Conclusion)', 'Astrological Conclusion')}
+            </h2>
+            <p style={{ fontFamily: 'var(--font-devanagari)', fontSize: '0.95rem', lineHeight: 1.6, textAlign: 'center', opacity: 0.9 }}>
+              {lang === 'mr' ? result.verdict_mr : (result.verdict_en || result.verdict_mr)}
+            </p>
           </div>
         )}
 

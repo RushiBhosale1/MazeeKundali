@@ -383,10 +383,10 @@ def _generate_3_charts(result) -> dict:
     from engine.ephemeris import longitude_to_navamsa_rashi
     
     if not result or not result.planet_positions:
-        placeholder = '<div style="width: 230px; height: 230px; display: flex; align-items: center; justify-content: center; border: 1px dashed #ccc; border-radius: 8px; color: #7a7268; font-size: 10pt; text-align: center; background: #fafafa;">माहिती उपलब्ध नाही</div>'
+        placeholder = '<div style="width: 300px; height: 300px; display: flex; align-items: center; justify-content: center; border: 1px dashed #ccc; border-radius: 8px; color: #7a7268; font-size: 11pt; text-align: center; background: #fafafa; margin: 0 auto;">माहिती उपलब्ध नाही</div>'
         return {"d1": placeholder, "d9": placeholder, "moon": placeholder}
     
-    empty_svg = '<div style="width: 230px; height: 230px; display: flex; align-items: center; justify-content: center; border: 1px dashed #ccc; border-radius: 8px; color: #7a7268; font-size: 10pt; text-align: center; background: #fafafa;">अचूक जन्मवेळ उपलब्ध नाही</div>'
+    empty_svg = '<div style="width: 300px; height: 300px; display: flex; align-items: center; justify-content: center; border: 1px dashed #ccc; border-radius: 8px; color: #7a7268; font-size: 11pt; text-align: center; background: #fafafa; margin: 0 auto;">अचूक जन्मवेळ उपलब्ध नाही</div>'
     
     # D1 Chart (Lagna)
     pr_d1 = {}
@@ -396,7 +396,7 @@ def _generate_3_charts(result) -> dict:
         if pp.retrograde:
             rr.add(pp.planet.value)
     
-    svg_d1 = render_north_indian_svg(result.lagna.value, pr_d1, rr, width=230, lang="mr", theme="light") if result.lagna else empty_svg
+    svg_d1 = render_north_indian_svg(result.lagna.value, pr_d1, rr, width=300, lang="mr", theme="bw") if result.lagna else empty_svg
     
     # D9 Chart (Navamsa)
     pr_d9 = {}
@@ -404,12 +404,12 @@ def _generate_3_charts(result) -> dict:
         pr_d9[pp.planet.value] = longitude_to_navamsa_rashi(pp.longitude).value
     
     lagna_d9 = longitude_to_navamsa_rashi(result._raw_ephemeris["lagna_longitude"]).value if hasattr(result, "_raw_ephemeris") else None
-    svg_d9 = render_north_indian_svg(lagna_d9, pr_d9, rr, width=230, lang="mr", theme="light") if lagna_d9 else empty_svg
+    svg_d9 = render_north_indian_svg(lagna_d9, pr_d9, rr, width=300, lang="mr", theme="bw") if lagna_d9 else empty_svg
     
     # Moon Chart (Chandra)
     pr_moon = pr_d1 # Rashi remains same, only ascendant changes to Moon's Rashi
     moon_lagna = pr_d1.get("Moon")
-    svg_moon = render_north_indian_svg(moon_lagna, pr_moon, rr, width=230, lang="mr", theme="light") if moon_lagna else empty_svg
+    svg_moon = render_north_indian_svg(moon_lagna, pr_moon, rr, width=300, lang="mr", theme="bw") if moon_lagna else empty_svg
     
     return {"d1": svg_d1, "d9": svg_d9, "moon": svg_moon}
 

@@ -248,38 +248,46 @@
   <div class="header-brand">MAZEEKUNDALI.IN</div>
   <div class="header-title">पत्रिका जुळणी अहवाल - जन्मकुंडली</div>
 </div>
+<table style="width: 100%; border: none; margin-top: 20px;">
+  <tr>
+    <td style="width: 50%; text-align: center; border: none; padding: 0 15px;">
+      <div class="section-title" style="text-align: center; margin: 0 0 15px 0; border: none;">वर: {{ groom_name }}</div>
+      
+      <div style="margin-bottom: 30px;">
+        <div style="font-weight: bold; font-size: 11pt; margin-bottom: 8px;">Lagna Chart</div>
+        {{ groom_charts.d1 | safe }}
+      </div>
+      
+      <div style="margin-bottom: 30px;">
+        <div style="font-weight: bold; font-size: 11pt; margin-bottom: 8px;">Navamsa Chart</div>
+        {{ groom_charts.d9 | safe }}
+      </div>
 
-<div class="section-title" style="text-align: center; margin-top: 10px;">वधू: {{ bride_name }}</div>
-<div style="display: flex; justify-content: space-between; gap: 10px; margin-bottom: 20px;">
-  <div style="text-align: center;">
-    <div style="font-weight: bold; font-size: 10pt; margin-bottom: 5px;">Lagna Chart</div>
-    {{ bride_charts.d1 | safe }}
-  </div>
-  <div style="text-align: center;">
-    <div style="font-weight: bold; font-size: 10pt; margin-bottom: 5px;">Navamsa Chart</div>
-    {{ bride_charts.d9 | safe }}
-  </div>
-  <div style="text-align: center;">
-    <div style="font-weight: bold; font-size: 10pt; margin-bottom: 5px;">Chandra Chart</div>
-    {{ bride_charts.moon | safe }}
-  </div>
-</div>
+      <div>
+        <div style="font-weight: bold; font-size: 11pt; margin-bottom: 8px;">Chandra Chart</div>
+        {{ groom_charts.moon | safe }}
+      </div>
+    </td>
+    <td style="width: 50%; text-align: center; border: none; padding: 0 15px;">
+      <div class="section-title" style="text-align: center; margin: 0 0 15px 0; border: none;">वधू: {{ bride_name }}</div>
+      
+      <div style="margin-bottom: 30px;">
+        <div style="font-weight: bold; font-size: 11pt; margin-bottom: 8px;">Lagna Chart</div>
+        {{ bride_charts.d1 | safe }}
+      </div>
+      
+      <div style="margin-bottom: 30px;">
+        <div style="font-weight: bold; font-size: 11pt; margin-bottom: 8px;">Navamsa Chart</div>
+        {{ bride_charts.d9 | safe }}
+      </div>
 
-<div class="section-title" style="text-align: center;">वर: {{ groom_name }}</div>
-<div style="display: flex; justify-content: space-between; gap: 10px;">
-  <div style="text-align: center;">
-    <div style="font-weight: bold; font-size: 10pt; margin-bottom: 5px;">Lagna Chart</div>
-    {{ groom_charts.d1 | safe }}
-  </div>
-  <div style="text-align: center;">
-    <div style="font-weight: bold; font-size: 10pt; margin-bottom: 5px;">Navamsa Chart</div>
-    {{ groom_charts.d9 | safe }}
-  </div>
-  <div style="text-align: center;">
-    <div style="font-weight: bold; font-size: 10pt; margin-bottom: 5px;">Chandra Chart</div>
-    {{ groom_charts.moon | safe }}
-  </div>
-</div>
+      <div>
+        <div style="font-weight: bold; font-size: 11pt; margin-bottom: 8px;">Chandra Chart</div>
+        {{ bride_charts.moon | safe }}
+      </div>
+    </td>
+  </tr>
+</table>
 
 <div style="page-break-before: always;"></div>
 <div class="header">

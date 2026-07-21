@@ -107,6 +107,39 @@ def _parse_time(s: Optional[str]) -> Optional[dtime]:
         return None
 
 
+def _generate_conclusion(score: float, match_result) -> tuple[str, str]:
+    """Generates detailed conclusion paragraphs (mr, en) based on Ashtakoot score and Doshas."""
+    nadi = match_result.nadi_dosha
+    bhakoot = match_result.bhakoot_dosha
+    
+    # Check severe doshas
+    severe_nadi = nadi and nadi.is_present and not nadi.is_cancelled
+    severe_bhakoot = bhakoot and bhakoot.is_present and not bhakoot.is_cancelled
+    
+    if score < 18 or severe_nadi:
+        if severe_nadi:
+            mr = f"या जुळणीला फक्त {score}/३६ गुण मिळाले आहेत आणि नाडी दोष (रद्द न झालेला) आढळला आहे. नाडी दोषामुळे संतती आणि आरोग्यावर गंभीर परिणाम होऊ शकतो. त्यामुळे, ज्योतिषाच्या सल्ल्याशिवाय हा विवाह सुचविला जात नाही."
+            en = f"This match scores {score}/36 points and exhibits an uncancelled Nadi Dosha. Nadi Dosha can severely impact progeny and health. Therefore, this marriage is highly not recommended without expert astrological consultation."
+        else:
+            mr = f"या जुळणीला फक्त {score}/३६ गुण मिळाले आहेत, जे किमान १८ गुणांपेक्षा कमी आहेत. गुण मिलान खूपच कमी असल्यामुळे वैवाहिक जीवनात अडचणी येऊ शकतात. त्यामुळे हा विवाह सुचविला जात नाही."
+            en = f"This match scores only {score}/36 points, which is below the minimum required 18 points. Due to low compatibility, this marriage is not recommended."
+    elif score >= 18 and score < 24:
+        if severe_bhakoot:
+            mr = f"या जुळणीला {score}/३६ गुण मिळाले आहेत. गुण मिलान ठीक आहे, परंतु भकूट दोष आढळला आहे. यामुळे वैवाहिक जीवनात तडजोड करावी लागू शकते. योग्य शांती करून विवाह करता येईल."
+            en = f"This match scores {score}/36 points. While the score is acceptable, an uncancelled Bhakoot Dosha is present, which may cause friction. Marriage can be considered after performing necessary remedies."
+        else:
+            mr = f"या जुळणीला {score}/३६ गुण मिळाले आहेत. ही एक साधारण (Average) जुळणी आहे. वैवाहिक जीवन ठीक राहील, परंतु दोघांनीही एकमेकांना समजून घेणे आवश्यक आहे."
+            en = f"This match scores {score}/36 points. It is an average match. Marriage is acceptable, but mutual understanding and compromise will be required."
+    elif score >= 24 and score < 30:
+        mr = f"या जुळणीला उत्तम {score}/३६ गुण मिळाले आहेत! ग्रहांची मैत्री आणि स्वभाव चांगला जुळत आहे. वैवाहिक जीवन सुखी आणि समृद्ध होईल. हा विवाह करण्यास हरकत नाही."
+        en = f"This match scores a good {score}/36 points! Planetary friendship and temperaments align well. The married life is expected to be happy and prosperous. This is a recommended match."
+    else:
+        mr = f"या जुळणीला अत्यंत उत्कृष्ट {score}/३६ गुण मिळाले आहेत! अशी जुळणी क्वचितच पाहायला मिळते. दोघांचेही विचार, स्वभाव आणि नशीब एकमेकांना खूप पूरक आहेत. हा विवाह नक्कीच करावा."
+        en = f"This match scores an excellent {score}/36 points! Such high compatibility is rare. The thoughts, temperaments, and fortunes of both individuals complement each other perfectly. This match is highly recommended."
+        
+    return mr, en
+
+
 def _compute_person(person: PersonInput):
     """Compute kundali for one person (free + paid fields for matching)."""
     birth_time = _parse_time(person.time_of_birth)
@@ -218,9 +251,8 @@ async def create_matching(request: MatchingCreateRequest, db: AsyncSession = Dep
     bride_manglik_sev = bride_result.mangal_dosha.severity if bride_result.mangal_dosha else None
     groom_manglik_sev = groom_result.mangal_dosha.severity if groom_result.mangal_dosha else None
 
-    # Call AI or basic logic for verdicts - we can just stub it for now
-    verdict_mr = "एकूण गुण: " + str(match_result.total_score) + "/३६"
-    verdict_en = "Total Score: " + str(match_result.total_score) + "/36"
+    # Generate expert conclusion
+    verdict_mr, verdict_en = _generate_conclusion(match_result.total_score, match_result)
 
     matching_db = await repo.create_matching(
         db=db,

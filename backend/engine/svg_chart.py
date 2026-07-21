@@ -170,8 +170,15 @@ def render_north_indian_svg(
     lines: list[str] = []
     lines.append(f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{h}" viewBox="0 0 {width} {h}" font-family="Noto Sans Devanagari,Inter,sans-serif">')
 
-    bg_color = "#0d1b2a" if theme == "dark" else "#ffffff"
-    border_color = "#f07c00"
+    if theme == "dark":
+        bg_color = "#0d1b2a"
+        border_color = "#f07c00"
+    elif theme == "light":
+        bg_color = "#ffffff"
+        border_color = "#f07c00"
+    else: # "bw"
+        bg_color = "#ffffff"
+        border_color = "#000000"
     
     # Background
     lines.append(f'<rect width="{width}" height="{h}" fill="{bg_color}" rx="8"/>')
@@ -180,8 +187,15 @@ def render_north_indian_svg(
     lines.append(f'<rect x="1" y="1" width="{width-2}" height="{h-2}" fill="none" stroke="{border_color}" stroke-width="1.5" rx="7"/>')
 
     # ── Draw 4x4 grid (outer 12 cells) ───────────────────────────────────────
-    STROKE = "#1a3050" if theme == "dark" else "#e5e7eb"
-    STROKE_LAGNA = "#f07c00"
+    if theme == "dark":
+        STROKE = "#1a3050"
+        STROKE_LAGNA = "#f07c00"
+    elif theme == "light":
+        STROKE = "#e5e7eb"
+        STROKE_LAGNA = "#f07c00"
+    else: # "bw"
+        STROKE = "#000000"
+        STROKE_LAGNA = "#000000"
 
     for house_num, (col, row) in HOUSE_GRID.items():
         x = int(col * cell * scale)
@@ -192,8 +206,10 @@ def render_north_indian_svg(
         # Cell background
         if theme == "dark":
             bg = "rgba(240,124,0,0.08)" if is_lagna else "rgba(255,255,255,0.02)"
-        else:
+        elif theme == "light":
             bg = "rgba(240,124,0,0.08)" if is_lagna else "#ffffff"
+        else: # "bw"
+            bg = "#ffffff"
         stroke_color = STROKE_LAGNA if is_lagna else STROKE
         stroke_w = "1.5" if is_lagna else "0.8"
 
@@ -205,7 +221,7 @@ def render_north_indian_svg(
         # Rashi number + short name (top-left of cell)
         rashi_label = rashi_labels.get(rashi_idx, "")
         rashi_num = rashi_idx + 1  # 1-12 for display
-        text_color = "#7a7268" if theme == "dark" else "#9ca3af"
+        text_color = "#7a7268" if theme == "dark" else ("#9ca3af" if theme == "light" else "#000000")
 
         lines.append(
             f'<text x="{x + int(4*scale)}" y="{y + int(13*scale)}" '
@@ -215,9 +231,10 @@ def render_north_indian_svg(
 
         # Lagna marker
         if is_lagna:
+            lagna_color = "#f07c00" if theme in ["dark", "light"] else "#000000"
             lines.append(
                 f'<text x="{x + cell - int(4*scale)}" y="{y + int(13*scale)}" '
-                f'font-size="{int(9*scale)}" fill="#f07c00" text-anchor="end" font-weight="700">ल</text>'
+                f'font-size="{int(9*scale)}" fill="{lagna_color}" text-anchor="end" font-weight="700">ल</text>'
             )
 
         # ── Planet labels in this house ───────────────────────────────────────
@@ -232,7 +249,10 @@ def render_north_indian_svg(
                 px = x + cell // 2
                 is_retro = planet in retrogrades
                 glyph = PLANET_MR.get(planet, planet[:2])
-                color = PLANET_COLOR.get(planet, "#b8b0a0")
+                if theme == "bw":
+                    color = "#000000"
+                else:
+                    color = PLANET_COLOR.get(planet, "#b8b0a0")
                 # Retrograde indicator
                 retro_mark = "ᵛ" if is_retro else ""
                 lines.append(
