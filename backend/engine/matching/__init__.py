@@ -408,19 +408,6 @@ def _compute_nadi(
         cancellation_rule_mr = "नाडी दोष रद्द: दोन्हींची राशी समान आहे परंतु नक्षत्र वेगळे आहे."
         cancellation_rule_en = "Nadi Dosha cancelled: Same Rashi but different Nakshatras."
 
-    # Cancellation Rule 3: Same Rashi lord (e.g. both ruled by Venus: Taurus and Libra)
-    if not cancelled:
-        bride_lord = RASHI_LORD[bride_rashi]
-        groom_lord = RASHI_LORD[groom_rashi]
-        if bride_lord == groom_lord and bride_rashi != groom_rashi:
-            cancelled = True
-            cancellation_rule_mr = (
-                f"नाडी दोष रद्द: राशी वेगळ्या असल्या तरी दोन्हींचा राशीपती ({bride_lord.name_mr}) समान आहे."
-            )
-            cancellation_rule_en = (
-                f"Nadi Dosha cancelled: Different Rashis but same Rashi lord ({bride_lord.value})."
-            )
-
     if cancelled:
         score = 8.0
         notes_mr = (
