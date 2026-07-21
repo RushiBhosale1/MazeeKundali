@@ -13,6 +13,8 @@ interface KootaRow {
   points_max: number;
   notes_mr: string;
   notes_en: string;
+  interpretation_mr?: string;
+  interpretation_en?: string;
 }
 
 interface DoshaInfo {
@@ -208,6 +210,18 @@ export default function MatchingResultPage() {
                   {k.notes_mr && (
                     <div style={{ fontFamily: 'var(--font-devanagari)', fontSize: '0.75rem', color: 'var(--text-muted)', lineHeight: 1.4 }}>
                       {lang === 'mr' ? k.notes_mr : k.notes_en}
+                    </div>
+                  )}
+                  {k.interpretation_mr && (
+                    <div style={{ marginTop: 8, padding: '10px 12px', background: 'rgba(240,124,0,0.05)', borderRadius: 6, border: '1px solid rgba(240,124,0,0.1)' }}>
+                      <div style={{ fontFamily: 'var(--font-devanagari)', fontSize: '0.85rem', color: 'var(--text-primary)', lineHeight: 1.5, marginBottom: 4 }}>
+                        {k.interpretation_mr}
+                      </div>
+                      {k.interpretation_en && (
+                        <div style={{ fontFamily: 'Inter', fontSize: '0.75rem', color: 'var(--text-muted)', lineHeight: 1.4, fontStyle: 'italic' }}>
+                          {k.interpretation_en}
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>

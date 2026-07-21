@@ -132,6 +132,7 @@ def render_north_indian_svg(
     retrogrades: Optional[set[str]] = None,
     width: int = 360,
     lang: str = "mr",
+    theme: str = "dark",
 ) -> str:
     """
     Render a North Indian style kundali chart as SVG string.
@@ -169,14 +170,17 @@ def render_north_indian_svg(
     lines: list[str] = []
     lines.append(f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{h}" viewBox="0 0 {width} {h}" font-family="Noto Sans Devanagari,Inter,sans-serif">')
 
+    bg_color = "#0d1b2a" if theme == "dark" else "#ffffff"
+    border_color = "#f07c00"
+    
     # Background
-    lines.append(f'<rect width="{width}" height="{h}" fill="#0d1b2a" rx="8"/>')
+    lines.append(f'<rect width="{width}" height="{h}" fill="{bg_color}" rx="8"/>')
 
     # Outer border
-    lines.append(f'<rect x="1" y="1" width="{width-2}" height="{h-2}" fill="none" stroke="#f07c00" stroke-width="1.5" rx="7"/>')
+    lines.append(f'<rect x="1" y="1" width="{width-2}" height="{h-2}" fill="none" stroke="{border_color}" stroke-width="1.5" rx="7"/>')
 
     # ── Draw 4x4 grid (outer 12 cells) ───────────────────────────────────────
-    STROKE = "#1a3050"
+    STROKE = "#1a3050" if theme == "dark" else "#e5e7eb"
     STROKE_LAGNA = "#f07c00"
 
     for house_num, (col, row) in HOUSE_GRID.items():
@@ -186,7 +190,10 @@ def render_north_indian_svg(
         is_lagna = house_num == 1
 
         # Cell background
-        bg = "rgba(240,124,0,0.08)" if is_lagna else "rgba(255,255,255,0.02)"
+        if theme == "dark":
+            bg = "rgba(240,124,0,0.08)" if is_lagna else "rgba(255,255,255,0.02)"
+        else:
+            bg = "rgba(240,124,0,0.08)" if is_lagna else "#ffffff"
         stroke_color = STROKE_LAGNA if is_lagna else STROKE
         stroke_w = "1.5" if is_lagna else "0.8"
 
@@ -198,10 +205,11 @@ def render_north_indian_svg(
         # Rashi number + short name (top-left of cell)
         rashi_label = rashi_labels.get(rashi_idx, "")
         rashi_num = rashi_idx + 1  # 1-12 for display
+        text_color = "#7a7268" if theme == "dark" else "#9ca3af"
 
         lines.append(
             f'<text x="{x + int(4*scale)}" y="{y + int(13*scale)}" '
-            f'font-size="{int(9*scale)}" fill="#7a7268" font-weight="400">'
+            f'font-size="{int(9*scale)}" fill="{text_color}" font-weight="400">'
             f'{rashi_num} {rashi_label}</text>'
         )
 
@@ -238,14 +246,15 @@ def render_north_indian_svg(
     cx = cell
     cy = cell
     inner_w = cell * 2
+    inner_bg = "rgba(255,255,255,0.01)" if theme == "dark" else "transparent"
     lines.append(
         f'<rect x="{cx}" y="{cy}" width="{inner_w}" height="{inner_w}" '
-        f'fill="rgba(255,255,255,0.01)" stroke="#1a3050" stroke-width="0.8"/>'
+        f'fill="{inner_bg}" stroke="{STROKE}" stroke-width="0.8"/>'
     )
     # Diagonals of inner square
     lines.append(
         f'<line x1="{cx}" y1="{cy}" x2="{cx+inner_w}" y2="{cy+inner_w}" '
-        f'stroke="#1a3050" stroke-width="0.6"/>'
+        f'stroke="{STROKE}" stroke-width="0.6"/>'
     )
     lines.append(
         f'<line x1="{cx+inner_w}" y1="{cy}" x2="{cx}" y2="{cy+inner_w}" '

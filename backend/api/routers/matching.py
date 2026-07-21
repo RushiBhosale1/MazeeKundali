@@ -57,6 +57,8 @@ class KootaRowOut(BaseModel):
     points_max: int
     notes_mr: str
     notes_en: str
+    interpretation_mr: Optional[str] = None
+    interpretation_en: Optional[str] = None
 
 
 class DoshaOut(BaseModel):
@@ -185,6 +187,8 @@ async def create_matching(request: MatchingCreateRequest, db: AsyncSession = Dep
             "points_max": k.points_max,
             "notes_mr": k.notes_mr,
             "notes_en": k.notes_en,
+            "interpretation_mr": getattr(k, 'interpretation_mr', None),
+            "interpretation_en": getattr(k, 'interpretation_en', None),
         }
         for k in match_result.kootas
     ]
