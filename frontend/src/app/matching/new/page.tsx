@@ -51,7 +51,7 @@ function PersonForm({ label, data, onChange, lang, icon }: PersonFormProps) {
         setShowDrop(res.length > 0);
       } catch { setSuggestions([]); }
       finally { setSearching(false); }
-    }, 350);
+    }, 150);
   }, [data, onChange]);
 
   useEffect(() => {

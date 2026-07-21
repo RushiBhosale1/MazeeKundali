@@ -55,7 +55,7 @@ export default function ManglikCheckerPage() {
       try { const res = await geocodePlace(val); setSuggestions(res); setShowDrop(res.length > 0); }
       catch { setSuggestions([]); }
       finally { setSearching(false); }
-    }, 350);
+    }, 150);
   }, []);
 
   useEffect(() => {

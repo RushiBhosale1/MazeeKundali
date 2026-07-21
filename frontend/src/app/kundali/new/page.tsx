@@ -68,7 +68,7 @@ export default function NewKundaliPage() {
       } finally {
         setPlaceSearching(false);
       }
-    }, 350);
+    }, 150);
   }, []);
 
   const selectPlace = (place: PlaceCandidate) => {
