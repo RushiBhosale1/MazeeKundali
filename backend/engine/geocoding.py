@@ -12,6 +12,8 @@ This correctly handles:
 from __future__ import annotations
 import logging
 from datetime import datetime, date, time
+import json
+from pathlib import Path
 try:
     from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 except ImportError:
@@ -29,6 +31,58 @@ logger = logging.getLogger(__name__)
 # Singleton instances (initialized once)
 _geocoder: Optional[Nominatim] = None
 _tz_finder: Optional[TimezoneFinder] = None
+_local_places: Optional[list[dict]] = None
+
+def _get_local_places() -> list[dict]:
+    global _local_places
+    if _local_places is None:
+        _local_places = []
+        try:
+            current_dir = Path(__file__).parent
+            json_path = current_dir / "maharashtra_places.json"
+            if json_path.exists():
+                with open(json_path, "r", encoding="utf-8") as f:
+                    _local_places = json.load(f)
+        except Exception as e:
+            logger.error("Failed to load local places: %s", e)
+    return _local_places
+
+def _search_local_places(query: str, max_results: int = 5) -> list[PlaceResult]:
+    query = query.lower().strip()
+    places = _get_local_places()
+    results = []
+    
+    # Prefix match first (e.g. "sat" -> "Satara")
+    for p in places:
+        if p["name"].lower().startswith(query):
+            results.append(PlaceResult(
+                display_name=p["name"],
+                latitude=p["lat"],
+                longitude=p["lon"],
+                tz_iana=p.get("tz_iana", "Asia/Kolkata"),
+                source="local_cache"
+            ))
+            if len(results) >= max_results:
+                break
+                
+    # If we still have room, try partial match (e.g. "pimpri" in "Pimpri-Chinchwad")
+    if len(results) < max_results:
+        for p in places:
+            # Skip if already in results
+            if any(r.display_name == p["name"] for r in results):
+                continue
+            if query in p["name"].lower():
+                results.append(PlaceResult(
+                    display_name=p["name"],
+                    latitude=p["lat"],
+                    longitude=p["lon"],
+                    tz_iana=p.get("tz_iana", "Asia/Kolkata"),
+                    source="local_cache"
+                ))
+                if len(results) >= max_results:
+                    break
+                    
+    return results
 
 
 def _get_geocoder(user_agent: str = "kundali-platform/1.0") -> Nominatim:
@@ -52,6 +106,12 @@ def geocode_place(query: str, max_results: int = 5) -> list[PlaceResult]:
 
     Used for the autocomplete search on the input form.
     """
+    # 1. Fast path: search local cache first (Instant)
+    local_results = _search_local_places(query, max_results)
+    if local_results:
+        return local_results
+
+    # 2. Slow path: fallback to Nominatim
     geocoder = _get_geocoder()
     tf = _get_tz_finder()
 

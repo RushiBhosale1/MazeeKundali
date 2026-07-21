@@ -20,7 +20,7 @@ router = APIRouter()
 
 
 @router.get("/geocode", response_model=GeocodeResponse)
-@limiter.limit("30/minute")
+@limiter.limit("120/minute")
 async def geocode_endpoint(
     request: Request,
     query: str = Query(..., min_length=2, max_length=200, description="Place name to search"),

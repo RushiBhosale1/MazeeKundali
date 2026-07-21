@@ -1,0 +1,296 @@
+[
+  {
+    "name": "Ahmednagar, Maharashtra, India",
+    "lat": 19.092952,
+    "lon": 74.749345,
+    "tz_iana": "Asia/Kolkata"
+  },
+  {
+    "name": "Akola, Maharashtra, India",
+    "lat": 20.761812,
+    "lon": 77.192116,
+    "tz_iana": "Asia/Kolkata"
+  },
+  {
+    "name": "Amravati, Maharashtra, India",
+    "lat": 21.154541,
+    "lon": 77.644296,
+    "tz_iana": "Asia/Kolkata"
+  },
+  {
+    "name": "Aurangabad, Maharashtra, India",
+    "lat": 19.877263,
+    "lon": 75.339024,
+    "tz_iana": "Asia/Kolkata"
+  },
+  {
+    "name": "Beed, Maharashtra, India",
+    "lat": 18.991844,
+    "lon": 75.909784,
+    "tz_iana": "Asia/Kolkata"
+  },
+  {
+    "name": "Bhandara, Maharashtra, India",
+    "lat": 21.122587,
+    "lon": 79.794509,
+    "tz_iana": "Asia/Kolkata"
+  },
+  {
+    "name": "Buldhana, Maharashtra, India",
+    "lat": 20.562845,
+    "lon": 76.408699,
+    "tz_iana": "Asia/Kolkata"
+  },
+  {
+    "name": "Chandrapur, Maharashtra, India",
+    "lat": 20.096756,
+    "lon": 79.504548,
+    "tz_iana": "Asia/Kolkata"
+  },
+  {
+    "name": "Dhule, Maharashtra, India",
+    "lat": 21.130522,
+    "lon": 74.490061,
+    "tz_iana": "Asia/Kolkata"
+  },
+  {
+    "name": "Gadchiroli, Maharashtra, India",
+    "lat": 19.75907,
+    "lon": 80.162281,
+    "tz_iana": "Asia/Kolkata"
+  },
+  {
+    "name": "Gondia, Maharashtra, India",
+    "lat": 21.455228,
+    "lon": 80.196273,
+    "tz_iana": "Asia/Kolkata"
+  },
+  {
+    "name": "Hingoli, Maharashtra, India",
+    "lat": 19.543116,
+    "lon": 77.173943,
+    "tz_iana": "Asia/Kolkata"
+  },
+  {
+    "name": "Jalgaon, Maharashtra, India",
+    "lat": 20.842883,
+    "lon": 75.526125,
+    "tz_iana": "Asia/Kolkata"
+  },
+  {
+    "name": "Jalna, Maharashtra, India",
+    "lat": 19.918833,
+    "lon": 75.87086,
+    "tz_iana": "Asia/Kolkata"
+  },
+  {
+    "name": "Kolhapur, Maharashtra, India",
+    "lat": 16.702841,
+    "lon": 74.240533,
+    "tz_iana": "Asia/Kolkata"
+  },
+  {
+    "name": "Latur, Maharashtra, India",
+    "lat": 18.355335,
+    "lon": 76.7549,
+    "tz_iana": "Asia/Kolkata"
+  },
+  {
+    "name": "Mumbai City, Maharashtra, India",
+    "lat": 19.054999,
+    "lon": 72.869203,
+    "tz_iana": "Asia/Kolkata"
+  },
+  {
+    "name": "Mumbai Suburban, Maharashtra, India",
+    "lat": 19.130984,
+    "lon": 72.889462,
+    "tz_iana": "Asia/Kolkata"
+  },
+  {
+    "name": "Nagpur, Maharashtra, India",
+    "lat": 21.149813,
+    "lon": 79.082056,
+    "tz_iana": "Asia/Kolkata"
+  },
+  {
+    "name": "Nanded, Maharashtra, India",
+    "lat": 19.094273,
+    "lon": 77.483263,
+    "tz_iana": "Asia/Kolkata"
+  },
+  {
+    "name": "Nandurbar, Maharashtra, India",
+    "lat": 21.514162,
+    "lon": 74.540551,
+    "tz_iana": "Asia/Kolkata"
+  },
+  {
+    "name": "Nashik, Maharashtra, India",
+    "lat": 20.011247,
+    "lon": 73.790236,
+    "tz_iana": "Asia/Kolkata"
+  },
+  {
+    "name": "Osmanabad, Maharashtra, India",
+    "lat": 18.282245,
+    "lon": 76.058817,
+    "tz_iana": "Asia/Kolkata"
+  },
+  {
+    "name": "Palghar, Maharashtra, India",
+    "lat": 19.757249,
+    "lon": 73.09312,
+    "tz_iana": "Asia/Kolkata"
+  },
+  {
+    "name": "Parbhani, Maharashtra, India",
+    "lat": 19.290198,
+    "lon": 76.602644,
+    "tz_iana": "Asia/Kolkata"
+  },
+  {
+    "name": "Pune, Maharashtra, India",
+    "lat": 18.521374,
+    "lon": 73.854507,
+    "tz_iana": "Asia/Kolkata"
+  },
+  {
+    "name": "Raigad, Maharashtra, India",
+    "lat": 18.492809,
+    "lon": 73.138071,
+    "tz_iana": "Asia/Kolkata"
+  },
+  {
+    "name": "Ratnagiri, Maharashtra, India",
+    "lat": 17.282608,
+    "lon": 73.456979,
+    "tz_iana": "Asia/Kolkata"
+  },
+  {
+    "name": "Sangli, Maharashtra, India",
+    "lat": 17.172693,
+    "lon": 74.586765,
+    "tz_iana": "Asia/Kolkata"
+  },
+  {
+    "name": "Satara, Maharashtra, India",
+    "lat": 17.636129,
+    "lon": 74.298278,
+    "tz_iana": "Asia/Kolkata"
+  },
+  {
+    "name": "Sindhudurg, Maharashtra, India",
+    "lat": 16.135719,
+    "lon": 73.652209,
+    "tz_iana": "Asia/Kolkata"
+  },
+  {
+    "name": "Solapur, Maharashtra, India",
+    "lat": 17.849907,
+    "lon": 75.27632,
+    "tz_iana": "Asia/Kolkata"
+  },
+  {
+    "name": "Thane, Maharashtra, India",
+    "lat": 19.36536,
+    "lon": 73.368544,
+    "tz_iana": "Asia/Kolkata"
+  },
+  {
+    "name": "Wardha, Maharashtra, India",
+    "lat": 20.825623,
+    "lon": 78.613146,
+    "tz_iana": "Asia/Kolkata"
+  },
+  {
+    "name": "Washim, Maharashtra, India",
+    "lat": 20.287418,
+    "lon": 77.236965,
+    "tz_iana": "Asia/Kolkata"
+  },
+  {
+    "name": "Yavatmal, Maharashtra, India",
+    "lat": 20.063868,
+    "lon": 78.356566,
+    "tz_iana": "Asia/Kolkata"
+  },
+  {
+    "name": "Karad, Maharashtra, India",
+    "lat": 17.285213,
+    "lon": 74.182215,
+    "tz_iana": "Asia/Kolkata"
+  },
+  {
+    "name": "Baramati, Maharashtra, India",
+    "lat": 18.219854,
+    "lon": 74.453405,
+    "tz_iana": "Asia/Kolkata"
+  },
+  {
+    "name": "Pimpri-Chinchwad, Maharashtra, India",
+    "lat": 18.627929,
+    "lon": 73.800983,
+    "tz_iana": "Asia/Kolkata"
+  },
+  {
+    "name": "Kalyan, Maharashtra, India",
+    "lat": 19.239674,
+    "lon": 73.136648,
+    "tz_iana": "Asia/Kolkata"
+  },
+  {
+    "name": "Dombivli, Maharashtra, India",
+    "lat": 19.21486,
+    "lon": 73.091027,
+    "tz_iana": "Asia/Kolkata"
+  },
+  {
+    "name": "Vasai, Maharashtra, India",
+    "lat": 19.342824,
+    "lon": 72.805441,
+    "tz_iana": "Asia/Kolkata"
+  },
+  {
+    "name": "Virar, Maharashtra, India",
+    "lat": 19.4498,
+    "lon": 72.812061,
+    "tz_iana": "Asia/Kolkata"
+  },
+  {
+    "name": "Navi Mumbai, Maharashtra, India",
+    "lat": 19.030826,
+    "lon": 73.019854,
+    "tz_iana": "Asia/Kolkata"
+  },
+  {
+    "name": "Bhusawal, Maharashtra, India",
+    "lat": 21.04572,
+    "lon": 75.780808,
+    "tz_iana": "Asia/Kolkata"
+  },
+  {
+    "name": "Malegaon, Maharashtra, India",
+    "lat": 20.557606,
+    "lon": 74.524651,
+    "tz_iana": "Asia/Kolkata"
+  },
+  {
+    "name": "Ichalkaranji, Maharashtra, India",
+    "lat": 16.695935,
+    "lon": 74.455575,
+    "tz_iana": "Asia/Kolkata"
+  },
+  {
+    "name": "Miraj, Maharashtra, India",
+    "lat": 16.858516,
+    "lon": 74.710895,
+    "tz_iana": "Asia/Kolkata"
+  },
+  {
+    "name": "Pandharpur, Maharashtra, India",
+    "lat": 17.725592,
+    "lon": 75.300194,
+    "tz_iana": "Asia/Kolkata"
+  }
+]
