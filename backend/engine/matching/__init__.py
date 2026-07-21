@@ -394,36 +394,31 @@ def _compute_nadi(
     cancellation_rule_mr = None
     cancellation_rule_en = None
 
-    # Cancellation Rule 1: Same Rashi AND same Nakshatra (same-Nakshatra exception)
-    if bride_nakshatra == groom_nakshatra and bride_rashi == groom_rashi:
-        cancelled = True
-        cancellation_rule_mr = (
-            "नाडी दोष रद्द: दोन्हींचे नक्षत्र आणि राशी समान आहे "
-            "(एकाच नक्षत्र-राशीतील जोडप्यास नाडी दोष नाही)."
-        )
-        cancellation_rule_en = (
-            "Nadi Dosha cancelled: Same nakshatra AND same rashi "
-            "(same-nakshatra-same-rashi exception applies)."
-        )
-
-    # Cancellation Rule 2: Same Nakshatra but different Pada (Charan Bhed)
-    if not cancelled and bride_nakshatra == groom_nakshatra:
+    # Cancellation Rule 1: Same Nakshatra but different Pada (Charan Bhed)
+    if bride_nakshatra == groom_nakshatra:
         if bride_pada is not None and groom_pada is not None and bride_pada != groom_pada:
             cancelled = True
-            cancellation_rule_mr = "नाडी दोष रद्द: नक्षत्र समान परंतु चरण (पद) वेगळे आहे."
+            cancellation_rule_mr = "नाडी दोष रद्द: दोन्हींचे नक्षत्र समान आहे परंतु चरण (पद) वेगळे आहे (चरण भेद)."
             cancellation_rule_en = "Nadi Dosha cancelled: Same nakshatra but different pada (Charan Bhed)."
+        # If same Nakshatra and same Pada, it is a severe Ek-Nakshatra Dosha and is NOT cancelled.
 
-    # Cancellation Rule 3: Same Rashi lord
+    # Cancellation Rule 2: Same Rashi but different Nakshatra
+    if not cancelled and bride_rashi == groom_rashi and bride_nakshatra != groom_nakshatra:
+        cancelled = True
+        cancellation_rule_mr = "नाडी दोष रद्द: दोन्हींची राशी समान आहे परंतु नक्षत्र वेगळे आहे."
+        cancellation_rule_en = "Nadi Dosha cancelled: Same Rashi but different Nakshatras."
+
+    # Cancellation Rule 3: Same Rashi lord (e.g. both ruled by Venus: Taurus and Libra)
     if not cancelled:
         bride_lord = RASHI_LORD[bride_rashi]
         groom_lord = RASHI_LORD[groom_rashi]
         if bride_lord == groom_lord and bride_rashi != groom_rashi:
             cancelled = True
             cancellation_rule_mr = (
-                f"नाडी दोष रद्द: दोन्हींचा राशीपती ({bride_lord.name_mr}) समान आहे."
+                f"नाडी दोष रद्द: राशी वेगळ्या असल्या तरी दोन्हींचा राशीपती ({bride_lord.name_mr}) समान आहे."
             )
             cancellation_rule_en = (
-                f"Nadi Dosha cancelled: Both have same Rashi lord ({bride_lord.value})."
+                f"Nadi Dosha cancelled: Different Rashis but same Rashi lord ({bride_lord.value})."
             )
 
     if cancelled:

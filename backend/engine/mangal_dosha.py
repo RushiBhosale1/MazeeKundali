@@ -73,14 +73,14 @@ def _check_cancellation_rules(
             "(Mars in exaltation — Capricorn — mitigates Mangal Dosha.)"
         )
 
-    # Rule 4: Jupiter aspects Mars (Whole Sign 4th, 7th, 10th from Mars)
+    # Rule 4: Jupiter aspects Mars (Jupiter's 5th, 7th, or 9th drishti on Mars)
     jupiter_pos = next((p for p in all_planets if p.planet == Planet.JUPITER), None)
     if jupiter_pos is not None:
-        aspect_houses = {4, 7, 10}
-        jupiter_house_from_mars = (
-            (jupiter_pos.rashi.value - mars_rashi.value) % 12
+        aspect_houses = {5, 7, 9}
+        mars_house_from_jupiter = (
+            (mars_rashi.value - jupiter_pos.rashi.value) % 12
         ) + 1
-        if jupiter_house_from_mars in aspect_houses:
+        if mars_house_from_jupiter in aspect_houses:
             return (
                 True,
                 "गुरूची मंगळावर दृष्टी असल्याने मंगळ दोष मोठ्या प्रमाणात कमी होतो / निवारित होतो. "
