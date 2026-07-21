@@ -243,6 +243,50 @@
   </div>
 </div>
 
+<div style="page-break-before: always;"></div>
+<div class="header">
+  <div class="header-brand">MAZEEKUNDALI.IN</div>
+  <div class="header-title">पत्रिका जुळणी अहवाल - जन्मकुंडली</div>
+</div>
+
+<div class="section-title" style="text-align: center; margin-top: 10px;">वधू: {{ bride_name }}</div>
+<div style="display: flex; justify-content: space-between; gap: 10px; margin-bottom: 20px;">
+  <div style="text-align: center;">
+    <div style="font-weight: bold; font-size: 10pt; margin-bottom: 5px;">Lagna Chart</div>
+    {{ bride_charts.d1 | safe }}
+  </div>
+  <div style="text-align: center;">
+    <div style="font-weight: bold; font-size: 10pt; margin-bottom: 5px;">Navamsa Chart</div>
+    {{ bride_charts.d9 | safe }}
+  </div>
+  <div style="text-align: center;">
+    <div style="font-weight: bold; font-size: 10pt; margin-bottom: 5px;">Chandra Chart</div>
+    {{ bride_charts.moon | safe }}
+  </div>
+</div>
+
+<div class="section-title" style="text-align: center;">वर: {{ groom_name }}</div>
+<div style="display: flex; justify-content: space-between; gap: 10px;">
+  <div style="text-align: center;">
+    <div style="font-weight: bold; font-size: 10pt; margin-bottom: 5px;">Lagna Chart</div>
+    {{ groom_charts.d1 | safe }}
+  </div>
+  <div style="text-align: center;">
+    <div style="font-weight: bold; font-size: 10pt; margin-bottom: 5px;">Navamsa Chart</div>
+    {{ groom_charts.d9 | safe }}
+  </div>
+  <div style="text-align: center;">
+    <div style="font-weight: bold; font-size: 10pt; margin-bottom: 5px;">Chandra Chart</div>
+    {{ groom_charts.moon | safe }}
+  </div>
+</div>
+
+<div style="page-break-before: always;"></div>
+<div class="header">
+  <div class="header-brand">MAZEEKUNDALI.IN</div>
+  <div class="header-title">अष्टकूट गुण मिलान</div>
+</div>
+
 <div class="summary-grid">
   <div class="summary-box">
     <span class="val {{ 'low' if total_score < 18 else 'medium' if total_score < 24 else '' }}">{{ total_score }} / 36</span>
@@ -318,6 +362,20 @@
   <h3>मराठी निकाल (Verdict)</h3>
   <p>{{ verdict_mr }}</p>
 </div>
+
+<div style="page-break-before: always;"></div>
+<div class="header">
+  <div class="header-brand">MAZEEKUNDALI.IN</div>
+  <div class="header-title">प्रत्येक गुणाचे विश्लेषण (Interpretation of Each Point)</div>
+</div>
+
+{% for row in kootas %}
+<div style="margin-bottom: 15px; background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px;">
+  <div style="font-size: 11pt; font-weight: bold; color: #f07c00; margin-bottom: 6px;">{{ row.name_en }} ({{ row.name_mr }})</div>
+  <div style="font-size: 9.5pt; color: #4b5563; line-height: 1.5; margin-bottom: 6px;">{{ row.interpretation_mr }}</div>
+  <div style="font-size: 9pt; color: #6b7280; line-height: 1.4; font-style: italic;">{{ row.interpretation_en }}</div>
+</div>
+{% endfor %}
 
 <div class="footer">
   हे परिणाम मार्गदर्शनासाठी आहेत. वैयक्तिक सल्ल्यासाठी तज्ञ ज्योतिषांचा सल्ला घ्या.<br>

@@ -154,7 +154,7 @@ class Matching(Base):
 
 
     # Free-tier: total score only
-    total_score: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    total_score: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
     total_max: Mapped[int] = mapped_column(Integer, default=36, nullable=False)
     bride_manglik: Mapped[Optional[bool]] = mapped_column(Boolean, nullable=True)
     groom_manglik: Mapped[Optional[bool]] = mapped_column(Boolean, nullable=True)

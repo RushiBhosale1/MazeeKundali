@@ -172,6 +172,15 @@ def longitude_to_rashi(sidereal_lon: float) -> Rashi:
     return Rashi(int(sidereal_lon / 30) % 12)
 
 
+def longitude_to_navamsa_rashi(sidereal_lon: float) -> Rashi:
+    """
+    Convert sidereal longitude to Navamsa Rashi (D9).
+    Each navamsa is 3°20' (10/3 degrees).
+    The mapping follows the traditional Parashari method.
+    """
+    return Rashi(int(sidereal_lon / (10.0 / 3.0)) % 12)
+
+
 def longitude_to_nakshatra(sidereal_lon: float) -> Nakshatra:
     """Convert a sidereal longitude to Nakshatra (0–26)."""
     nakshatra_span = 360 / 27  # 13.3333...°

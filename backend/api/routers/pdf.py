@@ -378,6 +378,38 @@ def _render_matching(ctx: dict) -> str:
     env = Environment(loader=BaseLoader(), autoescape=select_autoescape(["html"]))
     return env.from_string(_matching_tpl()).render(**ctx)
 
+def _generate_3_charts(result) -> dict:
+    from engine.svg_chart import render_north_indian_svg
+    from engine.ephemeris import longitude_to_navamsa_rashi
+    
+    if not result or not result.planet_positions:
+        return {"d1": "", "d9": "", "moon": ""}
+    
+    # D1 Chart (Lagna)
+    pr_d1 = {}
+    rr = set()
+    for pp in result.planet_positions:
+        pr_d1[pp.planet.value] = pp.rashi.value
+        if pp.retrograde:
+            rr.add(pp.planet.value)
+    
+    svg_d1 = render_north_indian_svg(result.lagna.value, pr_d1, rr, width=230, lang="mr") if result.lagna else ""
+    
+    # D9 Chart (Navamsa)
+    pr_d9 = {}
+    for pp in result.planet_positions:
+        pr_d9[pp.planet.value] = longitude_to_navamsa_rashi(pp.longitude).value
+    
+    lagna_d9 = longitude_to_navamsa_rashi(result._raw_ephemeris["lagna_longitude"]).value if hasattr(result, "_raw_ephemeris") else None
+    svg_d9 = render_north_indian_svg(lagna_d9, pr_d9, rr, width=230, lang="mr") if lagna_d9 else ""
+    
+    # Moon Chart (Chandra)
+    pr_moon = pr_d1 # Rashi remains same, only ascendant changes to Moon's Rashi
+    moon_lagna = pr_d1.get("Moon")
+    svg_moon = render_north_indian_svg(moon_lagna, pr_moon, rr, width=230, lang="mr") if moon_lagna else ""
+    
+    return {"d1": svg_d1, "d9": svg_d9, "moon": svg_moon}
+
 @router.get("/matchings/{matching_id}/pdf")
 async def generate_matching_pdf(matching_id: str, db: AsyncSession = Depends(get_db)):
     import uuid
@@ -389,19 +421,56 @@ async def generate_matching_pdf(matching_id: str, db: AsyncSession = Depends(get
     record = await repo.get_matching(db, mid)
     if not record:
         raise HTTPException(status_code=404, detail="जुळणी सापडली नाही.")
-
     if not record.paid:
         raise HTTPException(status_code=403, detail="ही जुळणी अजून अनलॉक केलेली नाही.")
 
-    bride_name = record.bride_birth_profile.name if record.bride_birth_profile else (record.bride_kundali.birth_profile.name if record.bride_kundali else "वधू")
-    groom_name = record.groom_birth_profile.name if record.groom_birth_profile else (record.groom_kundali.birth_profile.name if record.groom_kundali else "वर")
+    bride_profile = record.bride_birth_profile if record.bride_birth_profile else (record.bride_kundali.birth_profile if record.bride_kundali else None)
+    groom_profile = record.groom_birth_profile if record.groom_birth_profile else (record.groom_kundali.birth_profile if record.groom_kundali else None)
     
+    bride_name = bride_profile.name if bride_profile else "वधू"
+    groom_name = groom_profile.name if groom_profile else "वर"
     
-    bride_dob = record.bride_birth_profile.dob.strftime("%d-%m-%Y") if record.bride_birth_profile else "N/A"
-    bride_time = record.bride_birth_profile.time_of_birth.strftime("%I:%M %p") if record.bride_birth_profile and record.bride_birth_profile.time_of_birth else "N/A"
+    bride_dob = bride_profile.dob.strftime("%d-%m-%Y") if bride_profile else "N/A"
+    bride_time = bride_profile.time_of_birth.strftime("%I:%M %p") if bride_profile and bride_profile.time_of_birth else "N/A"
     
-    groom_dob = record.groom_birth_profile.dob.strftime("%d-%m-%Y") if record.groom_birth_profile else "N/A"
-    groom_time = record.groom_birth_profile.time_of_birth.strftime("%I:%M %p") if record.groom_birth_profile and record.groom_birth_profile.time_of_birth else "N/A"
+    groom_dob = groom_profile.dob.strftime("%d-%m-%Y") if groom_profile else "N/A"
+    groom_time = groom_profile.time_of_birth.strftime("%I:%M %p") if groom_profile and groom_profile.time_of_birth else "N/A"
+    
+    # Recompute to get charts and detailed interpretations
+    from engine.chart import compute_kundali
+    from engine.matching import compute_match
+    from engine.models import TimeAccuracy, RahuMode
+    from datetime import time as dtime
+
+    def _get_time(bp):
+        if not bp or not bp.time_of_birth: return None
+        if isinstance(bp.time_of_birth, str):
+            h, m = bp.time_of_birth.split(":")
+            return dtime(int(h), int(m))
+        return bp.time_of_birth
+
+    bride_result = compute_kundali(
+        name=bride_name, gender="female", birth_date=bride_profile.dob if bride_profile else None,
+        birth_time=_get_time(bride_profile), time_accuracy=TimeAccuracy.EXACT,
+        place_text=bride_profile.place_text if bride_profile else "",
+        latitude=bride_profile.latitude if bride_profile else 0, longitude=bride_profile.longitude if bride_profile else 0,
+        tz_iana=bride_profile.tz_iana if bride_profile else "Asia/Kolkata",
+        rahu_mode=RahuMode.TRUE_NODE, compute_paid_fields=True
+    ) if bride_profile else None
+
+    groom_result = compute_kundali(
+        name=groom_name, gender="male", birth_date=groom_profile.dob if groom_profile else None,
+        birth_time=_get_time(groom_profile), time_accuracy=TimeAccuracy.EXACT,
+        place_text=groom_profile.place_text if groom_profile else "",
+        latitude=groom_profile.latitude if groom_profile else 0, longitude=groom_profile.longitude if groom_profile else 0,
+        tz_iana=groom_profile.tz_iana if groom_profile else "Asia/Kolkata",
+        rahu_mode=RahuMode.TRUE_NODE, compute_paid_fields=True
+    ) if groom_profile else None
+
+    match_result = compute_match(bride_result, groom_result) if bride_result and groom_result else None
+
+    bride_charts = _generate_3_charts(bride_result)
+    groom_charts = _generate_3_charts(groom_result)
 
 
     ctx = {
@@ -416,8 +485,11 @@ async def generate_matching_pdf(matching_id: str, db: AsyncSession = Depends(get
         "groom_time": groom_time,
 
         "groom_manglik": record.groom_manglik,
-        "total_score": record.total_score,
+        "total_score": match_result.total_score if match_result else record.total_score,
+        "kootas": match_result.kootas if match_result else [],
         "koota_breakdown": record.koota_breakdown or [],
+        "bride_charts": bride_charts,
+        "groom_charts": groom_charts,
         "nadi_dosha": record.dosha_analysis.get("nadi_dosha") if record.dosha_analysis else None,
         "bhakoot_dosha": record.dosha_analysis.get("bhakoot_dosha") if record.dosha_analysis else None,
         "verdict_mr": record.verdict_mr,
@@ -426,9 +498,14 @@ async def generate_matching_pdf(matching_id: str, db: AsyncSession = Depends(get
     html = _render_matching(ctx)
     pdf_bytes = await _to_pdf(html)
     
-    filename = f"matching_{bride_name}_{groom_name}.pdf".replace(" ", "_")
+    import urllib.parse
+    safe_bride = "".join(c for c in bride_name if c.isalnum() or c in (" ", "_", "-")).replace(" ", "_")[:15]
+    safe_groom = "".join(c for c in groom_name if c.isalnum() or c in (" ", "_", "-")).replace(" ", "_")[:15]
+    fn = f"matching_{safe_bride}_{safe_groom}.pdf"
+    encoded_fn = urllib.parse.quote(fn)
+    
     return Response(
         content=pdf_bytes,
         media_type="application/pdf",
-        headers={"Content-Disposition": f'inline; filename="{filename}"'},
+        headers={"Content-Disposition": f"inline; filename=\"{encoded_fn}\"; filename*=UTF-8''{encoded_fn}"},
     )
