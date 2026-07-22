@@ -143,45 +143,35 @@ def _compute_vashya(bride_rashi: Rashi, groom_rashi: Rashi) -> KootaResult:
                        boy_trait=groom_vashya, girl_trait=bride_vashya, area_of_life_mr="वर्चस्व / Dominance")
 
 
-# Tara names for display
+# Tara names for display (Navatara cycle 1–9)
 _TARA_NAMES_MR: dict[int, str] = {
     1: "जन्म", 2: "संपत", 3: "विपत", 4: "क्षेम",
     5: "प्रत्यक", 6: "साधक", 7: "नैधन", 8: "मित्र", 9: "अति मित्र",
 }
-_TARA_INAUSPICIOUS = {1, 3, 5, 7}  # Janma, Vipat, Pratyak, Naidhana
+# Inauspicious Taras: 3 (Vipat), 5 (Pratyari/Pratyak), 7 (Naidhana/Vadha)
+_TARA_INAUSPICIOUS = {3, 5, 7}
 
 
 def _compute_tara(bride_nakshatra: Nakshatra, groom_nakshatra: Nakshatra) -> KootaResult:
     """
-    Tara (3 points): Health/wellbeing based on nakshatra counting.
-    Count from bride→groom and groom→bride. mod 9, then classify:
-    Inauspicious Taras: 1 (Janma), 3 (Vipat), 5 (Pratyak), 7 (Naidhana)
-    Auspicious Taras: 2 (Sampat), 4 (Kshema), 6 (Sadhaka), 8 (Mitra), 9 (Ati Mitra)
-    3 if both auspicious, 1.5 if one auspicious, 0 if neither.
+    Tara (3 points): Health and wellbeing based on Nakshatra counting.
 
-    Note: Janma Tara (1) is inauspicious per all classical references
-    (Parashar, Muhurtha Chintamani, standard Ashtakoot tables).
+    Standard Vedic Ashtakoot Formula:
+    1. Count Nakshatras from Person A to Person B (inclusive):
+       count = ((N_to - N_from) mod 27) + 1
+    2. Tara number = count mod 9 (if 0, tara = 9).
+    3. Inauspicious Taras: 3 (Vipat), 5 (Pratyari/Pratyak), 7 (Naidhana/Vadha).
+    4. Auspicious Taras: 1 (Janma), 2 (Sampat), 4 (Kshema), 6 (Sadhaka), 8 (Mitra), 9 (Ati Mitra).
+
+    Scoring:
+    - Both directions auspicious -> 3.0 points
+    - One direction auspicious -> 1.5 points
+    - Both directions inauspicious -> 0.0 points
     """
     def tara_number(from_nak: Nakshatra, to_nak: Nakshatra) -> int:
-        """Returns Tara number (1-9) counting from from_nak to to_nak.
-
-        AstroSage / standard formula: start counting FROM your own nakshatra
-        as position 1 (Janma). The raw diff%9 (with 0→9) needs a +2 shift
-        to align with the correct tara sequence start.
-        Formula: raw = diff%9 (0→9); tara = raw+2 (if >9: subtract 9).
-        """
-        diff = (to_nak.value - from_nak.value) % 27
-        raw = diff % 9
-        if raw == 0:
-            raw = 9
-        tara = raw + 2
-        if tara > 9:
-            tara -= 9
-        return tara
-
-    def tara_auspicious(from_nak: Nakshatra, to_nak: Nakshatra) -> bool:
-        """Returns True if the Tara in this direction is auspicious."""
-        return tara_number(from_nak, to_nak) not in _TARA_INAUSPICIOUS
+        count = ((to_nak.value - from_nak.value) % 27) + 1
+        tara = count % 9
+        return 9 if tara == 0 else tara
 
     btg_num = tara_number(bride_nakshatra, groom_nakshatra)
     gtb_num = tara_number(groom_nakshatra, bride_nakshatra)

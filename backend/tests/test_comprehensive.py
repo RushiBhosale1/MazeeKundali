@@ -35,21 +35,16 @@ from engine.matching import (
 # ──────────────────────────────────────────────────────────────────────────────
 ALL_RASHIS = list(Rashi)
 ALL_NAKSHATRAS = list(Nakshatra)
-_TARA_INAUSPICIOUS = {1, 3, 5, 7}
+_TARA_INAUSPICIOUS = {3, 5, 7}
 
 FIXTURE_PATH = os.path.join(os.path.dirname(__file__), "astrosage_fixtures.json")
 
 
 def tara_number(from_nak: Nakshatra, to_nak: Nakshatra) -> int:
-    """Reference tara formula (validated against AstroSage)."""
-    diff = (to_nak.value - from_nak.value) % 27
-    raw = diff % 9
-    if raw == 0:
-        raw = 9
-    tara = raw + 2
-    if tara > 9:
-        tara -= 9
-    return tara
+    """Standard Vedic tara formula: count from from_nak to to_nak inclusive mod 9."""
+    count = ((to_nak.value - from_nak.value) % 27) + 1
+    tara = count % 9
+    return 9 if tara == 0 else tara
 
 
 def expected_tara_score(bride_nak: Nakshatra, groom_nak: Nakshatra) -> float:
