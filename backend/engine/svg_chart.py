@@ -149,9 +149,10 @@ def render_north_indian_svg(
     if retrogrades is None:
         retrogrades = set()
 
-    scale = width / W
+    scale = width / float(W)
     h = width
-    cell = int(CELL * scale)
+    cell = width / 4.0  # exact float size for 4x4 grid cell
+
     rashi_labels = RASHI_SHORT_MR if lang == "mr" else RASHI_SHORT_EN
 
     # ── Group planets by house ────────────────────────────────────────────────
@@ -198,8 +199,8 @@ def render_north_indian_svg(
         STROKE_LAGNA = "#000000"
 
     for house_num, (col, row) in HOUSE_GRID.items():
-        x = int(col * cell * scale)
-        y = int(row * cell * scale)
+        x = round(col * cell, 2)
+        y = round(row * cell, 2)
         rashi_idx = house_rashi[house_num]
         is_lagna = house_num == 1
 
@@ -214,7 +215,7 @@ def render_north_indian_svg(
         stroke_w = "1.5" if is_lagna else "0.8"
 
         lines.append(
-            f'<rect x="{x}" y="{y}" width="{cell}" height="{cell}" '
+            f'<rect x="{x}" y="{y}" width="{round(cell, 2)}" height="{round(cell, 2)}" '
             f'fill="{bg}" stroke="{stroke_color}" stroke-width="{stroke_w}"/>'
         )
 
@@ -224,8 +225,8 @@ def render_north_indian_svg(
         text_color = "#7a7268" if theme == "dark" else ("#9ca3af" if theme == "light" else "#000000")
 
         lines.append(
-            f'<text x="{x + int(4*scale)}" y="{y + int(13*scale)}" '
-            f'font-size="{int(9*scale)}" fill="{text_color}" font-weight="400">'
+            f'<text x="{round(x + 4*scale, 2)}" y="{round(y + 13*scale, 2)}" '
+            f'font-size="{round(9.5*scale, 1)}" fill="{text_color}" font-weight="400">'
             f'{rashi_num} {rashi_label}</text>'
         )
 
@@ -233,20 +234,19 @@ def render_north_indian_svg(
         if is_lagna:
             lagna_color = "#f07c00" if theme in ["dark", "light"] else "#000000"
             lines.append(
-                f'<text x="{x + cell - int(4*scale)}" y="{y + int(13*scale)}" '
-                f'font-size="{int(9*scale)}" fill="{lagna_color}" text-anchor="end" font-weight="700">ल</text>'
+                f'<text x="{round(x + cell - 4*scale, 2)}" y="{round(y + 13*scale, 2)}" '
+                f'font-size="{round(10*scale, 1)}" fill="{lagna_color}" text-anchor="end" font-weight="700">ल</text>'
             )
 
         # ── Planet labels in this house ───────────────────────────────────────
         planets = house_planets.get(house_num, [])
-        # Layout: stack vertically, centered in cell
         total_planets = len(planets)
-        start_y = y + int(cell * 0.38)
+        start_y = y + cell * 0.38
         if total_planets > 0:
-            step = min(int(14 * scale), int((cell * 0.55) / total_planets))
+            step = min(14.0 * scale, (cell * 0.55) / total_planets)
             for pi, planet in enumerate(planets):
-                py = start_y + pi * step
-                px = x + cell // 2
+                py = start_y + (pi + 0.5) * step
+                px = x + cell / 2.0
                 is_retro = planet in retrogrades
                 glyph = PLANET_MR.get(planet, planet[:2])
                 if theme == "bw":
@@ -256,16 +256,16 @@ def render_north_indian_svg(
                 # Retrograde indicator
                 retro_mark = "ᵛ" if is_retro else ""
                 lines.append(
-                    f'<text x="{px}" y="{py}" '
-                    f'font-size="{int(11*scale)}" fill="{color}" '
+                    f'<text x="{round(px, 2)}" y="{round(py, 2)}" '
+                    f'font-size="{round(11*scale, 1)}" fill="{color}" '
                     f'text-anchor="middle" font-weight="600">'
                     f'{glyph}{retro_mark}</text>'
                 )
 
-    # ── Inner square (center) ─────────────────────────────────────────────────
-    cx = cell
-    cy = cell
-    inner_w = cell * 2
+    # ── Inner square (center 2x2) ──────────────────────────────────────────────
+    cx = round(cell, 2)
+    cy = round(cell, 2)
+    inner_w = round(cell * 2.0, 2)
     inner_bg = "rgba(255,255,255,0.01)" if theme == "dark" else "transparent"
     lines.append(
         f'<rect x="{cx}" y="{cy}" width="{inner_w}" height="{inner_w}" '
@@ -273,23 +273,25 @@ def render_north_indian_svg(
     )
     # Diagonals of inner square
     lines.append(
-        f'<line x1="{cx}" y1="{cy}" x2="{cx+inner_w}" y2="{cy+inner_w}" '
+        f'<line x1="{cx}" y1="{cy}" x2="{round(cx+inner_w, 2)}" y2="{round(cy+inner_w, 2)}" '
         f'stroke="{STROKE}" stroke-width="0.6"/>'
     )
     lines.append(
-        f'<line x1="{cx+inner_w}" y1="{cy}" x2="{cx}" y2="{cy+inner_w}" '
-        f'stroke="#1a3050" stroke-width="0.6"/>'
+        f'<line x1="{round(cx+inner_w, 2)}" y1="{cy}" x2="{cx}" y2="{round(cy+inner_w, 2)}" '
+        f'stroke="{STROKE}" stroke-width="0.6"/>'
     )
     # Om symbol in center
-    center_x = cx + inner_w // 2
-    center_y = cy + inner_w // 2
+    center_x = round(cx + inner_w / 2.0, 2)
+    center_y = round(cy + inner_w / 2.0, 2)
+    om_color = "#f07c00" if theme in ["dark", "light"] else "#000000"
     lines.append(
-        f'<text x="{center_x}" y="{center_y + int(8*scale)}" '
-        f'font-size="{int(22*scale)}" fill="rgba(240,124,0,0.3)" '
+        f'<text x="{center_x}" y="{round(center_y + 8*scale, 2)}" '
+        f'font-size="{round(24*scale, 1)}" fill="{om_color}" opacity="0.3" '
         f'text-anchor="middle" font-weight="400">ॐ</text>'
     )
 
     lines.append('</svg>')
+    return "\n".join(lines)
     return "\n".join(lines)
 
 
