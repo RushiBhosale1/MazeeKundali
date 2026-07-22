@@ -431,21 +431,21 @@ async def get_matching(matching_id: str = Path(...), db: AsyncSession = Depends(
 
             def _get_details(kr):
                 if not kr: return {}
-                raw_yoni, _ = NAKSHATRA_YONI.get(kr.nakshatra, ("", "")) if kr.nakshatra else ("", "")
-                raw_vashya = RASHI_VASHYA_GROUP.get(kr.rashi, "") if kr.rashi else ""
+                raw_yoni, _ = NAKSHATRA_YONI.get(kr.nakshatra, ("", "")) if kr.nakshatra is not None else ("", "")
+                raw_vashya = RASHI_VASHYA_GROUP.get(kr.rashi, "") if kr.rashi is not None else ""
                 return {
-                    "rashi": kr.rashi.name_mr if kr.rashi else "-",
-                    "rashi_lord": RASHI_LORD[kr.rashi].name_mr if kr.rashi else "-",
-                    "nakshatra": kr.nakshatra.name_mr if kr.nakshatra else "-",
-                    "nakshatra_lord": NAKSHATRA_DASHA_LORD[kr.nakshatra].name_mr if kr.nakshatra else "-",
-                    "pada": kr.pada if kr.pada else "-",
-                    "lagna": kr.lagna.name_mr if kr.lagna else "-",
-                    "lagna_lord": RASHI_LORD[kr.lagna].name_mr if kr.lagna else "-",
-                    "varna": RASHI_TO_VARNA[kr.rashi].name_mr if kr.rashi else "-",
-                    "vashya": VASHYA_MAP_MR.get(raw_vashya, raw_vashya),
-                    "yoni": YONI_MAP_MR.get(raw_yoni, raw_yoni),
-                    "gana": kr.gana.name_mr if kr.gana else "-",
-                    "nadi": kr.nadi.name_mr if kr.nadi else "-"
+                    "rashi": kr.rashi.name_mr if kr.rashi is not None else "-",
+                    "rashi_lord": RASHI_LORD[kr.rashi].name_mr if kr.rashi is not None else "-",
+                    "nakshatra": kr.nakshatra.name_mr if kr.nakshatra is not None else "-",
+                    "nakshatra_lord": NAKSHATRA_DASHA_LORD[kr.nakshatra].name_mr if kr.nakshatra is not None else "-",
+                    "pada": kr.pada if kr.pada is not None else "-",
+                    "lagna": kr.lagna.name_mr if kr.lagna is not None else "-",
+                    "lagna_lord": RASHI_LORD[kr.lagna].name_mr if kr.lagna is not None else "-",
+                    "varna": RASHI_TO_VARNA[kr.rashi].name_mr if kr.rashi is not None else "-",
+                    "vashya": VASHYA_MAP_MR.get(raw_vashya, raw_vashya) if raw_vashya else "-",
+                    "yoni": YONI_MAP_MR.get(raw_yoni, raw_yoni) if raw_yoni else "-",
+                    "gana": kr.gana.name_mr if kr.gana is not None else "-",
+                    "nadi": kr.nadi.name_mr if kr.nadi is not None else "-"
                 }
 
             bp_bride = record.bride_birth_profile or (record.bride_kundali.birth_profile if record.bride_kundali else None)

@@ -417,16 +417,16 @@ async def engine_kundali_endpoint(request: KundaliCreateRequest):
     dasha = result.dasha
 
     return {
-        "rashi": result.rashi.name_en if result.rashi else None,
-        "rashi_mr": result.rashi.name_mr if result.rashi else None,
-        "nakshatra": result.nakshatra.name_en if result.nakshatra else None,
-        "nakshatra_mr": result.nakshatra.name_mr if result.nakshatra else None,
+        "rashi": result.rashi.name_en if result.rashi is not None else None,
+        "rashi_mr": result.rashi.name_mr if result.rashi is not None else None,
+        "nakshatra": result.nakshatra.name_en if result.nakshatra is not None else None,
+        "nakshatra_mr": result.nakshatra.name_mr if result.nakshatra is not None else None,
         "pada": result.pada,
-        "lagna": result.lagna.name_en if result.lagna else None,
+        "lagna": result.lagna.name_en if result.lagna is not None else None,
         "lagna_reliable": result.lagna_reliable,
-        "gana": result.gana.value if result.gana else None,
-        "nadi": result.nadi.value if result.nadi else None,
-        "varna": result.varna.value if result.varna else None,
+        "gana": result.gana.value if result.gana is not None else None,
+        "nadi": result.nadi.value if result.nadi is not None else None,
+        "varna": result.varna.value if result.varna is not None else None,
         "mangal_dosha": {
             "is_manglik": md.is_manglik,
             "reference_point": md.reference_point,

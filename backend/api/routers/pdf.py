@@ -540,23 +540,23 @@ async def generate_matching_pdf(matching_id: str, db: AsyncSession = Depends(get
 
     def _get_details(kr: KundaliResult):
         if not kr: return {}
-        raw_yoni, _ = NAKSHATRA_YONI.get(kr.nakshatra, ("", "")) if kr.nakshatra else ("", "")
-        raw_vashya = RASHI_VASHYA_GROUP.get(kr.rashi, "") if kr.rashi else ""
+        raw_yoni, _ = NAKSHATRA_YONI.get(kr.nakshatra, ("", "")) if kr.nakshatra is not None else ("", "")
+        raw_vashya = RASHI_VASHYA_GROUP.get(kr.rashi, "") if kr.rashi is not None else ""
         yoni_mr = YONI_MAP_MR.get(raw_yoni, raw_yoni)
         vashya_mr = VASHYA_MAP_MR.get(raw_vashya, raw_vashya)
         return {
-            "rashi": kr.rashi.name_mr if kr.rashi else "-",
-            "rashi_lord": RASHI_LORD[kr.rashi].name_mr if kr.rashi else "-",
-            "nakshatra": kr.nakshatra.name_mr if kr.nakshatra else "-",
-            "nakshatra_lord": NAKSHATRA_DASHA_LORD[kr.nakshatra].name_mr if kr.nakshatra else "-",
-            "pada": kr.pada if kr.pada else "-",
-            "lagna": kr.lagna.name_mr if kr.lagna else "-",
-            "lagna_lord": RASHI_LORD[kr.lagna].name_mr if kr.lagna else "-",
-            "varna": RASHI_TO_VARNA[kr.rashi].name_mr if kr.rashi else "-",
-            "vashya": vashya_mr,
-            "yoni": yoni_mr,
-            "gana": kr.gana.name_mr if kr.gana else "-",
-            "nadi": kr.nadi.name_mr if kr.nadi else "-"
+            "rashi": kr.rashi.name_mr if kr.rashi is not None else "-",
+            "rashi_lord": RASHI_LORD[kr.rashi].name_mr if kr.rashi is not None else "-",
+            "nakshatra": kr.nakshatra.name_mr if kr.nakshatra is not None else "-",
+            "nakshatra_lord": NAKSHATRA_DASHA_LORD[kr.nakshatra].name_mr if kr.nakshatra is not None else "-",
+            "pada": kr.pada if kr.pada is not None else "-",
+            "lagna": kr.lagna.name_mr if kr.lagna is not None else "-",
+            "lagna_lord": RASHI_LORD[kr.lagna].name_mr if kr.lagna is not None else "-",
+            "varna": RASHI_TO_VARNA[kr.rashi].name_mr if kr.rashi is not None else "-",
+            "vashya": vashya_mr if raw_vashya else "-",
+            "yoni": yoni_mr if raw_yoni else "-",
+            "gana": kr.gana.name_mr if kr.gana is not None else "-",
+            "nadi": kr.nadi.name_mr if kr.nadi is not None else "-"
         }
 
     bride_details = _get_details(bride_result)
