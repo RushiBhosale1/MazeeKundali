@@ -448,14 +448,23 @@ async def generate_matching_pdf(matching_id: str, db: AsyncSession = Depends(get
 
     def _get_time(bp):
         if not bp or not bp.time_of_birth: return None
-        if isinstance(bp.time_of_birth, str):
-            h, m = bp.time_of_birth.split(":")
-            return dtime(int(h), int(m))
-        return bp.time_of_birth
+        tob = bp.time_of_birth
+        if isinstance(tob, str):
+            try:
+                parts = tob.split(":")
+                return dtime(int(parts[0]), int(parts[1]))
+            except Exception:
+                return None
+        if hasattr(tob, "hour") and hasattr(tob, "minute"):
+            return dtime(tob.hour, tob.minute)
+        return None
+
+    bride_tob = _get_time(bride_profile)
+    groom_tob = _get_time(groom_profile)
 
     bride_result = compute_kundali(
         name=bride_name, gender="female", birth_date=bride_profile.dob if bride_profile else None,
-        birth_time=_get_time(bride_profile), time_accuracy=TimeAccuracy.EXACT,
+        birth_time=bride_tob, time_accuracy=TimeAccuracy.EXACT if bride_tob else TimeAccuracy.UNKNOWN,
         place_text=bride_profile.place_text if bride_profile else "",
         latitude=bride_profile.latitude if bride_profile else 0, longitude=bride_profile.longitude if bride_profile else 0,
         tz_iana=bride_profile.tz_iana if bride_profile else "Asia/Kolkata",
@@ -464,7 +473,7 @@ async def generate_matching_pdf(matching_id: str, db: AsyncSession = Depends(get
 
     groom_result = compute_kundali(
         name=groom_name, gender="male", birth_date=groom_profile.dob if groom_profile else None,
-        birth_time=_get_time(groom_profile), time_accuracy=TimeAccuracy.EXACT,
+        birth_time=groom_tob, time_accuracy=TimeAccuracy.EXACT if groom_tob else TimeAccuracy.UNKNOWN,
         place_text=groom_profile.place_text if groom_profile else "",
         latitude=groom_profile.latitude if groom_profile else 0, longitude=groom_profile.longitude if groom_profile else 0,
         tz_iana=groom_profile.tz_iana if groom_profile else "Asia/Kolkata",
@@ -476,10 +485,36 @@ async def generate_matching_pdf(matching_id: str, db: AsyncSession = Depends(get
     bride_charts = _generate_3_charts(bride_result)
     groom_charts = _generate_3_charts(groom_result)
 
+    VASHYA_MAP_MR = {
+        "Chatushpada": "चतुष्पाद",
+        "Manava": "मानव",
+        "Jalachara": "जलचर",
+        "Vanachara": "वनचर",
+        "Keeta": "कीट",
+    }
+    YONI_MAP_MR = {
+        "Horse": "अश्व (घोडा)",
+        "Elephant": "गज (हत्ती)",
+        "Sheep": "मेष (मेंढा)",
+        "Serpent": "सर्प (साप)",
+        "Dog": "श्वान (कुत्रा)",
+        "Cat": "मार्जार (मांजर)",
+        "Rat": "मूषक (उंदीर)",
+        "Cow": "गौ (गाय)",
+        "Buffalo": "महिष (म्हैस)",
+        "Tiger": "व्याघ्र (वाघ)",
+        "Deer": "मृग (हरीण)",
+        "Monkey": "वानर (माकड)",
+        "Mongoose": "नकुल (मुंगूस)",
+        "Lion": "सिंह",
+    }
+
     def _get_details(kr: KundaliResult):
         if not kr: return {}
-        yoni, _ = NAKSHATRA_YONI.get(kr.nakshatra, ("", "")) if kr.nakshatra else ("", "")
-        vashya = RASHI_VASHYA_GROUP.get(kr.rashi, "") if kr.rashi else ""
+        raw_yoni, _ = NAKSHATRA_YONI.get(kr.nakshatra, ("", "")) if kr.nakshatra else ("", "")
+        raw_vashya = RASHI_VASHYA_GROUP.get(kr.rashi, "") if kr.rashi else ""
+        yoni_mr = YONI_MAP_MR.get(raw_yoni, raw_yoni)
+        vashya_mr = VASHYA_MAP_MR.get(raw_vashya, raw_vashya)
         return {
             "rashi": kr.rashi.name_mr if kr.rashi else "-",
             "rashi_lord": RASHI_LORD[kr.rashi].name_mr if kr.rashi else "-",
@@ -489,8 +524,8 @@ async def generate_matching_pdf(matching_id: str, db: AsyncSession = Depends(get
             "lagna": kr.lagna.name_mr if kr.lagna else "-",
             "lagna_lord": RASHI_LORD[kr.lagna].name_mr if kr.lagna else "-",
             "varna": RASHI_TO_VARNA[kr.rashi].name_mr if kr.rashi else "-",
-            "vashya": vashya,
-            "yoni": yoni,
+            "vashya": vashya_mr,
+            "yoni": yoni_mr,
             "gana": kr.gana.name_mr if kr.gana else "-",
             "nadi": kr.nadi.name_mr if kr.nadi else "-"
         }

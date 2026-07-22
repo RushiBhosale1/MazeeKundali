@@ -199,7 +199,7 @@ YONI_SCORE_MATRIX: dict[tuple[str, str], int] = {
     ("Elephant", "Buffalo"): 3,
     ("Elephant", "Tiger"): 1,
     ("Elephant", "Deer"): 2,
-    ("Elephant", "Monkey"): 3,
+    ("Elephant", "Monkey"): 2,
     ("Elephant", "Mongoose"): 2,
     ("Elephant", "Lion"): 0,
     ("Sheep", "Sheep"): 4,
@@ -488,7 +488,7 @@ RASHI_VASHYA_GROUP: dict[Rashi, str] = {
     Rashi.VIRGO: "Manava",
     Rashi.LIBRA: "Manava",
     Rashi.SCORPIO: "Keeta",
-    Rashi.SAGITTARIUS: "Vanachara",
+    Rashi.SAGITTARIUS: "Chatushpada",
     Rashi.CAPRICORN: "Chatushpada",   # first half default; see note above
     Rashi.AQUARIUS: "Manava",
     Rashi.PISCES: "Jalachara",
