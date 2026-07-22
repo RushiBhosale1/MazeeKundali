@@ -22,7 +22,10 @@ from engine.tables import EXALTATION_SIGN, OWN_SIGNS
 logger = logging.getLogger(__name__)
 
 # Houses from any reference that trigger Mangal Dosha
-MANGAL_DOSHA_HOUSES = {1, 2, 4, 7, 8, 12}
+# Standard Parashar/BPHS tradition (matches AstroSage, JHora):
+#   1st (self/health), 4th (home), 7th (spouse), 8th (longevity), 12th (bed pleasures)
+# Note: 2nd house is NOT included — it appears in some later texts but is NOT standard.
+MANGAL_DOSHA_HOUSES = {1, 4, 7, 8, 12}
 
 
 def _mars_house_from_reference(
