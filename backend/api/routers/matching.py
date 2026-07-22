@@ -429,11 +429,46 @@ async def get_matching(matching_id: str = Path(...), db: AsyncSession = Depends(
                 "Mongoose": "नकुल (मुंगूस)", "Lion": "सिंह",
             }
 
-            def _get_details(kr):
+            def _fmt_12h(tob):
+                if not tob: return "-"
+                if isinstance(tob, str):
+                    try:
+                        parts = tob.strip().split(":")
+                        h, m = int(parts[0]), int(parts[1])
+                        ampm = "AM" if h < 12 else "PM"
+                        h12 = h % 12 or 12
+                        return f"{h12:02d}:{m:02d} {ampm}"
+                    except Exception:
+                        return str(tob)
+                if hasattr(tob, "strftime"):
+                    return tob.strftime("%I:%M %p")
+                return str(tob)
+
+            def _get_details(kr, bp=None):
                 if not kr: return {}
                 raw_yoni, _ = NAKSHATRA_YONI.get(kr.nakshatra, ("", "")) if kr.nakshatra is not None else ("", "")
                 raw_vashya = RASHI_VASHYA_GROUP.get(kr.rashi, "") if kr.rashi is not None else ""
+
+                dob_val = "-"
+                if bp and hasattr(bp, "dob") and bp.dob:
+                    dob_val = bp.dob.strftime("%d-%m-%Y")
+                elif hasattr(kr, "dob") and kr.dob:
+                    dob_val = kr.dob.strftime("%d-%m-%Y")
+
+                tob_val = "-"
+                if bp and hasattr(bp, "time_of_birth"):
+                    tob_val = _fmt_12h(bp.time_of_birth)
+                elif hasattr(kr, "time_of_birth"):
+                    tob_val = _fmt_12h(kr.time_of_birth)
+
+                name_val = bp.name if (bp and hasattr(bp, "name") and bp.name) else getattr(kr, "name", "-")
+                place_val = bp.place_text if (bp and hasattr(bp, "place_text") and bp.place_text) else getattr(kr, "place_text", "-")
+
                 return {
+                    "name": name_val,
+                    "dob": dob_val,
+                    "time_of_birth": tob_val,
+                    "place": place_val,
                     "rashi": kr.rashi.name_mr if kr.rashi is not None else "-",
                     "rashi_lord": RASHI_LORD[kr.rashi].name_mr if kr.rashi is not None else "-",
                     "nakshatra": kr.nakshatra.name_mr if kr.nakshatra is not None else "-",
@@ -462,7 +497,7 @@ async def get_matching(matching_id: str = Path(...), db: AsyncSession = Depends(
                 bride_chart_svg = b_charts.get("d1")
                 bride_d9_chart_svg = b_charts.get("d9")
                 bride_moon_chart_svg = b_charts.get("moon")
-                bride_details = _get_details(bride_res)
+                bride_details = _get_details(bride_res, bp_bride)
                 if bride_res.mangal_dosha:
                     bride_manglik_exp = bride_res.mangal_dosha.explanation_mr
 
@@ -471,7 +506,7 @@ async def get_matching(matching_id: str = Path(...), db: AsyncSession = Depends(
                 groom_chart_svg = g_charts.get("d1")
                 groom_d9_chart_svg = g_charts.get("d9")
                 groom_moon_chart_svg = g_charts.get("moon")
-                groom_details = _get_details(groom_res)
+                groom_details = _get_details(groom_res, bp_groom)
                 if groom_res.mangal_dosha:
                     groom_manglik_exp = groom_res.mangal_dosha.explanation_mr
 

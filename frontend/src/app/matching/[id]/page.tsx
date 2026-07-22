@@ -30,6 +30,10 @@ interface DoshaInfo {
 }
 
 interface PersonDetails {
+  name?: string;
+  dob?: string;
+  time_of_birth?: string;
+  place?: string;
   rashi?: string;
   rashi_lord?: string;
   nakshatra?: string;
@@ -232,18 +236,20 @@ export default function MatchingResultPage() {
   const gd = result.groom_details || {};
 
   const detailsRows = [
-    { label: mr('राशी (Rashi)', 'Rashi'), bride: bd.rashi || '-', groom: gd.rashi || '-' },
-    { label: mr('राशीपती (Rashi Lord)', 'Rashi Lord'), bride: bd.rashi_lord || '-', groom: gd.rashi_lord || '-' },
-    { label: mr('नक्षत्र (Nakshatra)', 'Nakshatra'), bride: bd.nakshatra || '-', groom: gd.nakshatra || '-' },
-    { label: mr('नक्षत्रपती (Nakshatra Lord)', 'Nakshatra Lord'), bride: bd.nakshatra_lord || '-', groom: gd.nakshatra_lord || '-' },
-    { label: mr('पद / चरण (Pada)', 'Pada'), bride: bd.pada || '-', groom: gd.pada || '-' },
-    { label: mr('लग्न राशी (Lagna)', 'Lagna'), bride: bd.lagna || '-', groom: gd.lagna || '-' },
-    { label: mr('लग्नपती (Lagna Lord)', 'Lagna Lord'), bride: bd.lagna_lord || '-', groom: gd.lagna_lord || '-' },
-    { label: mr('वर्ण (Varna)', 'Varna'), bride: bd.varna || '-', groom: gd.varna || '-' },
-    { label: mr('वश्य (Vashya)', 'Vashya'), bride: bd.vashya || '-', groom: gd.vashya || '-' },
-    { label: mr('योनी (Yoni)', 'Yoni'), bride: bd.yoni || '-', groom: gd.yoni || '-' },
-    { label: mr('गण (Gana)', 'Gana'), bride: bd.gana || '-', groom: gd.gana || '-' },
-    { label: mr('नाडी (Nadi)', 'Nadi'), bride: bd.nadi || '-', groom: gd.nadi || '-' },
+    { label: mr('नाव', 'Name'), bride: bd.name || result.bride_name || '-', groom: gd.name || result.groom_name || '-' },
+    { label: mr('जन्म तारीख', 'Date of Birth'), bride: bd.dob || '-', groom: gd.dob || '-' },
+    { label: mr('जन्म वेळ (१२ तास)', 'Time of Birth (12h)'), bride: bd.time_of_birth || '-', groom: gd.time_of_birth || '-' },
+    { label: mr('राशी', 'Rashi'), bride: bd.rashi || '-', groom: gd.rashi || '-' },
+    { label: mr('राशीपती', 'Rashi Lord'), bride: bd.rashi_lord || '-', groom: gd.rashi_lord || '-' },
+    { label: mr('नक्षत्र व पद', 'Nakshatra & Pada'), bride: `${bd.nakshatra || '-'} (${bd.pada || '-'})`, groom: `${gd.nakshatra || '-'} (${gd.pada || '-'})` },
+    { label: mr('नक्षत्रपती', 'Nakshatra Lord'), bride: bd.nakshatra_lord || '-', groom: gd.nakshatra_lord || '-' },
+    { label: mr('लग्न राशी', 'Lagna Sign'), bride: bd.lagna || '-', groom: gd.lagna || '-' },
+    { label: mr('लग्नपती', 'Lagna Lord'), bride: bd.lagna_lord || '-', groom: gd.lagna_lord || '-' },
+    { label: mr('वर्ण', 'Varna'), bride: bd.varna || '-', groom: gd.varna || '-' },
+    { label: mr('वश्य', 'Vashya'), bride: bd.vashya || '-', groom: gd.vashya || '-' },
+    { label: mr('योनी', 'Yoni'), bride: bd.yoni || '-', groom: gd.yoni || '-' },
+    { label: mr('गण', 'Gana'), bride: bd.gana || '-', groom: gd.gana || '-' },
+    { label: mr('नाडी', 'Nadi'), bride: bd.nadi || '-', groom: gd.nadi || '-' },
   ];
 
   return (
@@ -289,7 +295,7 @@ export default function MatchingResultPage() {
         {(result.verdict_mr || result.verdict_en) && (
           <div className="card animate-fade-up" style={{ padding: '20px', marginBottom: 16, background: 'linear-gradient(135deg, rgba(20,40,70,0.9) 0%, rgba(10,20,40,0.95) 100%)', borderColor: 'rgba(240,124,0,0.4)', color: '#fff' }}>
             <h2 style={{ fontFamily: 'var(--font-devanagari)', fontSize: '1.15rem', fontWeight: 700, marginBottom: 10, color: 'var(--saffron-400)', textAlign: 'center' }}>
-              📜 {mr('ज्योतिषीय निष्कर्ष (Astrological Conclusion)', 'Astrological Conclusion')}
+              📜 {mr('ज्योतिषीय निष्कर्ष', 'Astrological Conclusion')}
             </h2>
             <p style={{ fontFamily: 'var(--font-devanagari)', fontSize: '0.95rem', lineHeight: 1.65, textAlign: 'center', opacity: 0.95 }}>
               {lang === 'mr' ? result.verdict_mr : (result.verdict_en || result.verdict_mr)}
@@ -300,7 +306,7 @@ export default function MatchingResultPage() {
         {/* ─── Birth Details Comparison Table ───────────────────── */}
         <div style={{ marginBottom: 20 }}>
           <h2 style={{ fontFamily: 'var(--font-devanagari)', fontSize: '1.05rem', fontWeight: 700, marginBottom: 12, color: 'var(--text-primary)' }}>
-            📋 {mr('वधू आणि वर पत्रिका माहिती', 'Planetary & Birth Details')}
+            📋 {mr('ग्रहीय व जन्म तपशील', 'Planetary & Birth Details')}
           </h2>
           <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
@@ -339,7 +345,7 @@ export default function MatchingResultPage() {
         {/* ─── 6 Kundali Diagrams (D1, D9, Moon for Bride & Groom) ─ */}
         <div style={{ marginBottom: 20 }}>
           <h2 style={{ fontFamily: 'var(--font-devanagari)', fontSize: '1.05rem', fontWeight: 700, marginBottom: 12, color: 'var(--text-primary)' }}>
-            📊 {mr('सविस्तर ६ कुंडळ्या (Kundali Diagrams)', '6 Kundali Diagrams (D1, D9 & Moon)')}
+            📊 {mr('सविस्तर ६ कुंडळ्या', '6 Kundali Diagrams (D1, D9 & Moon)')}
           </h2>
 
           {/* Bride 3 charts */}
