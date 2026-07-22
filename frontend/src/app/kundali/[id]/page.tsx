@@ -38,6 +38,7 @@ export default function KundaliResultPage() {
   const router = useRouter();
   const id = params?.id as string;
   const [lang, setLang] = useState<Lang>('mr');
+  const [activeChart, setActiveChart] = useState<'d1' | 'd9' | 'moon'>('d1');
   const [kundali, setKundali] = useState<KundaliResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -279,12 +280,60 @@ export default function KundaliResultPage() {
           </div>
         )}
 
-        {/* ─── PAID: D1 Kundali Chart ──────────────────────────── */}
-        {kundali.paid && kundali.chart_d1_svg ? (
+        {/* ─── Kundali Charts (D1, D9, Moon) ────────────────── */}
+        {(kundali.chart_d1_svg || kundali.navamsa_chart_svg || kundali.moon_chart_svg) && (
           <div className="card animate-fade-up" style={{ padding: '20px', marginBottom: 16, textAlign: 'center' }}>
             <h3 style={{ fontFamily: 'var(--font-devanagari)', fontSize: '1rem', fontWeight: 700, marginBottom: 12, color: 'var(--text-primary)' }}>
-              🌌 {mr('जन्मकुंडली (D1 लग्न कुंडली)', 'Horoscope (D1 Lagna Chart)')}
+              🌌 {mr('कुंडली तक्ते (Horoscope Charts)', 'Horoscope Charts')}
             </h3>
+
+            {/* Tab selector */}
+            <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginBottom: 16 }}>
+              {kundali.chart_d1_svg && (
+                <button
+                  className={`btn-tab ${activeChart === 'd1' ? 'active' : ''}`}
+                  onClick={() => setActiveChart('d1')}
+                  style={{
+                    padding: '6px 14px', borderRadius: 20, border: '1px solid var(--border-subtle)',
+                    background: activeChart === 'd1' ? 'var(--saffron-500)' : 'rgba(255,255,255,0.05)',
+                    color: activeChart === 'd1' ? '#fff' : 'var(--text-secondary)',
+                    fontFamily: 'var(--font-devanagari)', fontSize: '0.82rem', cursor: 'pointer', fontWeight: 600
+                  }}
+                >
+                  {mr('D1 लग्न कुंडली', 'D1 Lagna')}
+                </button>
+              )}
+              {kundali.navamsa_chart_svg && (
+                <button
+                  className={`btn-tab ${activeChart === 'd9' ? 'active' : ''}`}
+                  onClick={() => setActiveChart('d9')}
+                  style={{
+                    padding: '6px 14px', borderRadius: 20, border: '1px solid var(--border-subtle)',
+                    background: activeChart === 'd9' ? 'var(--saffron-500)' : 'rgba(255,255,255,0.05)',
+                    color: activeChart === 'd9' ? '#fff' : 'var(--text-secondary)',
+                    fontFamily: 'var(--font-devanagari)', fontSize: '0.82rem', cursor: 'pointer', fontWeight: 600
+                  }}
+                >
+                  {mr('D9 नवमांश', 'D9 Navamsha')}
+                </button>
+              )}
+              {kundali.moon_chart_svg && (
+                <button
+                  className={`btn-tab ${activeChart === 'moon' ? 'active' : ''}`}
+                  onClick={() => setActiveChart('moon')}
+                  style={{
+                    padding: '6px 14px', borderRadius: 20, border: '1px solid var(--border-subtle)',
+                    background: activeChart === 'moon' ? 'var(--saffron-500)' : 'rgba(255,255,255,0.05)',
+                    color: activeChart === 'moon' ? '#fff' : 'var(--text-secondary)',
+                    fontFamily: 'var(--font-devanagari)', fontSize: '0.82rem', cursor: 'pointer', fontWeight: 600
+                  }}
+                >
+                  {mr('चंद्र कुंडली', 'Moon Chart')}
+                </button>
+              )}
+            </div>
+
+            {/* Active chart SVG */}
             <div 
               style={{ 
                 maxWidth: '360px', 
@@ -296,21 +345,14 @@ export default function KundaliResultPage() {
                 display: 'flex',
                 justifyContent: 'center'
               }}
-              dangerouslySetInnerHTML={{ __html: kundali.chart_d1_svg }} 
+              dangerouslySetInnerHTML={{ 
+                __html: (activeChart === 'd9' && kundali.navamsa_chart_svg) 
+                  ? kundali.navamsa_chart_svg 
+                  : (activeChart === 'moon' && kundali.moon_chart_svg)
+                  ? kundali.moon_chart_svg
+                  : (kundali.chart_d1_svg || '')
+              }} 
             />
-          </div>
-        ) : !kundali.paid && kundali.chart_d1_svg && (
-          <div className="locked-overlay" style={{ marginBottom: 16 }}>
-            <div className="locked-blur">
-              <div className="card" style={{ padding: '20px', textAlign: 'center' }}>
-                <div style={{ fontFamily: 'var(--font-devanagari)', fontSize: '1rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: 12 }}>
-                  🌌 {mr('जन्मकुंडली (D1 लग्न कुंडली)', 'Horoscope (D1 Lagna Chart)')}
-                </div>
-                <div style={{ height: 250, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-secondary)' }}>
-                  <span style={{ fontSize: '4rem', opacity: 0.1 }}>☸</span>
-                </div>
-              </div>
-            </div>
           </div>
         )}
 

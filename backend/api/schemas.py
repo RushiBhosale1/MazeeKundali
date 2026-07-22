@@ -200,6 +200,7 @@ class KundaliPaidResponse(KundaliFreeResponse):
     """Extends free response with all paid fields unlocked."""
     planet_positions: List[PlanetPositionResponse]
     navamsa_chart_svg: Optional[str]
+    moon_chart_svg: Optional[str] = None
     mangal_dosha: Optional[MangalDoshaResponse]
     dasha: Optional[DashaResponse]
     written_analysis: Optional[WrittenAnalysis]

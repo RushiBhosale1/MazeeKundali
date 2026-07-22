@@ -121,10 +121,22 @@ def _ctx_from_result(result, name: str) -> dict:
             "is_debilitated": pp.is_debilitated,
         })
 
-    svg = ""
-    if result.lagna and pr:
+    svg_d1 = ""
+    svg_d9 = ""
+    svg_moon = ""
+    if pr:
         try:
-            svg = render_north_indian_svg(result.lagna.value, pr, rr, width=380, lang="mr")
+            if result.lagna:
+                svg_d1 = render_north_indian_svg(result.lagna.value, pr, rr, width=260, lang="mr", theme="bw")
+            
+            from engine.ephemeris import longitude_to_navamsa_rashi as _nav_rashi
+            pr_d9 = {pp.planet.value: _nav_rashi(pp.longitude).value for pp in (result.planet_positions or [])}
+            rr_d9 = {pp.planet.value for pp in (result.planet_positions or []) if pp.retrograde}
+            nav_lagna = result.lagna.value if result.lagna else (result.rashi.value if result.rashi else 0)
+            svg_d9 = render_north_indian_svg(nav_lagna, pr_d9, rr_d9, width=260, lang="mr", theme="bw")
+
+            if result.rashi:
+                svg_moon = render_north_indian_svg(result.rashi.value, pr, rr, width=260, lang="mr", theme="bw")
         except Exception as e:
             logger.warning("SVG render failed: %s", e)
 
@@ -179,7 +191,9 @@ def _ctx_from_result(result, name: str) -> dict:
         "gana_mr": GM.get(result.gana.value, "") if result.gana else "",
         "nadi_mr": NM.get(result.nadi.value, "") if result.nadi else "",
         "varna_mr": VARNA_MR.get(result.varna.value, result.varna.value) if result.varna else None,
-        "chart_svg": svg,
+        "chart_svg": svg_d1,
+        "navamsa_svg": svg_d9,
+        "moon_svg": svg_moon,
         "planet_positions": plist,
         "dasha": dc,
         "mangal_dosha": mc,

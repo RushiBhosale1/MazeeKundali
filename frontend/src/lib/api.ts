@@ -97,6 +97,8 @@ export interface KundaliResponse {
   created_at: string;
   // Paid fields (only present when paid=true)
   planet_positions?: PlanetPosition[];
+  navamsa_chart_svg?: string | null;
+  moon_chart_svg?: string | null;
   mangal_dosha?: MangalDoshaInfo;
   dasha?: DashaInfo;
   written_analysis?: WrittenAnalysis;

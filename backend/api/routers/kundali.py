@@ -196,10 +196,28 @@ def _build_paid_response(record: dict, result: KundaliResult) -> KundaliPaidResp
         except Exception as nav_err:
             logger.warning("Navamsa SVG generation failed: %s", nav_err)
 
+    # Chandra (Moon) chart SVG — Moon's rashi as Lagna
+    moon_chart_svg: Optional[str] = None
+    if result.rashi is not None and result.planet_positions:
+        try:
+            from engine.svg_chart import render_north_indian_svg
+            pr_d1 = {pp.planet.value: pp.rashi.value for pp in result.planet_positions}
+            rr_d1 = {pp.planet.value for pp in result.planet_positions if pp.retrograde}
+            moon_chart_svg = render_north_indian_svg(
+                lagna_rashi=result.rashi.value,
+                planet_rashis=pr_d1,
+                retrogrades=rr_d1,
+                width=360,
+                lang="mr",
+            )
+        except Exception as moon_err:
+            logger.warning("Moon SVG generation failed: %s", moon_err)
+
     return KundaliPaidResponse(
         **free.model_dump(),
         planet_positions=planet_positions,
         navamsa_chart_svg=navamsa_chart_svg,
+        moon_chart_svg=moon_chart_svg,
         mangal_dosha=mangal_resp,
         dasha=dasha_resp,
         written_analysis=analysis,
@@ -218,7 +236,7 @@ async def create_kundali(
 ):
     """
     Create and compute a new kundali from birth data.
-    Saves to DB. Returns free-tier fields only.
+    Saves to DB. Returns computed kundali fields.
     """
     birth_time = _parse_time(request.time_of_birth)
     time_accuracy = TimeAccuracy(request.time_accuracy.value)
@@ -236,7 +254,7 @@ async def create_kundali(
             longitude=request.longitude,
             tz_iana=request.tz_iana,
             rahu_mode=rahu_mode,
-            compute_paid_fields=False,
+            compute_paid_fields=True,
         )
     except Exception as e:
         logger.exception("Kundali computation failed: %s", e)
@@ -250,10 +268,12 @@ async def create_kundali(
     if result.lagna is not None:
         try:
             from engine.svg_chart import render_north_indian_svg
+            pr = {pp.planet.value: pp.rashi.value for pp in result.planet_positions} if result.planet_positions else {}
+            rr = {pp.planet.value for pp in result.planet_positions if pp.retrograde} if result.planet_positions else set()
             chart_svg = render_north_indian_svg(
                 lagna_rashi=result.lagna.value,
-                planet_rashis={},
-                retrogrades=set(),
+                planet_rashis=pr,
+                retrogrades=rr,
                 width=360,
                 lang="mr",
             )
