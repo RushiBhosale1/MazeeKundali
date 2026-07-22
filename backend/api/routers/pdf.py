@@ -382,34 +382,50 @@ def _generate_3_charts(result) -> dict:
     from engine.svg_chart import render_north_indian_svg
     from engine.ephemeris import longitude_to_navamsa_rashi
     
+    placeholder = '<div style="width: 300px; height: 300px; display: flex; align-items: center; justify-content: center; border: 1px dashed #ccc; border-radius: 8px; color: #7a7268; font-size: 11pt; text-align: center; background: #fafafa; margin: 0 auto;">माहिती उपलब्ध नाही</div>'
+
     if not result or not result.planet_positions:
-        placeholder = '<div style="width: 300px; height: 300px; display: flex; align-items: center; justify-content: center; border: 1px dashed #ccc; border-radius: 8px; color: #7a7268; font-size: 11pt; text-align: center; background: #fafafa; margin: 0 auto;">माहिती उपलब्ध नाही</div>'
         return {"d1": placeholder, "d9": placeholder, "moon": placeholder}
     
-    empty_svg = '<div style="width: 300px; height: 300px; display: flex; align-items: center; justify-content: center; border: 1px dashed #ccc; border-radius: 8px; color: #7a7268; font-size: 11pt; text-align: center; background: #fafafa; margin: 0 auto;">अचूक जन्मवेळ उपलब्ध नाही</div>'
+    empty_lagna_svg = '<div style="width: 300px; height: 300px; display: flex; align-items: center; justify-content: center; border: 1px dashed #ccc; border-radius: 8px; color: #7a7268; font-size: 11pt; text-align: center; background: #fafafa; margin: 0 auto;">अचूक जन्मवेळ उपलब्ध नाही<br/>(Lagna unavailable)</div>'
     
-    # D1 Chart (Lagna)
-    pr_d1 = {}
-    rr = set()
+    # D1 Chart (Lagna) — requires lagna
+    pr_d1: dict[str, int] = {}
+    rr: set[str] = set()
     for pp in result.planet_positions:
         pr_d1[pp.planet.value] = pp.rashi.value
         if pp.retrograde:
             rr.add(pp.planet.value)
     
-    svg_d1 = render_north_indian_svg(result.lagna.value, pr_d1, rr, width=300, lang="mr", theme="bw") if result.lagna else empty_svg
+    if result.lagna is not None:
+        svg_d1 = render_north_indian_svg(result.lagna.value, pr_d1, rr, width=300, lang="mr", theme="bw")
+    else:
+        svg_d1 = empty_lagna_svg
     
-    # D9 Chart (Navamsa)
-    pr_d9 = {}
+    # D9 Chart (Navamsa) — uses corrected Parashari navamsa formula
+    pr_d9: dict[str, int] = {}
     for pp in result.planet_positions:
         pr_d9[pp.planet.value] = longitude_to_navamsa_rashi(pp.longitude).value
     
-    lagna_d9 = longitude_to_navamsa_rashi(result._raw_ephemeris["lagna_longitude"]).value if hasattr(result, "_raw_ephemeris") else None
-    svg_d9 = render_north_indian_svg(lagna_d9, pr_d9, rr, width=300, lang="mr", theme="bw") if lagna_d9 else empty_svg
+    # Navamsa Lagna from raw ephemeris
+    raw = getattr(result, '_raw_ephemeris', None)
+    nav_lagna = None
+    if raw:
+        nav_lagna = longitude_to_navamsa_rashi(raw['lagna_longitude']).value
+    elif result.lagna is not None:
+        nav_lagna = result.lagna.value  # approximate fallback
     
-    # Moon Chart (Chandra)
-    pr_moon = pr_d1 # Rashi remains same, only ascendant changes to Moon's Rashi
+    if nav_lagna is not None:
+        svg_d9 = render_north_indian_svg(nav_lagna, pr_d9, rr, width=300, lang="mr", theme="bw")
+    else:
+        svg_d9 = empty_lagna_svg
+    
+    # Moon Chart (Chandra Kundali) — Moon is the ascendant, same planet positions
     moon_lagna = pr_d1.get("Moon")
-    svg_moon = render_north_indian_svg(moon_lagna, pr_moon, rr, width=300, lang="mr", theme="bw") if moon_lagna else empty_svg
+    if moon_lagna is not None:
+        svg_moon = render_north_indian_svg(moon_lagna, pr_d1, rr, width=300, lang="mr", theme="bw")
+    else:
+        svg_moon = placeholder
     
     return {"d1": svg_d1, "d9": svg_d9, "moon": svg_moon}
 
@@ -459,12 +475,24 @@ async def generate_matching_pdf(matching_id: str, db: AsyncSession = Depends(get
             return dtime(tob.hour, tob.minute)
         return None
 
+    def _get_time_accuracy(bp) -> str:
+        """Get stored time_accuracy from profile, falling back to inference."""
+        if not bp:
+            return "unknown"
+        # Use stored time_accuracy if available
+        stored = getattr(bp, 'time_accuracy', None)
+        if stored:
+            return stored
+        # Fallback: infer from whether time exists
+        return "exact" if _get_time(bp) else "approximate"
+
     bride_tob = _get_time(bride_profile)
     groom_tob = _get_time(groom_profile)
 
     bride_result = compute_kundali(
         name=bride_name, gender="female", birth_date=bride_profile.dob if bride_profile else None,
-        birth_time=bride_tob, time_accuracy=TimeAccuracy.EXACT if bride_tob else TimeAccuracy.UNKNOWN,
+        birth_time=bride_tob,
+        time_accuracy=TimeAccuracy(_get_time_accuracy(bride_profile)),
         place_text=bride_profile.place_text if bride_profile else "",
         latitude=bride_profile.latitude if bride_profile else 0, longitude=bride_profile.longitude if bride_profile else 0,
         tz_iana=bride_profile.tz_iana if bride_profile else "Asia/Kolkata",
@@ -473,7 +501,8 @@ async def generate_matching_pdf(matching_id: str, db: AsyncSession = Depends(get
 
     groom_result = compute_kundali(
         name=groom_name, gender="male", birth_date=groom_profile.dob if groom_profile else None,
-        birth_time=groom_tob, time_accuracy=TimeAccuracy.EXACT if groom_tob else TimeAccuracy.UNKNOWN,
+        birth_time=groom_tob,
+        time_accuracy=TimeAccuracy(_get_time_accuracy(groom_profile)),
         place_text=groom_profile.place_text if groom_profile else "",
         latitude=groom_profile.latitude if groom_profile else 0, longitude=groom_profile.longitude if groom_profile else 0,
         tz_iana=groom_profile.tz_iana if groom_profile else "Asia/Kolkata",

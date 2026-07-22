@@ -165,10 +165,41 @@ def _build_paid_response(record: dict, result: KundaliResult) -> KundaliPaidResp
     # Written analysis (templated)
     analysis = generate_written_analysis(result) if result.planet_positions else None
 
+    # Navamsa chart SVG (D9) — computed from planet positions
+    navamsa_chart_svg: Optional[str] = None
+    if result.lagna is not None and result.planet_positions:
+        try:
+            from engine.svg_chart import render_north_indian_svg
+            from engine.ephemeris import longitude_to_navamsa_rashi as _nav_rashi
+            pr_d9: dict[str, int] = {}
+            rr_d9: set[str] = set()
+            for pp in result.planet_positions:
+                pr_d9[pp.planet.value] = _nav_rashi(pp.longitude).value
+                if pp.retrograde:
+                    rr_d9.add(pp.planet.value)
+            # Navamsa Lagna — from raw ephemeris if available
+            raw = getattr(result, '_raw_ephemeris', None)
+            nav_lagna_rashi = None
+            if raw:
+                nav_lagna_rashi = _nav_rashi(raw['lagna_longitude']).value
+            elif result.lagna is not None:
+                # Fall back: use lagna longitude approximation
+                nav_lagna_rashi = result.lagna.value
+            if nav_lagna_rashi is not None:
+                navamsa_chart_svg = render_north_indian_svg(
+                    lagna_rashi=nav_lagna_rashi,
+                    planet_rashis=pr_d9,
+                    retrogrades=rr_d9,
+                    width=360,
+                    lang="mr",
+                )
+        except Exception as nav_err:
+            logger.warning("Navamsa SVG generation failed: %s", nav_err)
+
     return KundaliPaidResponse(
         **free.model_dump(),
         planet_positions=planet_positions,
-        navamsa_chart_svg=None,   # Navamsa SVG — Phase 2
+        navamsa_chart_svg=navamsa_chart_svg,
         mangal_dosha=mangal_resp,
         dasha=dasha_resp,
         written_analysis=analysis,

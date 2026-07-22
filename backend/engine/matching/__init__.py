@@ -143,36 +143,59 @@ def _compute_vashya(bride_rashi: Rashi, groom_rashi: Rashi) -> KootaResult:
                        boy_trait=groom_vashya, girl_trait=bride_vashya, area_of_life_mr="वर्चस्व / Dominance")
 
 
+# Tara names for display
+_TARA_NAMES_MR: dict[int, str] = {
+    1: "जन्म", 2: "संपत", 3: "विपत", 4: "क्षेम",
+    5: "प्रत्यक", 6: "साधक", 7: "नैधन", 8: "मित्र", 9: "अति मित्र",
+}
+_TARA_INAUSPICIOUS = {1, 3, 5, 7}  # Janma, Vipat, Pratyak, Naidhana
+
+
 def _compute_tara(bride_nakshatra: Nakshatra, groom_nakshatra: Nakshatra) -> KootaResult:
     """
     Tara (3 points): Health/wellbeing based on nakshatra counting.
     Count from bride→groom and groom→bride. mod 9, then classify:
-    1,3,5,7 = inauspicious; 2,4,6,8,9(=0) = auspicious.
+    Inauspicious Taras: 1 (Janma), 3 (Vipat), 5 (Pratyak), 7 (Naidhana)
+    Auspicious Taras: 2 (Sampat), 4 (Kshema), 6 (Sadhaka), 8 (Mitra), 9 (Ati Mitra)
     3 if both auspicious, 1.5 if one auspicious, 0 if neither.
+
+    Note: Janma Tara (1) is inauspicious per all classical references
+    (Parashar, Muhurtha Chintamani, standard Ashtakoot tables).
     """
-    def tara_value(from_nak: Nakshatra, to_nak: Nakshatra) -> bool:
-        """Returns True if the direction is auspicious."""
+    def tara_number(from_nak: Nakshatra, to_nak: Nakshatra) -> int:
+        """Returns Tara number (1-9) counting from from_nak to to_nak."""
         diff = (to_nak.value - from_nak.value) % 27
         tara = diff % 9
         if tara == 0:
             tara = 9
-        return tara not in {3, 5, 7}
+        return tara
 
-    bride_to_groom_ok = tara_value(bride_nakshatra, groom_nakshatra)
-    groom_to_bride_ok = tara_value(groom_nakshatra, bride_nakshatra)
+    def tara_auspicious(from_nak: Nakshatra, to_nak: Nakshatra) -> bool:
+        """Returns True if the Tara in this direction is auspicious."""
+        return tara_number(from_nak, to_nak) not in _TARA_INAUSPICIOUS
+
+    btg_num = tara_number(bride_nakshatra, groom_nakshatra)
+    gtb_num = tara_number(groom_nakshatra, bride_nakshatra)
+    bride_to_groom_ok = btg_num not in _TARA_INAUSPICIOUS
+    groom_to_bride_ok = gtb_num not in _TARA_INAUSPICIOUS
+
+    btg_name = _TARA_NAMES_MR.get(btg_num, str(btg_num))
+    gtb_name = _TARA_NAMES_MR.get(gtb_num, str(gtb_num))
 
     if bride_to_groom_ok and groom_to_bride_ok:
         score = 3.0
-        notes_mr = "दोन्ही दिशांनी तारा शुभ. उत्तम."
-        notes_en = "Tara auspicious in both directions. Excellent."
+        notes_mr = f"दोन्ही दिशांनी तारा शुभ (मुलगी→मुलगा: {btg_name}/{btg_num}, मुलगा→मुलगी: {gtb_name}/{gtb_num}). उत्तम."
+        notes_en = f"Tara auspicious in both directions (Bride→Groom: {btg_name}/{btg_num}, Groom→Bride: {gtb_name}/{gtb_num}). Excellent."
     elif bride_to_groom_ok or groom_to_bride_ok:
         score = 1.5
-        notes_mr = "एका दिशेने तारा शुभ. ठीक."
-        notes_en = "Tara auspicious in one direction. Average."
+        good_dir = f"मुलगी→मुलगा: {btg_name}/{btg_num}" if bride_to_groom_ok else f"मुलगा→मुलगी: {gtb_name}/{gtb_num}"
+        bad_dir  = f"मुलगा→मुलगी: {gtb_name}/{gtb_num}" if bride_to_groom_ok else f"मुलगी→मुलगा: {btg_name}/{btg_num}"
+        notes_mr = f"एका दिशेने शुभ ({good_dir}), एका दिशेने अशुभ ({bad_dir}). मध्यम."
+        notes_en = f"Tara auspicious in one direction. Average. (B→G: {btg_name}/{btg_num}, G→B: {gtb_name}/{gtb_num})"
     else:
         score = 0.0
-        notes_mr = "दोन्ही दिशांनी तारा अशुभ. प्रतिकूल."
-        notes_en = "Tara inauspicious in both directions. Incompatible."
+        notes_mr = f"दोन्ही दिशांनी तारा अशुभ (मुलगी→मुलगा: {btg_name}/{btg_num}, मुलगा→मुलगी: {gtb_name}/{gtb_num}). प्रतिकूल."
+        notes_en = f"Tara inauspicious in both directions (B→G: {btg_name}/{btg_num}, G→B: {gtb_name}/{gtb_num}). Incompatible."
 
     from engine.matching.interpretations import get_tara_interpretation
     interp_mr, interp_en = get_tara_interpretation(score)

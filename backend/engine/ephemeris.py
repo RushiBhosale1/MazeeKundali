@@ -174,11 +174,38 @@ def longitude_to_rashi(sidereal_lon: float) -> Rashi:
 
 def longitude_to_navamsa_rashi(sidereal_lon: float) -> Rashi:
     """
-    Convert sidereal longitude to Navamsa Rashi (D9).
-    Each navamsa is 3°20' (10/3 degrees).
-    The mapping follows the traditional Parashari method.
+    Convert sidereal longitude to Navamsa Rashi (D9) using the correct
+    Parashari (Varga) method.
+
+    Each Rashi = 30°, divided into 9 navamsas of 3°20' (10/3°) each.
+    The starting navamsa sign depends on the sign's element:
+      - Fire signs (Aries=0, Leo=4, Sagittarius=8) → start from Aries (0)
+      - Earth signs (Taurus=1, Virgo=5, Capricorn=9) → start from Capricorn (9)
+      - Air signs (Gemini=2, Libra=6, Aquarius=10) → start from Libra (6)
+      - Water signs (Cancer=3, Scorpio=7, Pisces=11) → start from Cancer (3)
+
+    This matches the output of AstroSage, JHora, and standard Jyotisha software.
     """
-    return Rashi(int(sidereal_lon / (10.0 / 3.0)) % 12)
+    NAVAMSA_SPAN = 10.0 / 3.0  # 3°20'
+
+    # Which sign (rashi 0-11) does this longitude fall in?
+    rashi_index = int(sidereal_lon / 30) % 12
+
+    # How far into the sign (0 to 30°)?
+    degree_in_sign = sidereal_lon % 30.0
+
+    # Which navamsa number within this sign (0-8)?
+    navamsa_num = int(degree_in_sign / NAVAMSA_SPAN)
+
+    # Starting Navamsa sign based on element
+    # Fire=0, Earth=1, Air=2, Water=3 based on rashi_index % 4 sequence:
+    # 0(Aries/Fire), 1(Taurus/Earth), 2(Gemini/Air), 3(Cancer/Water),
+    # 4(Leo/Fire), 5(Virgo/Earth), 6(Libra/Air), 7(Scorpio/Water), ...
+    element = rashi_index % 4  # 0=Fire, 1=Earth, 2=Air, 3=Water
+    navamsa_start = {0: 0, 1: 9, 2: 6, 3: 3}[element]  # Aries, Capricorn, Libra, Cancer
+
+    navamsa_rashi = (navamsa_start + navamsa_num) % 12
+    return Rashi(navamsa_rashi)
 
 
 def longitude_to_nakshatra(sidereal_lon: float) -> Nakshatra:

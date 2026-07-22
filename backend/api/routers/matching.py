@@ -223,8 +223,11 @@ async def create_matching(request: MatchingCreateRequest, db: AsyncSession = Dep
             "points_max": k.points_max,
             "notes_mr": k.notes_mr,
             "notes_en": k.notes_en,
-            "interpretation_mr": getattr(k, 'interpretation_mr', None),
-            "interpretation_en": getattr(k, 'interpretation_en', None),
+            "interpretation_mr": getattr(k, 'interpretation_mr', "") or "",
+            "interpretation_en": getattr(k, 'interpretation_en', "") or "",
+            "boy_trait": getattr(k, 'boy_trait', "") or "",
+            "girl_trait": getattr(k, 'girl_trait', "") or "",
+            "area_of_life_mr": getattr(k, 'area_of_life_mr', "") or "",
         }
         for k in match_result.kootas
     ]
@@ -325,6 +328,11 @@ async def get_matching(matching_id: str = Path(...), db: AsyncSession = Depends(
                     points_max=k["points_max"],
                     notes_mr=k["notes_mr"],
                     notes_en=k["notes_en"],
+                    interpretation_mr=k.get("interpretation_mr") or "",
+                    interpretation_en=k.get("interpretation_en") or "",
+                    boy_trait=k.get("boy_trait") or "",
+                    girl_trait=k.get("girl_trait") or "",
+                    area_of_life_mr=k.get("area_of_life_mr") or "",
                 )
                 for k in record.koota_breakdown
             ]
