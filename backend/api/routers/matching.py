@@ -96,10 +96,14 @@ class MatchingPaidResponse(MatchingFreeResponse):
     verdict_mr: str
     verdict_en: str
     pdf_url: Optional[str]
-    bride_chart_svg: Optional[str] = None   # D1 Janma Kundali SVG for bride
-    groom_chart_svg: Optional[str] = None   # D1 Janma Kundali SVG for groom
-    bride_moon_chart_svg: Optional[str] = None  # Chandra Kundali for bride
-    groom_moon_chart_svg: Optional[str] = None  # Chandra Kundali for groom
+    bride_details: Optional[dict] = None
+    groom_details: Optional[dict] = None
+    bride_chart_svg: Optional[str] = None      # D1 Janma Kundali SVG for bride
+    bride_d9_chart_svg: Optional[str] = None   # D9 Navamsha Kundali SVG for bride
+    bride_moon_chart_svg: Optional[str] = None # Chandra Kundali for bride
+    groom_chart_svg: Optional[str] = None      # D1 Janma Kundali SVG for groom
+    groom_d9_chart_svg: Optional[str] = None   # D9 Navamsha Kundali SVG for groom
+    groom_moon_chart_svg: Optional[str] = None # Chandra Kundali for groom
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
@@ -365,40 +369,43 @@ async def get_matching(matching_id: str = Path(...), db: AsyncSession = Depends(
                     explanation_en=b["explanation_en"]
                 )
 
-        # Compute chart SVGs for the result page (D1 + Moon Kundali)
+        # Compute chart SVGs and details for the paid result page
+        bride_details = None
+        groom_details = None
         bride_chart_svg = None
-        groom_chart_svg = None
+        bride_d9_chart_svg = None
         bride_moon_chart_svg = None
+        groom_chart_svg = None
+        groom_d9_chart_svg = None
         groom_moon_chart_svg = None
         try:
-            from engine.svg_chart import render_north_indian_svg
+            from api.routers.pdf import _generate_3_charts
             from engine.chart import compute_kundali
             from engine.models import TimeAccuracy, RahuMode
+            from engine.tables import RASHI_LORD, NAKSHATRA_DASHA_LORD, RASHI_TO_VARNA, NAKSHATRA_YONI, RASHI_VASHYA_GROUP
             from datetime import time as dtime
 
-            def _get_chart_svgs(bp):
-                """Compute D1 and Moon chart SVGs from a birth profile record."""
+            def _compute_kr(bp, gender):
                 if bp is None or bp.dob is None:
-                    return None, None
+                    return None
                 tob_obj = None
                 if bp.time_of_birth:
-                    try:
-                        h, m = str(bp.time_of_birth)[:5].split(":")
-                        tob_obj = dtime(int(h), int(m))
-                    except Exception:
-                        pass
+                    if isinstance(bp.time_of_birth, str):
+                        try:
+                            h, m = bp.time_of_birth[:5].split(":")
+                            tob_obj = dtime(int(h), int(m))
+                        except Exception:
+                            pass
+                    elif hasattr(bp.time_of_birth, "hour"):
+                        tob_obj = dtime(bp.time_of_birth.hour, bp.time_of_birth.minute)
                 ta_str = getattr(bp, 'time_accuracy', 'approximate') or 'approximate'
-                try:
-                    ta = TimeAccuracy(ta_str)
-                except ValueError:
-                    ta = TimeAccuracy.APPROXIMATE
-                try:
-                    kr = RahuMode(getattr(bp, 'rahu_mode', 'true_node') or 'true_node')
-                except ValueError:
-                    kr = RahuMode.TRUE_NODE
-                res = compute_kundali(
+                try: ta = TimeAccuracy(ta_str)
+                except ValueError: ta = TimeAccuracy.APPROXIMATE
+                try: kr_mode = RahuMode(getattr(bp, 'rahu_mode', 'true_node') or 'true_node')
+                except ValueError: kr_mode = RahuMode.TRUE_NODE
+                return compute_kundali(
                     name=bp.name or "",
-                    gender=getattr(bp, 'gender', 'male') or 'male',
+                    gender=gender,
                     birth_date=bp.dob,
                     birth_time=tob_obj,
                     time_accuracy=ta,
@@ -406,30 +413,61 @@ async def get_matching(matching_id: str = Path(...), db: AsyncSession = Depends(
                     latitude=float(bp.latitude or 18.52),
                     longitude=float(bp.longitude or 73.85),
                     tz_iana=bp.tz_iana or "Asia/Kolkata",
-                    rahu_mode=kr,
-                    compute_paid_fields=False,
+                    rahu_mode=kr_mode,
+                    compute_paid_fields=True,
                 )
-                if not res.planet_positions:
-                    return None, None
-                pr = {p.planet.value: p.rashi.value for p in res.planet_positions}
-                rr = {p.planet.value for p in res.planet_positions if p.retrograde}
-                # D1 chart
-                d1_svg = render_north_indian_svg(
-                    lagna_rashi=res.lagna.value if res.lagna else list(pr.values())[0],
-                    planet_rashis=pr, retrogrades=rr, width=320, lang="mr"
-                ) if res.lagna or pr else None
-                # Moon (Chandra) chart — Moon rashi as lagna
-                moon_rashi_val = pr.get("Moon")
-                moon_svg = render_north_indian_svg(
-                    lagna_rashi=moon_rashi_val, planet_rashis=pr,
-                    retrogrades=rr, width=320, lang="mr"
-                ) if moon_rashi_val is not None else None
-                return d1_svg, moon_svg
+
+            VASHYA_MAP_MR = {
+                "Chatushpada": "चतुष्पाद", "Manava": "मानव", "Jalachara": "जलचर",
+                "Vanachara": "वनचर", "Keeta": "कीट",
+            }
+            YONI_MAP_MR = {
+                "Horse": "अश्व (घोडा)", "Elephant": "गज (हत्ती)", "Sheep": "मेष (मेंढा)",
+                "Serpent": "सर्प (साप)", "Dog": "श्वान (कुत्रा)", "Cat": "मार्जार (मांजर)",
+                "Rat": "मूषक (उंदीर)", "Cow": "गौ (गाय)", "Buffalo": "महिष (म्हैस)",
+                "Tiger": "व्याघ्र (वाघ)", "Deer": "मृग (हरीण)", "Monkey": "वानर (माकड)",
+                "Mongoose": "नकुल (मुंगूस)", "Lion": "सिंह",
+            }
+
+            def _get_details(kr):
+                if not kr: return {}
+                raw_yoni, _ = NAKSHATRA_YONI.get(kr.nakshatra, ("", "")) if kr.nakshatra else ("", "")
+                raw_vashya = RASHI_VASHYA_GROUP.get(kr.rashi, "") if kr.rashi else ""
+                return {
+                    "rashi": kr.rashi.name_mr if kr.rashi else "-",
+                    "rashi_lord": RASHI_LORD[kr.rashi].name_mr if kr.rashi else "-",
+                    "nakshatra": kr.nakshatra.name_mr if kr.nakshatra else "-",
+                    "nakshatra_lord": NAKSHATRA_DASHA_LORD[kr.nakshatra].name_mr if kr.nakshatra else "-",
+                    "pada": kr.pada if kr.pada else "-",
+                    "lagna": kr.lagna.name_mr if kr.lagna else "-",
+                    "lagna_lord": RASHI_LORD[kr.lagna].name_mr if kr.lagna else "-",
+                    "varna": RASHI_TO_VARNA[kr.rashi].name_mr if kr.rashi else "-",
+                    "vashya": VASHYA_MAP_MR.get(raw_vashya, raw_vashya),
+                    "yoni": YONI_MAP_MR.get(raw_yoni, raw_yoni),
+                    "gana": kr.gana.name_mr if kr.gana else "-",
+                    "nadi": kr.nadi.name_mr if kr.nadi else "-"
+                }
 
             bp_bride = record.bride_birth_profile
             bp_groom = record.groom_birth_profile
-            bride_chart_svg, bride_moon_chart_svg = _get_chart_svgs(bp_bride)
-            groom_chart_svg, groom_moon_chart_svg = _get_chart_svgs(bp_groom)
+
+            bride_res = _compute_kr(bp_bride, "female")
+            groom_res = _compute_kr(bp_groom, "male")
+
+            if bride_res:
+                b_charts = _generate_3_charts(bride_res)
+                bride_chart_svg = b_charts.get("d1")
+                bride_d9_chart_svg = b_charts.get("d9")
+                bride_moon_chart_svg = b_charts.get("moon")
+                bride_details = _get_details(bride_res)
+
+            if groom_res:
+                g_charts = _generate_3_charts(groom_res)
+                groom_chart_svg = g_charts.get("d1")
+                groom_d9_chart_svg = g_charts.get("d9")
+                groom_moon_chart_svg = g_charts.get("moon")
+                groom_details = _get_details(groom_res)
+
         except Exception as chart_err:
             logger.warning("Chart SVG computation failed: %s", chart_err)
 
@@ -458,9 +496,13 @@ async def get_matching(matching_id: str = Path(...), db: AsyncSession = Depends(
             verdict_mr=record.verdict_mr or "",
             verdict_en=record.verdict_en or "",
             pdf_url=record.pdf_url,
+            bride_details=bride_details,
+            groom_details=groom_details,
             bride_chart_svg=bride_chart_svg,
-            groom_chart_svg=groom_chart_svg,
+            bride_d9_chart_svg=bride_d9_chart_svg,
             bride_moon_chart_svg=bride_moon_chart_svg,
+            groom_chart_svg=groom_chart_svg,
+            groom_d9_chart_svg=groom_d9_chart_svg,
             groom_moon_chart_svg=groom_moon_chart_svg,
         )
     else:

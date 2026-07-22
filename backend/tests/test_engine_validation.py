@@ -277,8 +277,8 @@ def test_bhakoot_dosha_68():
     from engine.models import Rashi
     from engine.matching import _compute_bhakoot
 
-    # Aries (0) and Virgo (5): distance = 6 from Aries, 8 from Virgo → 6/8 dosha
-    koota, dosha = _compute_bhakoot(Rashi.ARIES, Rashi.VIRGO)
+    # Aries (0) and Virgo (5): distance = 6 from Aries, 8 from Virgo → 6/8 dosha. Lord Mars & Mercury (Graha maitri = 0.5)
+    koota, dosha = _compute_bhakoot(Rashi.ARIES, Rashi.VIRGO, 0.5)
     assert dosha.is_present is True
     assert koota.points_earned == 0.0
 
@@ -288,11 +288,8 @@ def test_bhakoot_no_dosha():
     from engine.models import Rashi
     from engine.matching import _compute_bhakoot
 
-    # Aries (0) and Taurus (1): distance = 2/12? No — 2 from Aries, 12 from Taurus
-    # Actually 1→2 is Aries to Taurus = 2 positions... let's pick a clean non-dosha pair
-    # Aries (0) and Leo (4): distance = 5/9? No. 5 from Aries, 9 from Leo → 5/9 is dosha
     # Aries (0) and Gemini (2): distance = 3/11 → not a dosha pair
-    koota, dosha = _compute_bhakoot(Rashi.ARIES, Rashi.GEMINI)
+    koota, dosha = _compute_bhakoot(Rashi.ARIES, Rashi.GEMINI, 0.5)
     assert dosha.is_present is False
     assert koota.points_earned == 7.0
 

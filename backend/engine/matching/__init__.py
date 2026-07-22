@@ -358,15 +358,16 @@ def _compute_bhakoot(
             cancellation_rule_mr = f"ग्रहमैत्री उत्तम ({int(graha_maitri_score)}/5) आहे."
             cancellation_rule_en = f"Excellent Graha Maitri ({int(graha_maitri_score)}/5)."
 
-        score = 0.0
         if cancelled:
+            score = 7.0
             notes_mr = (
-                f"भकूट दोष ({dosha_type}) (रद्द): {cancellation_rule_mr} ० गुण."
+                f"भकूट दोष ({dosha_type}) (रद्द): {cancellation_rule_mr} ७ गुण."
             )
             notes_en = (
-                f"Bhakoot Dosha ({dosha_type}) (Cancelled): {cancellation_rule_en} 0 points."
+                f"Bhakoot Dosha ({dosha_type}) (Cancelled): {cancellation_rule_en} 7 points."
             )
         else:
+            score = 0.0
             notes_mr = (
                 f"भकूट दोष ({dosha_type}) — मुलगी {bride_rashi.name_mr}, "
                 f"मुलगा {groom_rashi.name_mr}. ० गुण."
@@ -470,17 +471,18 @@ def _compute_nadi(
         cancellation_rule_mr = "नाडी दोष रद्द: दोन्हींची राशी समान आहे परंतु नक्षत्र वेगळे आहे."
         cancellation_rule_en = "Nadi Dosha cancelled: Same Rashi but different Nakshatras."
 
-    score = 0.0
     if cancelled:
+        score = 8.0
         notes_mr = (
             f"मुलगी नाडी: {bride_nadi.name_mr} | मुलगा नाडी: {groom_nadi.name_mr}. "
-            f"नाडी दोष आहे (रद्द): {cancellation_rule_mr} ० गुण."
+            f"नाडी दोष आहे (रद्द): {cancellation_rule_mr} ८ गुण."
         )
         notes_en = (
             f"Bride Nadi: {bride_nadi.value} | Groom Nadi: {groom_nadi.value}. "
-            f"Nadi Dosha present (Cancelled): {cancellation_rule_en} 0 points."
+            f"Nadi Dosha present (Cancelled): {cancellation_rule_en} 8 points."
         )
     else:
+        score = 0.0
         notes_mr = (
             f"मुलगी नाडी: {bride_nadi.name_mr} | मुलगा नाडी: {groom_nadi.name_mr}. "
             f"नाडी दोष आहे. रद्द नाही. ० गुण."
