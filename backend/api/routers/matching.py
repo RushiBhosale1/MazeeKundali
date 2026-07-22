@@ -59,6 +59,9 @@ class KootaRowOut(BaseModel):
     notes_en: str
     interpretation_mr: Optional[str] = None
     interpretation_en: Optional[str] = None
+    boy_trait: Optional[str] = None
+    girl_trait: Optional[str] = None
+    area_of_life_mr: Optional[str] = None
 
 
 class DoshaOut(BaseModel):
