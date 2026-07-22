@@ -23,9 +23,10 @@ def test_bhakoot_cancellation():
     print("test_bhakoot_cancellation PASSED")
 
 def test_gana_cancellation():
-    # Deva and Rakshasa is 0 points. But if Graha maitri is 5, it should cancel.
+    # Deva and Rakshasa is 0 points. Even with Graha maitri=5, AstroSage does NOT cancel Gana Dosha.
+    # Case 3 (Sujata/Suraj): Devta+Rakshas, Maitri=5 (Mercury+Venus) → Gana=0, NOT 6.
     koota = _compute_gana(Nakshatra.ASHWINI, Nakshatra.KRITTIKA, graha_maitri_score=5)
-    assert koota.points_earned == 6.0, "Gana dosha should be cancelled and get full points"
+    assert koota.points_earned == 0.0, "Gana dosha should NOT be cancelled (matches AstroSage behavior)"
     print("test_gana_cancellation PASSED")
 
 if __name__ == "__main__":

@@ -1,0 +1,71 @@
+[
+  {
+    "id": "AS001",
+    "description": "Suraj (Scorpio/Jyeshtha) + Sonali (Scorpio/Jyeshtha) - Same rashi/nakshatra",
+    "boy": {"name": "Suraj", "dob": "1996-05-05", "time": "15:05:00", "place": "Satara"},
+    "girl": {"name": "Sonali", "dob": "1994-02-05", "time": "15:05:00", "place": "Satara"},
+    "boy_rashi": "SCORPIO", "boy_nakshatra": "JYESHTHA",
+    "girl_rashi": "SCORPIO", "girl_nakshatra": "JYESHTHA",
+    "astrosage_result": {
+      "total": 28.0,
+      "varna": 1, "vasya": 2, "tara": 3.0, "yoni": 4,
+      "maitri": 5, "gana": 6, "bhakoot": 7, "nadi": 0,
+      "boy_varna": "Brahmin", "girl_varna": "Brahmin",
+      "boy_vasya": "Keeta", "girl_vasya": "Keeta",
+      "boy_tara": "Sampat", "girl_tara": "Sampat",
+      "boy_yoni": "Mriga", "girl_yoni": "Mriga",
+      "boy_maitri": "Mars", "girl_maitri": "Mars",
+      "boy_gana": "Rakshasa", "girl_gana": "Rakshasa",
+      "boy_bhakoot": "Scorpion", "girl_bhakoot": "Scorpion",
+      "boy_nadi": "Adi", "girl_nadi": "Adi",
+      "nadi_dosha": true, "bhakoot_dosha": false
+    },
+    "source": "AstroSage.com manual verification 2026-07"
+  },
+  {
+    "id": "AS002",
+    "description": "Aishwarya (Scorpio/Jyeshtha) bride + Rushikesh (Cancer/Ashlesha) groom",
+    "boy": {"name": "Rushikesh", "dob": "1996-10-07", "time": "21:33:00", "place": "Koregaon"},
+    "girl": {"name": "Aishwarya", "dob": "2000-12-24", "time": "00:55:00", "place": "Satara"},
+    "boy_rashi": "CANCER", "boy_nakshatra": "ASHLESHA",
+    "girl_rashi": "SCORPIO", "girl_nakshatra": "JYESHTHA",
+    "astrosage_result": {
+      "total": 26.0,
+      "varna": 1, "vasya": 1, "tara": 3.0, "yoni": 2,
+      "maitri": 5, "gana": 6, "bhakoot": 0, "nadi": 8,
+      "boy_varna": "Brahmin", "girl_varna": "Brahmin",
+      "boy_vasya": "Jalachara", "girl_vasya": "Keeta",
+      "boy_tara": "Sampat", "girl_tara": "Sampat",
+      "boy_yoni": "Cat", "girl_yoni": "Deer",
+      "boy_maitri": "Moon", "girl_maitri": "Mars",
+      "boy_gana": "Rakshasa", "girl_gana": "Rakshasa",
+      "boy_bhakoot": "Cancer", "girl_bhakoot": "Scorpion",
+      "boy_nadi": "Antya", "girl_nadi": "Adi",
+      "nadi_dosha": false, "bhakoot_dosha": true
+    },
+    "source": "AstroSage.com manual verification 2026-07"
+  },
+  {
+    "id": "AS003",
+    "description": "Sujata (Taurus/Krittika) bride + Suraj (Gemini/Punarvasu) groom - 1889 date",
+    "boy": {"name": "Suraj", "dob": "1889-05-05", "time": "13:55:00", "place": "Satara"},
+    "girl": {"name": "Sujata", "dob": "1997-01-18", "time": "21:00:00", "place": "Dhule"},
+    "boy_rashi": "GEMINI", "boy_nakshatra": "PUNARVASU",
+    "girl_rashi": "TAURUS", "girl_nakshatra": "KRITTIKA",
+    "astrosage_result": {
+      "total": 18.5,
+      "varna": 0, "vasya": 1, "tara": 1.5, "yoni": 3,
+      "maitri": 5, "gana": 0, "bhakoot": 0, "nadi": 8,
+      "boy_varna": "Sudra", "girl_varna": "Vaishya",
+      "boy_vasya": "Manava", "girl_vasya": "Chatushpada",
+      "boy_tara": "Vadha", "girl_tara": "Saadhak",
+      "boy_yoni": "Cat", "girl_yoni": "Sheep",
+      "boy_maitri": "Mercury", "girl_maitri": "Venus",
+      "boy_gana": "Deva", "girl_gana": "Rakshasa",
+      "boy_bhakoot": "Gemini", "girl_bhakoot": "Taurus",
+      "boy_nadi": "Adi", "girl_nadi": "Antya",
+      "nadi_dosha": false, "bhakoot_dosha": true
+    },
+    "source": "AstroSage.com manual verification 2026-07"
+  }
+]

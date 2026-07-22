@@ -303,14 +303,9 @@ def _compute_gana(bride_nakshatra: Nakshatra, groom_nakshatra: Nakshatra, graha_
 
     score = gana_scores.get((bride_gana, groom_gana), 0)
 
-    # Gana Dosha Cancellation (परिहार)
-    if score <= 1 and graha_maitri_score == 5:
-        notes_mr = f"मुलगी: {bride_gana.name_mr}, मुलगा: {groom_gana.name_mr}. गण दोष रद्द: ग्रहमैत्री उत्तम (५/५) असल्याने गण दोष नष्ट होतो."
-        notes_en = f"Bride: {bride_gana.value}, Groom: {groom_gana.value}. Gana Dosha cancelled: Excellent Graha Maitri (5/5) neutralizes Gana Dosha."
-        from engine.matching.interpretations import get_gana_interpretation
-        interp_mr, interp_en = get_gana_interpretation(bride_gana, groom_gana, 6.0)
-        return KootaResult("Gana", "गण", 6.0, 6, notes_mr, notes_en, interp_mr, interp_en,
-                           boy_trait=groom_gana.name_mr, girl_trait=bride_gana.name_mr, area_of_life_mr="स्वभाव / Temperament")
+    # NOTE: Gana Dosha is NOT cancelled regardless of Graha Maitri.
+    # AstroSage confirmed: Devta+Rakshasa with Maitri=5 (Mercury+Venus) still gives 0.
+    # This matches all major standard calculators.
 
     if score == 6:
         notes_mr = f"दोन्ही {bride_gana.name_mr} गण. उत्तम जुळणी."
