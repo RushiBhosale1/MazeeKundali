@@ -243,6 +243,74 @@
   </div>
 </div>
 
+<div class="section-title" style="margin-top: 16px;">ग्रहीय आणि पंचांग तपशील (Birth Details)</div>
+<table style="margin-bottom: 24px;">
+  <thead>
+    <tr>
+      <th>तपशील (Details)</th>
+      <th>वर (Groom)</th>
+      <th>वधू (Bride)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="td-bold">राशी (Moon Sign)</td>
+      <td>{{ groom_details.rashi }}</td>
+      <td>{{ bride_details.rashi }}</td>
+    </tr>
+    <tr>
+      <td class="td-bold">राशी स्वामी (Rashi Lord)</td>
+      <td>{{ groom_details.rashi_lord }}</td>
+      <td>{{ bride_details.rashi_lord }}</td>
+    </tr>
+    <tr>
+      <td class="td-bold">नक्षत्र - पद (Nakshatra-Pada)</td>
+      <td>{{ groom_details.nakshatra }} - {{ groom_details.pada }}</td>
+      <td>{{ bride_details.nakshatra }} - {{ bride_details.pada }}</td>
+    </tr>
+    <tr>
+      <td class="td-bold">नक्षत्र स्वामी (Nakshatra Lord)</td>
+      <td>{{ groom_details.nakshatra_lord }}</td>
+      <td>{{ bride_details.nakshatra_lord }}</td>
+    </tr>
+    <tr>
+      <td class="td-bold">लग्न (Ascendant)</td>
+      <td>{{ groom_details.lagna }}</td>
+      <td>{{ bride_details.lagna }}</td>
+    </tr>
+    <tr>
+      <td class="td-bold">लग्न स्वामी (Lagna Lord)</td>
+      <td>{{ groom_details.lagna_lord }}</td>
+      <td>{{ bride_details.lagna_lord }}</td>
+    </tr>
+    <tr>
+      <td class="td-bold">वर्ण (Varna)</td>
+      <td>{{ groom_details.varna }}</td>
+      <td>{{ bride_details.varna }}</td>
+    </tr>
+    <tr>
+      <td class="td-bold">वश्य (Vashya)</td>
+      <td>{{ groom_details.vashya }}</td>
+      <td>{{ bride_details.vashya }}</td>
+    </tr>
+    <tr>
+      <td class="td-bold">योनी (Yoni)</td>
+      <td>{{ groom_details.yoni }}</td>
+      <td>{{ bride_details.yoni }}</td>
+    </tr>
+    <tr>
+      <td class="td-bold">गण (Gana)</td>
+      <td>{{ groom_details.gana }}</td>
+      <td>{{ bride_details.gana }}</td>
+    </tr>
+    <tr>
+      <td class="td-bold">नाडी (Nadi)</td>
+      <td>{{ groom_details.nadi }}</td>
+      <td>{{ bride_details.nadi }}</td>
+    </tr>
+  </tbody>
+</table>
+
 <div style="page-break-before: always;"></div>
 <div class="header">
   <div class="header-brand">MAZEEKUNDALI.IN</div>
@@ -307,24 +375,36 @@
   <thead>
     <tr>
       <th>कूट (Koota)</th>
-      <th>वर्णन (Description)</th>
-      <th>मिळालेले गुण</th>
-      <th>जास्तीत जास्त गुण</th>
+      <th>वर (Boy)</th>
+      <th>वधू (Girl)</th>
+      <th>गुण (Score)</th>
+      <th>जास्तीत (Max)</th>
+      <th>क्षेत्र (Area of Life)</th>
     </tr>
   </thead>
   <tbody>
     {% for row in koota_breakdown %}
     <tr>
       <td class="td-bold">{{ row.name_mr }}</td>
-      <td>{{ row.notes_mr }}</td>
+      <td>{{ row.boy_trait if row.boy_trait else '-' }}</td>
+      <td>{{ row.girl_trait if row.girl_trait else '-' }}</td>
       <td class="td-bold" style="color: {{ '#22c55e' if row.points_earned == row.points_max else '#ef4444' if row.points_earned == 0 else '#f59e0b' }};">
         {{ row.points_earned }}
       </td>
       <td>{{ row.points_max }}</td>
+      <td style="color: #6b7280; font-size: 8.5pt;">{{ row.area_of_life_mr if row.area_of_life_mr else '-' }}</td>
     </tr>
     {% endfor %}
   </tbody>
 </table>
+
+</table>
+
+<div class="section-title">मंगळ दोष विश्लेषण (Mangal Dosha)</div>
+<div style="background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px; margin-bottom: 24px; font-size: 10pt; line-height: 1.6;">
+  <b>वर (Groom):</b> {{ 'मंगळ दोष आहे ⚠️' if groom_manglik else 'मंगळ दोष नाही ✅' }}<br/>
+  <b>वधू (Bride):</b> {{ 'मंगळ दोष आहे ⚠️' if bride_manglik else 'मंगळ दोष नाही ✅' }}
+</div>
 
 <div class="section-title">दोष विश्लेषण (Dosha Analysis)</div>
 
@@ -367,7 +447,7 @@
 {% endif %}
 
 <div class="verdict-box">
-  <h3>मराठी निकाल (Verdict)</h3>
+  <h3>निष्कर्ष (CONCLUSION)</h3>
   <p>{{ verdict_mr }}</p>
 </div>
 

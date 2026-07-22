@@ -43,6 +43,9 @@ class KootaResult:
     notes_en: str
     interpretation_mr: str = ""
     interpretation_en: str = ""
+    boy_trait: str = ""
+    girl_trait: str = ""
+    area_of_life_mr: str = ""
 
 
 @dataclass
@@ -112,7 +115,8 @@ def _compute_varna(bride_rashi: Rashi, groom_rashi: Rashi) -> KootaResult:
     from engine.matching.interpretations import get_varna_interpretation
     interp_mr, interp_en = get_varna_interpretation(bride_varna, groom_varna, score)
 
-    return KootaResult("Varna", "वर्ण", score, 1, notes_mr, notes_en, interp_mr, interp_en)
+    return KootaResult("Varna", "वर्ण", score, 1, notes_mr, notes_en, interp_mr, interp_en, 
+                       boy_trait=groom_varna.name_mr, girl_trait=bride_varna.name_mr, area_of_life_mr="कार्य / Work")
 
 
 def _compute_vashya(bride_rashi: Rashi, groom_rashi: Rashi) -> KootaResult:
@@ -131,7 +135,12 @@ def _compute_vashya(bride_rashi: Rashi, groom_rashi: Rashi) -> KootaResult:
     from engine.matching.interpretations import get_vashya_interpretation
     interp_mr, interp_en = get_vashya_interpretation(score)
 
-    return KootaResult("Vashya", "वश्य", score, 2, notes_mr, notes_en, interp_mr, interp_en)
+    from engine.tables import RASHI_VASHYA_GROUP
+    bride_vashya = RASHI_VASHYA_GROUP[bride_rashi]
+    groom_vashya = RASHI_VASHYA_GROUP[groom_rashi]
+
+    return KootaResult("Vashya", "वश्य", score, 2, notes_mr, notes_en, interp_mr, interp_en,
+                       boy_trait=groom_vashya, girl_trait=bride_vashya, area_of_life_mr="वर्चस्व / Dominance")
 
 
 def _compute_tara(bride_nakshatra: Nakshatra, groom_nakshatra: Nakshatra) -> KootaResult:
@@ -169,7 +178,8 @@ def _compute_tara(bride_nakshatra: Nakshatra, groom_nakshatra: Nakshatra) -> Koo
     from engine.matching.interpretations import get_tara_interpretation
     interp_mr, interp_en = get_tara_interpretation(score)
 
-    return KootaResult("Tara", "तारा", score, 3, notes_mr, notes_en, interp_mr, interp_en)
+    return KootaResult("Tara", "तारा", score, 3, notes_mr, notes_en, interp_mr, interp_en,
+                       boy_trait=groom_nakshatra.name_mr, girl_trait=bride_nakshatra.name_mr, area_of_life_mr="भाग्य / Destiny")
 
 
 def _compute_yoni(bride_nakshatra: Nakshatra, groom_nakshatra: Nakshatra) -> KootaResult:
@@ -197,7 +207,8 @@ def _compute_yoni(bride_nakshatra: Nakshatra, groom_nakshatra: Nakshatra) -> Koo
     from engine.matching.interpretations import get_yoni_interpretation
     interp_mr, interp_en = get_yoni_interpretation(float(score))
 
-    return KootaResult("Yoni", "योनी", float(score), 4, notes_mr, notes_en, interp_mr, interp_en)
+    return KootaResult("Yoni", "योनी", float(score), 4, notes_mr, notes_en, interp_mr, interp_en,
+                       boy_trait=groom_animal, girl_trait=bride_animal, area_of_life_mr="मानसिकता / Mentality")
 
 
 def _compute_graha_maitri(bride_rashi: Rashi, groom_rashi: Rashi) -> KootaResult:
@@ -229,7 +240,8 @@ def _compute_graha_maitri(bride_rashi: Rashi, groom_rashi: Rashi) -> KootaResult
     from engine.matching.interpretations import get_maitri_interpretation
     interp_mr, interp_en = get_maitri_interpretation(float(score))
 
-    return KootaResult("Graha Maitri", "ग्रह मैत्री", float(score), 5, notes_mr, notes_en, interp_mr, interp_en)
+    return KootaResult("Graha Maitri", "ग्रह मैत्री", float(score), 5, notes_mr, notes_en, interp_mr, interp_en,
+                       boy_trait=groom_lord.name_mr, girl_trait=bride_lord.name_mr, area_of_life_mr="सुसंगतता / Compatibility")
 
 
 def _compute_gana(bride_nakshatra: Nakshatra, groom_nakshatra: Nakshatra, graha_maitri_score: float) -> KootaResult:
@@ -266,7 +278,8 @@ def _compute_gana(bride_nakshatra: Nakshatra, groom_nakshatra: Nakshatra, graha_
         notes_en = f"Bride: {bride_gana.value}, Groom: {groom_gana.value}. Gana Dosha cancelled: Excellent Graha Maitri (5/5) neutralizes Gana Dosha."
         from engine.matching.interpretations import get_gana_interpretation
         interp_mr, interp_en = get_gana_interpretation(bride_gana, groom_gana, 6.0)
-        return KootaResult("Gana", "गण", 6.0, 6, notes_mr, notes_en, interp_mr, interp_en)
+        return KootaResult("Gana", "गण", 6.0, 6, notes_mr, notes_en, interp_mr, interp_en,
+                           boy_trait=groom_gana.name_mr, girl_trait=bride_gana.name_mr, area_of_life_mr="स्वभाव / Temperament")
 
     if score == 6:
         notes_mr = f"दोन्ही {bride_gana.name_mr} गण. उत्तम जुळणी."
@@ -283,7 +296,8 @@ def _compute_gana(bride_nakshatra: Nakshatra, groom_nakshatra: Nakshatra, graha_
 
     from engine.matching.interpretations import get_gana_interpretation
     interp_mr, interp_en = get_gana_interpretation(bride_gana, groom_gana, float(score))
-    return KootaResult("Gana", "गण", float(score), 6, notes_mr, notes_en, interp_mr, interp_en)
+    return KootaResult("Gana", "गण", float(score), 6, notes_mr, notes_en, interp_mr, interp_en,
+                       boy_trait=groom_gana.name_mr, girl_trait=bride_gana.name_mr, area_of_life_mr="स्वभाव / Temperament")
 
 
 def _compute_bhakoot(
@@ -353,7 +367,8 @@ def _compute_bhakoot(
 
     from engine.matching.interpretations import get_bhakoot_interpretation
     interp_mr, interp_en = get_bhakoot_interpretation(float(score))
-    koota = KootaResult("Bhakoot", "भकूट", float(score), 7, notes_mr, notes_en, interp_mr, interp_en)
+    koota = KootaResult("Bhakoot", "भकूट", float(score), 7, notes_mr, notes_en, interp_mr, interp_en,
+                        boy_trait=groom_rashi.name_mr, girl_trait=bride_rashi.name_mr, area_of_life_mr="प्रेम / Love")
 
     dosha = DoshaCancellation(
         dosha_name="Bhakoot Dosha",
@@ -402,7 +417,8 @@ def _compute_nadi(
         )
         from engine.matching.interpretations import get_nadi_interpretation
         interp_mr, interp_en = get_nadi_interpretation(bride_nadi, groom_nadi, score)
-        koota = KootaResult("Nadi", "नाडी", score, 8, notes_mr, notes_en, interp_mr, interp_en)
+        koota = KootaResult("Nadi", "नाडी", score, 8, notes_mr, notes_en, interp_mr, interp_en,
+                            boy_trait=groom_nadi.name_mr, girl_trait=bride_nadi.name_mr, area_of_life_mr="आरोग्य / Health")
         dosha = DoshaCancellation(
             dosha_name="Nadi Dosha",
             is_present=False,
@@ -456,7 +472,8 @@ def _compute_nadi(
 
     from engine.matching.interpretations import get_nadi_interpretation
     interp_mr, interp_en = get_nadi_interpretation(bride_nadi, groom_nadi, score)
-    koota = KootaResult("Nadi", "नाडी", score, 8, notes_mr, notes_en, interp_mr, interp_en)
+    koota = KootaResult("Nadi", "नाडी", score, 8, notes_mr, notes_en, interp_mr, interp_en,
+                        boy_trait=groom_nadi.name_mr, girl_trait=bride_nadi.name_mr, area_of_life_mr="आरोग्य / Health")
     dosha = DoshaCancellation(
         dosha_name="Nadi Dosha",
         is_present=True,

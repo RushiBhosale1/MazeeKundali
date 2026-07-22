@@ -442,7 +442,8 @@ async def generate_matching_pdf(matching_id: str, db: AsyncSession = Depends(get
     # Recompute to get charts and detailed interpretations
     from engine.chart import compute_kundali
     from engine.matching import compute_match
-    from engine.models import TimeAccuracy, RahuMode
+    from engine.models import TimeAccuracy, RahuMode, KundaliResult
+    from engine.tables import RASHI_LORD, NAKSHATRA_DASHA_LORD, RASHI_TO_VARNA, NAKSHATRA_YONI, RASHI_VASHYA_GROUP
     from datetime import time as dtime
 
     def _get_time(bp):
@@ -475,6 +476,27 @@ async def generate_matching_pdf(matching_id: str, db: AsyncSession = Depends(get
     bride_charts = _generate_3_charts(bride_result)
     groom_charts = _generate_3_charts(groom_result)
 
+    def _get_details(kr: KundaliResult):
+        if not kr: return {}
+        yoni, _ = NAKSHATRA_YONI.get(kr.nakshatra, ("", "")) if kr.nakshatra else ("", "")
+        vashya = RASHI_VASHYA_GROUP.get(kr.rashi, "") if kr.rashi else ""
+        return {
+            "rashi": kr.rashi.name_mr if kr.rashi else "-",
+            "rashi_lord": RASHI_LORD[kr.rashi].name_mr if kr.rashi else "-",
+            "nakshatra": kr.nakshatra.name_mr if kr.nakshatra else "-",
+            "nakshatra_lord": NAKSHATRA_DASHA_LORD[kr.nakshatra].name_mr if kr.nakshatra else "-",
+            "pada": kr.pada if kr.pada else "-",
+            "lagna": kr.lagna.name_mr if kr.lagna else "-",
+            "lagna_lord": RASHI_LORD[kr.lagna].name_mr if kr.lagna else "-",
+            "varna": RASHI_TO_VARNA[kr.rashi].name_mr if kr.rashi else "-",
+            "vashya": vashya,
+            "yoni": yoni,
+            "gana": kr.gana.name_mr if kr.gana else "-",
+            "nadi": kr.nadi.name_mr if kr.nadi else "-"
+        }
+
+    bride_details = _get_details(bride_result)
+    groom_details = _get_details(groom_result)
 
     ctx = {
         "generated_at": datetime.now().strftime("%d %b %Y"),
@@ -488,6 +510,8 @@ async def generate_matching_pdf(matching_id: str, db: AsyncSession = Depends(get
         "groom_time": groom_time,
 
         "groom_manglik": record.groom_manglik,
+        "bride_details": bride_details,
+        "groom_details": groom_details,
         "total_score": match_result.total_score if match_result else record.total_score,
         "kootas": match_result.kootas if match_result else [],
         "koota_breakdown": record.koota_breakdown or [],
