@@ -242,8 +242,13 @@ def compute_mangal_dosha(
         )
 
     # ── Dosha present — grade severity ────────────────────────────────────────
-    # Matches AstroSage: 1 reference = "Low", 2+ = "High"
-    if dosha_count >= 2:
+    # Matches AstroSage and BPHS:
+    # High Mangal Dosha = Mars in dosha house from BOTH Lagna AND Moon
+    # Low / Mild Mangal Dosha = Mars in dosha house from Lagna only, Moon only, or Venus
+    dosha_lagna = dosha_from.get("Lagna", False)
+    dosha_moon  = dosha_from.get("Moon", False)
+
+    if dosha_lagna and dosha_moon:
         severity = "HIGH"
         sev_mr = "कडक मंगळ दोष"
         sev_en = "High Mangal Dosha"
