@@ -15,6 +15,9 @@ interface KootaRow {
   notes_en: string;
   interpretation_mr?: string;
   interpretation_en?: string;
+  boy_trait?: string;
+  girl_trait?: string;
+  area_of_life_mr?: string;
 }
 
 interface DoshaInfo {
@@ -44,6 +47,11 @@ interface MatchResult {
   koota_breakdown?: KootaRow[];
   nadi_dosha?: DoshaInfo;
   bhakoot_dosha?: DoshaInfo;
+  // Chart SVGs (paid only)
+  bride_chart_svg?: string | null;
+  groom_chart_svg?: string | null;
+  bride_moon_chart_svg?: string | null;
+  groom_moon_chart_svg?: string | null;
 }
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000';
@@ -290,6 +298,61 @@ export default function MatchingResultPage() {
             <p style={{ fontFamily: 'var(--font-devanagari)', fontSize: '0.95rem', lineHeight: 1.6, textAlign: 'center', opacity: 0.9 }}>
               {lang === 'mr' ? result.verdict_mr : (result.verdict_en || result.verdict_mr)}
             </p>
+          </div>
+        )}
+
+        {/* ─── Paid: Janma Kundali Charts ─────────────────────── */}
+        {result.paid && (result.bride_chart_svg || result.groom_chart_svg) && (
+          <div style={{ marginBottom: 20 }}>
+            <h2 style={{ fontFamily: 'var(--font-devanagari)', fontSize: '1rem', fontWeight: 700, marginBottom: 12, color: 'var(--text-primary)' }}>
+              {mr('जन्मकुंडळी', 'Janma Kundali Charts')}
+            </h2>
+
+            {/* Bride charts */}
+            <div className="card" style={{ padding: '16px', marginBottom: 12 }}>
+              <div style={{ fontFamily: 'var(--font-devanagari)', fontSize: '0.88rem', fontWeight: 600, color: 'var(--saffron-400)', marginBottom: 12, textAlign: 'center' }}>
+                👰 {result.bride_name}
+              </div>
+              <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center' }}>
+                {result.bride_chart_svg && (
+                  <div style={{ flex: '1 1 280px', maxWidth: 340 }}>
+                    <div style={{ fontFamily: 'var(--font-devanagari)', fontSize: '0.75rem', color: 'var(--text-muted)', textAlign: 'center', marginBottom: 6 }}>लग्न कुंडळी (D1)</div>
+                    <div dangerouslySetInnerHTML={{ __html: result.bride_chart_svg }}
+                      style={{ display: 'flex', justifyContent: 'center', filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.3))' }} />
+                  </div>
+                )}
+                {result.bride_moon_chart_svg && (
+                  <div style={{ flex: '1 1 280px', maxWidth: 340 }}>
+                    <div style={{ fontFamily: 'var(--font-devanagari)', fontSize: '0.75rem', color: 'var(--text-muted)', textAlign: 'center', marginBottom: 6 }}>चंद्र कुंडळी</div>
+                    <div dangerouslySetInnerHTML={{ __html: result.bride_moon_chart_svg }}
+                      style={{ display: 'flex', justifyContent: 'center', filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.3))' }} />
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Groom charts */}
+            <div className="card" style={{ padding: '16px' }}>
+              <div style={{ fontFamily: 'var(--font-devanagari)', fontSize: '0.88rem', fontWeight: 600, color: 'var(--saffron-400)', marginBottom: 12, textAlign: 'center' }}>
+                🤵 {result.groom_name}
+              </div>
+              <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center' }}>
+                {result.groom_chart_svg && (
+                  <div style={{ flex: '1 1 280px', maxWidth: 340 }}>
+                    <div style={{ fontFamily: 'var(--font-devanagari)', fontSize: '0.75rem', color: 'var(--text-muted)', textAlign: 'center', marginBottom: 6 }}>लग्न कुंडळी (D1)</div>
+                    <div dangerouslySetInnerHTML={{ __html: result.groom_chart_svg }}
+                      style={{ display: 'flex', justifyContent: 'center', filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.3))' }} />
+                  </div>
+                )}
+                {result.groom_moon_chart_svg && (
+                  <div style={{ flex: '1 1 280px', maxWidth: 340 }}>
+                    <div style={{ fontFamily: 'var(--font-devanagari)', fontSize: '0.75rem', color: 'var(--text-muted)', textAlign: 'center', marginBottom: 6 }}>चंद्र कुंडळी</div>
+                    <div dangerouslySetInnerHTML={{ __html: result.groom_moon_chart_svg }}
+                      style={{ display: 'flex', justifyContent: 'center', filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.3))' }} />
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         )}
 

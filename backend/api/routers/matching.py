@@ -96,6 +96,10 @@ class MatchingPaidResponse(MatchingFreeResponse):
     verdict_mr: str
     verdict_en: str
     pdf_url: Optional[str]
+    bride_chart_svg: Optional[str] = None   # D1 Janma Kundali SVG for bride
+    groom_chart_svg: Optional[str] = None   # D1 Janma Kundali SVG for groom
+    bride_moon_chart_svg: Optional[str] = None  # Chandra Kundali for bride
+    groom_moon_chart_svg: Optional[str] = None  # Chandra Kundali for groom
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
@@ -361,6 +365,74 @@ async def get_matching(matching_id: str = Path(...), db: AsyncSession = Depends(
                     explanation_en=b["explanation_en"]
                 )
 
+        # Compute chart SVGs for the result page (D1 + Moon Kundali)
+        bride_chart_svg = None
+        groom_chart_svg = None
+        bride_moon_chart_svg = None
+        groom_moon_chart_svg = None
+        try:
+            from engine.svg_chart import render_north_indian_svg
+            from engine.chart import compute_kundali
+            from engine.models import TimeAccuracy, RahuMode
+            from datetime import time as dtime
+
+            def _get_chart_svgs(bp):
+                """Compute D1 and Moon chart SVGs from a birth profile record."""
+                if bp is None or bp.dob is None:
+                    return None, None
+                tob_obj = None
+                if bp.time_of_birth:
+                    try:
+                        h, m = str(bp.time_of_birth)[:5].split(":")
+                        tob_obj = dtime(int(h), int(m))
+                    except Exception:
+                        pass
+                ta_str = getattr(bp, 'time_accuracy', 'approximate') or 'approximate'
+                try:
+                    ta = TimeAccuracy(ta_str)
+                except ValueError:
+                    ta = TimeAccuracy.APPROXIMATE
+                try:
+                    kr = RahuMode(getattr(bp, 'rahu_mode', 'true_node') or 'true_node')
+                except ValueError:
+                    kr = RahuMode.TRUE_NODE
+                res = compute_kundali(
+                    name=bp.name or "",
+                    gender=getattr(bp, 'gender', 'male') or 'male',
+                    birth_date=bp.dob,
+                    birth_time=tob_obj,
+                    time_accuracy=ta,
+                    place_text=bp.place_text or "",
+                    latitude=float(bp.latitude or 18.52),
+                    longitude=float(bp.longitude or 73.85),
+                    tz_iana=bp.tz_iana or "Asia/Kolkata",
+                    rahu_mode=kr,
+                    compute_paid_fields=False,
+                )
+                if not res.planet_positions:
+                    return None, None
+                pr = {p.planet.value: p.rashi.value for p in res.planet_positions}
+                rr = {p.planet.value for p in res.planet_positions if p.retrograde}
+                # D1 chart
+                d1_svg = render_north_indian_svg(
+                    lagna_rashi=res.lagna.value if res.lagna else list(pr.values())[0],
+                    planet_rashis=pr, retrogrades=rr, width=320, lang="mr"
+                ) if res.lagna or pr else None
+                # Moon (Chandra) chart — Moon rashi as lagna
+                moon_rashi_val = pr.get("Moon")
+                moon_svg = render_north_indian_svg(
+                    lagna_rashi=moon_rashi_val, planet_rashis=pr,
+                    retrogrades=rr, width=320, lang="mr"
+                ) if moon_rashi_val is not None else None
+                return d1_svg, moon_svg
+
+            bp_bride = record.bride_birth_profile
+            bp_groom = record.groom_birth_profile
+            bride_chart_svg, bride_moon_chart_svg = _get_chart_svgs(bp_bride)
+            groom_chart_svg, groom_moon_chart_svg = _get_chart_svgs(bp_groom)
+        except Exception as chart_err:
+            logger.warning("Chart SVG computation failed: %s", chart_err)
+
         return MatchingPaidResponse(
             id=str(record.id),
             bride_name=bride_name,
@@ -386,6 +458,10 @@ async def get_matching(matching_id: str = Path(...), db: AsyncSession = Depends(
             verdict_mr=record.verdict_mr or "",
             verdict_en=record.verdict_en or "",
             pdf_url=record.pdf_url,
+            bride_chart_svg=bride_chart_svg,
+            groom_chart_svg=groom_chart_svg,
+            bride_moon_chart_svg=bride_moon_chart_svg,
+            groom_moon_chart_svg=groom_moon_chart_svg,
         )
     else:
         return MatchingFreeResponse(
