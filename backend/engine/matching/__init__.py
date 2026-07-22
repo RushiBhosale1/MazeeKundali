@@ -163,11 +163,20 @@ def _compute_tara(bride_nakshatra: Nakshatra, groom_nakshatra: Nakshatra) -> Koo
     (Parashar, Muhurtha Chintamani, standard Ashtakoot tables).
     """
     def tara_number(from_nak: Nakshatra, to_nak: Nakshatra) -> int:
-        """Returns Tara number (1-9) counting from from_nak to to_nak."""
+        """Returns Tara number (1-9) counting from from_nak to to_nak.
+
+        AstroSage / standard formula: start counting FROM your own nakshatra
+        as position 1 (Janma). The raw diff%9 (with 0→9) needs a +2 shift
+        to align with the correct tara sequence start.
+        Formula: raw = diff%9 (0→9); tara = raw+2 (if >9: subtract 9).
+        """
         diff = (to_nak.value - from_nak.value) % 27
-        tara = diff % 9
-        if tara == 0:
-            tara = 9
+        raw = diff % 9
+        if raw == 0:
+            raw = 9
+        tara = raw + 2
+        if tara > 9:
+            tara -= 9
         return tara
 
     def tara_auspicious(from_nak: Nakshatra, to_nak: Nakshatra) -> bool:

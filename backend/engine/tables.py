@@ -205,7 +205,7 @@ YONI_SCORE_MATRIX: dict[tuple[str, str], int] = {
     ("Sheep", "Sheep"): 4,
     ("Sheep", "Serpent"): 2,
     ("Sheep", "Dog"): 1,
-    ("Sheep", "Cat"): 2,
+    ("Sheep", "Cat"): 3,     # AstroSage verified: Sheep+Cat = 3 (partially friendly)
     ("Sheep", "Rat"): 1,
     ("Sheep", "Cow"): 3,
     ("Sheep", "Buffalo"): 2,
@@ -515,6 +515,8 @@ VASHYA_AFFINITY: dict[tuple[str, str], int] = {
     ("Keeta", "Jalachara"): 1,
     ("Manava", "Jalachara"): 1,
     ("Jalachara", "Manava"): 1,
+    ("Chatushpada", "Manava"): 1,     # quadrupeds partially compatible with humans
+    ("Manava", "Chatushpada"): 1,     # symmetric
     # All other cross-group combinations → 0
 }
 

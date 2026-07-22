@@ -124,5 +124,12 @@ print("TEST CASE 2: Aishwarya(Scorpio/Jyeshtha) BRIDE + Rushikesh(Cancer/Ashlesh
 print("AstroSage expected: 26/36")
 compute_koota("Case2", Rashi.SCORPIO, Rashi.CANCER, Nakshatra.JYESHTHA, Nakshatra.ASHLESHA)
 
-print("\n\n--- KEY ISSUES IDENTIFIED ---")
-print("Check above output for Vasya and Bhakoot discrepancies vs AstroSage.")
+print("\n\n" + "="*70)
+print("TEST CASE 3: Sujata(Taurus/Krittika) BRIDE + Suraj(Gemini/Punarvasu) GROOM")
+print("AstroSage expected: 18.5/36")
+compute_koota("Case3", Rashi.TAURUS, Rashi.GEMINI, Nakshatra.KRITTIKA, Nakshatra.PUNARVASU)
+
+print("\n\n--- SUMMARY ---")
+print("Case 1: Suraj/Sonali (28/36) - Target: 28/36")
+print("Case 2: Aishwarya/Rushikesh (26/36) - Target: 26/36")
+print("Case 3: Sujata/Suraj (18.5/36) - Target: 18.5/36")
