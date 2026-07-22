@@ -18,8 +18,9 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 
 def generate_astrosage_url(
-    boy_name, boy_dob, boy_time, boy_lat, boy_lon, boy_tz=5.5,
-    girl_name, girl_dob, girl_time, girl_lat, girl_lon, girl_tz=5.5,
+    boy_name, boy_dob, boy_time, boy_lat, boy_lon,
+    girl_name, girl_dob, girl_time, girl_lat, girl_lon,
+    boy_tz=5.5, girl_tz=5.5,
 ):
     """
     Generates a direct AstroSage Kundali Matching URL.
