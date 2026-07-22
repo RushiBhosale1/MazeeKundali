@@ -54,6 +54,8 @@ interface MatchResult {
   groom_manglik: boolean | null;
   bride_manglik_severity?: string;
   groom_manglik_severity?: string;
+  bride_manglik_explanation?: string;
+  groom_manglik_explanation?: string;
   paid: boolean;
   resume_token: string;
   locked: Record<string, boolean>;
@@ -408,23 +410,47 @@ export default function MatchingResultPage() {
         </div>
 
         {/* ─── Manglik status ────────────────────────────────── */}
-        <div className="card" style={{ padding: '16px 20px', marginBottom: 16 }}>
-          <div style={{ fontFamily: 'var(--font-devanagari)', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: 10 }}>
-            🔴 {mr('मंगळ दोष सुसंगतता', 'Mangal Dosha Compatibility')}
+        <div className="card" style={{ padding: '18px 20px', marginBottom: 16 }}>
+          <div style={{ fontFamily: 'var(--font-devanagari)', fontSize: '0.9rem', fontWeight: 700, color: 'var(--saffron-400)', marginBottom: 12 }}>
+            🔴 {mr('मंगळ दोष सुसंगतता व विश्लेषण', 'Mangal Dosha Analysis & Compatibility')}
           </div>
-          <div style={{ display: 'flex', gap: 12 }}>
-            <div style={{ flex: 1, textAlign: 'center' }}>
-              <div style={{ fontFamily: 'var(--font-devanagari)', fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: 4 }}>👰 {result.bride_name}</div>
-              <span className={`chip ${result.bride_manglik_severity === 'HIGH' ? 'chip-red' : result.bride_manglik_severity === 'MILD' ? 'chip-orange' : result.bride_manglik === false ? 'chip-green' : 'chip-green'}`} style={{ fontSize: '0.8rem' }}>
-                {result.bride_manglik === null ? mr('अज्ञात', 'Unknown') : result.bride_manglik_severity === 'HIGH' ? mr('कडक मंगळ दोष ⚠️', 'High Manglik ⚠️') : result.bride_manglik_severity === 'MILD' ? mr('अंशिक/सौम्य मंगळ ⚠️', 'Mild Manglik ⚠️') : mr('दोष नाही ✅', 'No Dosha ✅')}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 14 }}>
+            {/* Bride Mangal */}
+            <div style={{ padding: '12px 14px', background: 'rgba(0,0,0,0.15)', borderRadius: 10, border: '1px solid var(--border-subtle)' }}>
+              <div style={{ fontFamily: 'var(--font-devanagari)', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: 6 }}>
+                👰 {result.bride_name}
+              </div>
+              <span className={`chip ${result.bride_manglik_severity === 'HIGH' ? 'chip-red' : result.bride_manglik_severity === 'MILD' ? 'chip-orange' : result.bride_manglik_severity === 'CANCELLED' ? 'chip-green' : 'chip-green'}`} style={{ fontSize: '0.8rem', marginBottom: 8, display: 'inline-block' }}>
+                {result.bride_manglik === null ? mr('अज्ञात', 'Unknown') :
+                 result.bride_manglik_severity === 'HIGH' ? mr('कडक मंगळ दोष ⚠️', 'High Manglik ⚠️') :
+                 result.bride_manglik_severity === 'MILD' ? mr('अंशिक/सौम्य मंगळ ⚠️', 'Mild Manglik ⚠️') :
+                 result.bride_manglik_severity === 'CANCELLED' ? mr('मंगळ दोष रद्द (परिहार लागू) ✅', 'Dosha Cancelled ✅') :
+                 mr('दोष नाही ✅', 'No Dosha ✅')}
               </span>
+              {result.bride_manglik_explanation && (
+                <div style={{ fontFamily: 'var(--font-devanagari)', fontSize: '0.78rem', color: 'var(--text-secondary)', lineHeight: 1.5, marginTop: 6, borderTop: '1px dashed rgba(255,255,255,0.1)', paddingTop: 6 }}>
+                  {result.bride_manglik_explanation}
+                </div>
+              )}
             </div>
-            <div style={{ width: 1, background: 'var(--border-subtle)' }} />
-            <div style={{ flex: 1, textAlign: 'center' }}>
-              <div style={{ fontFamily: 'var(--font-devanagari)', fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: 4 }}>🤵 {result.groom_name}</div>
-              <span className={`chip ${result.groom_manglik_severity === 'HIGH' ? 'chip-red' : result.groom_manglik_severity === 'MILD' ? 'chip-orange' : result.groom_manglik === false ? 'chip-green' : 'chip-green'}`} style={{ fontSize: '0.8rem' }}>
-                {result.groom_manglik === null ? mr('अज्ञात', 'Unknown') : result.groom_manglik_severity === 'HIGH' ? mr('कडक मंगळ दोष ⚠️', 'High Manglik ⚠️') : result.groom_manglik_severity === 'MILD' ? mr('अंशिक/सौम्य मंगळ ⚠️', 'Mild Manglik ⚠️') : mr('दोष नाही ✅', 'No Dosha ✅')}
+
+            {/* Groom Mangal */}
+            <div style={{ padding: '12px 14px', background: 'rgba(0,0,0,0.15)', borderRadius: 10, border: '1px solid var(--border-subtle)' }}>
+              <div style={{ fontFamily: 'var(--font-devanagari)', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: 6 }}>
+                🤵 {result.groom_name}
+              </div>
+              <span className={`chip ${result.groom_manglik_severity === 'HIGH' ? 'chip-red' : result.groom_manglik_severity === 'MILD' ? 'chip-orange' : result.groom_manglik_severity === 'CANCELLED' ? 'chip-green' : 'chip-green'}`} style={{ fontSize: '0.8rem', marginBottom: 8, display: 'inline-block' }}>
+                {result.groom_manglik === null ? mr('अज्ञात', 'Unknown') :
+                 result.groom_manglik_severity === 'HIGH' ? mr('कडक मंगळ दोष ⚠️', 'High Manglik ⚠️') :
+                 result.groom_manglik_severity === 'MILD' ? mr('अंशिक/सौम्य मंगळ ⚠️', 'Mild Manglik ⚠️') :
+                 result.groom_manglik_severity === 'CANCELLED' ? mr('मंगळ दोष रद्द (परिहार लागू) ✅', 'Dosha Cancelled ✅') :
+                 mr('दोष नाही ✅', 'No Dosha ✅')}
               </span>
+              {result.groom_manglik_explanation && (
+                <div style={{ fontFamily: 'var(--font-devanagari)', fontSize: '0.78rem', color: 'var(--text-secondary)', lineHeight: 1.5, marginTop: 6, borderTop: '1px dashed rgba(255,255,255,0.1)', paddingTop: 6 }}>
+                  {result.groom_manglik_explanation}
+                </div>
+              )}
             </div>
           </div>
         </div>

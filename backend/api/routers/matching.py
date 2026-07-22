@@ -448,11 +448,14 @@ async def get_matching(matching_id: str = Path(...), db: AsyncSession = Depends(
                     "nadi": kr.nadi.name_mr if kr.nadi else "-"
                 }
 
-            bp_bride = record.bride_birth_profile
-            bp_groom = record.groom_birth_profile
+            bp_bride = record.bride_birth_profile or (record.bride_kundali.birth_profile if record.bride_kundali else None)
+            bp_groom = record.groom_birth_profile or (record.groom_kundali.birth_profile if record.groom_kundali else None)
 
             bride_res = _compute_kr(bp_bride, "female")
             groom_res = _compute_kr(bp_groom, "male")
+
+            bride_manglik_exp = None
+            groom_manglik_exp = None
 
             if bride_res:
                 b_charts = _generate_3_charts(bride_res)
@@ -460,6 +463,8 @@ async def get_matching(matching_id: str = Path(...), db: AsyncSession = Depends(
                 bride_d9_chart_svg = b_charts.get("d9")
                 bride_moon_chart_svg = b_charts.get("moon")
                 bride_details = _get_details(bride_res)
+                if bride_res.mangal_dosha:
+                    bride_manglik_exp = bride_res.mangal_dosha.explanation_mr
 
             if groom_res:
                 g_charts = _generate_3_charts(groom_res)
@@ -467,6 +472,8 @@ async def get_matching(matching_id: str = Path(...), db: AsyncSession = Depends(
                 groom_d9_chart_svg = g_charts.get("d9")
                 groom_moon_chart_svg = g_charts.get("moon")
                 groom_details = _get_details(groom_res)
+                if groom_res.mangal_dosha:
+                    groom_manglik_exp = groom_res.mangal_dosha.explanation_mr
 
         except Exception as chart_err:
             logger.warning("Chart SVG computation failed: %s", chart_err)
@@ -481,6 +488,8 @@ async def get_matching(matching_id: str = Path(...), db: AsyncSession = Depends(
             groom_manglik=record.groom_manglik,
             bride_manglik_severity=record.bride_manglik_severity,
             groom_manglik_severity=record.groom_manglik_severity,
+            bride_manglik_explanation=bride_manglik_exp,
+            groom_manglik_explanation=groom_manglik_exp,
             paid=True,
             resume_token=record.resume_token,
             created_at=str(record.created_at),

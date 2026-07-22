@@ -198,24 +198,25 @@ def compute_mangal_dosha(
     lagna_note_mr = "" if lagna_rashi is not None else " (जन्मवेळ अज्ञात — लग्न तपासले नाही)"
     lagna_note_en = "" if lagna_rashi is not None else " (birth time unknown — Lagna not checked)"
 
-    # ── Cancellation applied → No Mangal Dosha ───────────────────────────────
+    # ── Cancellation applied → Mangal Dosha Cancelled (Parihara) ─────────────
     if cancelled:
+        severity_val = "CANCELLED" if dosha_count > 0 else "NONE"
         return MangalDoshaResult(
             is_manglik=False,
-            severity="NONE",
+            severity=severity_val,
             reference_point=primary_label,
             mars_house=primary_house,
             cancellation_applied=True,
             cancellation_rule=cancellation_rule,
             explanation_mr=(
-                f"मंगळ {mars_pos.rashi.name_mr} राशीत. "
+                f"मंगळ {mars_pos.rashi.name_mr} राशीत ({primary_house}वे घर). "
                 f"{context_mr}.{lagna_note_mr} "
-                f"मंगळ दोष रद्द: {cancellation_rule}"
+                f"मंगळ दोष रद्द (परिहार लागू): {cancellation_rule}"
             ),
             explanation_en=(
-                f"Mars in {mars_pos.rashi.name_en}. "
+                f"Mars in {mars_pos.rashi.name_en} (House {primary_house}). "
                 f"{context_en}.{lagna_note_en} "
-                f"Dosha cancelled: {cancellation_rule}"
+                f"Dosha cancelled (Parihara): {cancellation_rule}"
             ),
         )
 
