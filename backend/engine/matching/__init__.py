@@ -330,7 +330,8 @@ def _compute_bhakoot(
     Dosha distances: 2/12, 6/8, 5/9 → 0 points (Bhakoot Dosha).
     Otherwise: 7 points.
 
-    Cancellation (परिहार): Cancelled if Rashi lords are same OR friends (Graha Maitri >= 4).
+    NOTE: Bhakoot dosha is NOT cancelled regardless of Graha Maitri.
+    This matches AstroSage and major traditional calculators.
     """
     # Distance from bride to groom (1-indexed)
     dist_bg = ((groom_rashi.value - bride_rashi.value) % 12) + 1
@@ -339,43 +340,17 @@ def _compute_bhakoot(
     dosha_pairs = {(2, 12), (6, 8), (5, 9), (12, 2), (8, 6), (9, 5)}
     is_dosha = (dist_bg, dist_gb) in dosha_pairs
 
-    cancelled = False
-    cancellation_rule_mr = None
-    cancellation_rule_en = None
-
     if is_dosha:
-        bride_lord = RASHI_LORD[bride_rashi]
-        groom_lord = RASHI_LORD[groom_rashi]
         dosha_type = f"{min(dist_bg, dist_gb)}/{max(dist_bg, dist_gb)}"
-
-        # Cancellation check
-        if bride_lord == groom_lord:
-            cancelled = True
-            cancellation_rule_mr = f"दोन्हींचा राशीपती ({bride_lord.name_mr}) समान आहे."
-            cancellation_rule_en = f"Both have same Rashi lord ({bride_lord.value})."
-        elif graha_maitri_score >= 4:
-            cancelled = True
-            cancellation_rule_mr = f"ग्रहमैत्री उत्तम ({int(graha_maitri_score)}/5) आहे."
-            cancellation_rule_en = f"Excellent Graha Maitri ({int(graha_maitri_score)}/5)."
-
-        if cancelled:
-            score = 7.0
-            notes_mr = (
-                f"भकूट दोष ({dosha_type}) (रद्द): {cancellation_rule_mr} ७ गुण."
-            )
-            notes_en = (
-                f"Bhakoot Dosha ({dosha_type}) (Cancelled): {cancellation_rule_en} 7 points."
-            )
-        else:
-            score = 0.0
-            notes_mr = (
-                f"भकूट दोष ({dosha_type}) — मुलगी {bride_rashi.name_mr}, "
-                f"मुलगा {groom_rashi.name_mr}. ० गुण."
-            )
-            notes_en = (
-                f"Bhakoot Dosha ({dosha_type}) — Bride {bride_rashi.name_en}, "
-                f"Groom {groom_rashi.name_en}. 0 points."
-            )
+        score = 0.0
+        notes_mr = (
+            f"भकूट दोष ({dosha_type}) — मुलगी {bride_rashi.name_mr}, "
+            f"मुलगा {groom_rashi.name_mr}. ० गुण."
+        )
+        notes_en = (
+            f"Bhakoot Dosha ({dosha_type}) — Bride {bride_rashi.name_en}, "
+            f"Groom {groom_rashi.name_en}. 0 points."
+        )
     else:
         score = 7
         notes_mr = (
@@ -395,9 +370,9 @@ def _compute_bhakoot(
     dosha = DoshaCancellation(
         dosha_name="Bhakoot Dosha",
         is_present=is_dosha,
-        is_cancelled=cancelled,
-        cancellation_rule_mr=cancellation_rule_mr,
-        cancellation_rule_en=cancellation_rule_en,
+        is_cancelled=False,
+        cancellation_rule_mr=None,
+        cancellation_rule_en=None,
         explanation_mr=notes_mr,
         explanation_en=notes_en,
     )

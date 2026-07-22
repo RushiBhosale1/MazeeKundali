@@ -316,14 +316,14 @@ GRAHA_MAITRI_SCORES: dict[tuple[Planet, Planet], float] = {
     # Moon
     (Planet.MOON, Planet.SUN): 5.0,
     (Planet.MOON, Planet.MOON): 5.0,
-    (Planet.MOON, Planet.MARS): 4.0,
+    (Planet.MOON, Planet.MARS): 5.0,     # Moon-Mars: mutual friends (Maharashtrian tradition)
     (Planet.MOON, Planet.MERCURY): 1.0,
     (Planet.MOON, Planet.JUPITER): 4.0,
     (Planet.MOON, Planet.VENUS): 0.5,
     (Planet.MOON, Planet.SATURN): 0.5,
     # Mars
     (Planet.MARS, Planet.SUN): 5.0,
-    (Planet.MARS, Planet.MOON): 4.0,
+    (Planet.MARS, Planet.MOON): 5.0,     # Mars-Moon: mutual friends (Maharashtrian tradition)
     (Planet.MARS, Planet.MARS): 5.0,
     (Planet.MARS, Planet.MERCURY): 0.5,
     (Planet.MARS, Planet.JUPITER): 5.0,
@@ -494,8 +494,11 @@ RASHI_VASHYA_GROUP: dict[Rashi, str] = {
     Rashi.PISCES: "Jalachara",
 }
 
-# Affinity matrix: 2=full, 1=one-way affinity, 0=none
+# Affinity matrix: 2=full, 1=partial affinity, 0=none
 # Classical Vashya affinity rules
+# NOTE: Asymmetric pairs (e.g. Jalachara dominates Keeta) give 1 point
+# regardless of bride/groom order — both directions give 1 point.
+# This matches the standard AstroSage / DrikPanchang implementation.
 VASHYA_AFFINITY: dict[tuple[str, str], int] = {
     # Same group → 2
     ("Chatushpada", "Chatushpada"): 2,
@@ -503,15 +506,15 @@ VASHYA_AFFINITY: dict[tuple[str, str], int] = {
     ("Jalachara", "Jalachara"): 2,
     ("Vanachara", "Vanachara"): 2,
     ("Keeta", "Keeta"): 2,
-    # One-way affinities (1 point) — classical rules
-    ("Manava", "Vanachara"): 1,      # humans dominate wild animals (one-way)
-    ("Vanachara", "Manava"): 0,
-    ("Chatushpada", "Vanachara"): 1, # quadruped partly compatible with wild
+    # Partial affinities (1 point each direction) — symmetric
+    ("Manava", "Vanachara"): 1,
+    ("Vanachara", "Manava"): 1,
+    ("Chatushpada", "Vanachara"): 1,
     ("Vanachara", "Chatushpada"): 1,
-    ("Jalachara", "Keeta"): 1,       # water creatures dominate insects
-    ("Keeta", "Jalachara"): 0,
+    ("Jalachara", "Keeta"): 1,
+    ("Keeta", "Jalachara"): 1,
     ("Manava", "Jalachara"): 1,
-    ("Jalachara", "Manava"): 0,
+    ("Jalachara", "Manava"): 1,
     # All other cross-group combinations → 0
 }
 

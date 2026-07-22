@@ -14,11 +14,12 @@ def test_nadi_dosha_pada_cancellation():
     print("test_nadi_dosha_pada_cancellation PASSED")
 
 def test_bhakoot_cancellation():
-    # Aries and Scorpio are 6/8. But lord of both is Mars.
+    # Aries and Scorpio are 6/8. Even though both lords are Mars (same lord),
+    # Bhakoot dosha is NOT cancelled in standard implementations (AstroSage behavior).
     koota, dosha = _compute_bhakoot(Rashi.ARIES, Rashi.SCORPIO, graha_maitri_score=4)
     assert dosha.is_present == True, "Bhakoot dosha should be present (6/8)"
-    assert dosha.is_cancelled == True, "Bhakoot dosha should be cancelled (Same Lord: Mars)"
-    assert koota.points_earned == 7.0, "Should get full points"
+    assert dosha.is_cancelled == False, "Bhakoot dosha should NOT be cancelled (strict mode, matches AstroSage)"
+    assert koota.points_earned == 0.0, "Should get 0 points for Bhakoot dosha"
     print("test_bhakoot_cancellation PASSED")
 
 def test_gana_cancellation():
