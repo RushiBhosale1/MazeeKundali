@@ -20,7 +20,7 @@ const products = [
     descEn: 'Rashi, Nakshatra, Lagna, Dasha, Mangal Dosha',
     priceMr: 'मोफत पूर्वावलोकन',
     priceEn: 'Free preview',
-    paid: '₹99',
+    paid: '₹49',
     primary: true,
   },
   {
@@ -32,7 +32,7 @@ const products = [
     descEn: 'Ashtakoot Guna Milan, Dosha analysis',
     priceMr: 'मोफत स्कोअर',
     priceEn: 'Free score',
-    paid: '₹49',
+    paid: '₹79',
     primary: false,
   },
   {
@@ -42,9 +42,9 @@ const products = [
     titleEn: 'Marathi Biodata',
     descMr: 'सुंदर PDF, WhatsApp रेडी',
     descEn: 'Beautiful PDF, WhatsApp ready',
-    priceMr: 'कुंडली सोबत मोफत',
-    priceEn: 'Free with Kundali',
-    paid: '₹39',
+    priceMr: '१००% मोफत',
+    priceEn: '100% Free',
+    paid: 'मोफत (Free)',
     primary: false,
   },
 ];

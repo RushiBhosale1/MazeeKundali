@@ -215,7 +215,7 @@ export default function MatchingResultPage() {
               recordId={id}
               resumeToken={result.resume_token ?? ''}
               buyerName={`${result.bride_name} / ${result.groom_name}`}
-              label={mr('संपूर्ण जुळणी अहवाल अनलॉक करा (₹४९)', 'Unlock Full Matching Report (₹49)')}
+              label={mr('संपूर्ण जुळणी अहवाल अनलॉक करा (₹७९)', 'Unlock Full Matching Report (₹79)')}
               sublabel={mr('एकदाच पेमेंट · संपूर्ण अहवाल + ६ कुंडळ्या + PDF', 'One-time payment · Instant access')}
               description={`पत्रिका जुळणी — ${result.bride_name} ↔ ${result.groom_name}`}
               pollUrl={`/api/v1/matchings/${id}`}

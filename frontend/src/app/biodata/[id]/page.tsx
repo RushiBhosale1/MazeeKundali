@@ -56,40 +56,20 @@ export default function BiodataResultPage() {
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 20 }} className="animate-fade-up">
-                    <button onClick={downloadPDF} className="btn-primary" style={{ padding: '16px 8px', fontSize: '1rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, opacity: biodata.paid ? 1 : 0.5 }} disabled={!biodata.paid}>
+                    <button onClick={downloadPDF} className="btn-primary" style={{ padding: '16px 8px', fontSize: '1rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
                         <span style={{ fontSize: '1.4rem' }}>📄</span>
-                        <span>{biodata.paid ? 'PDF डाउनलोड करा' : 'PDF (🔒 Unpaid)'}</span>
+                        <span>PDF डाउनलोड करा</span>
                     </button>
                     
                     <button onClick={shareWhatsApp} style={{ 
                         background: '#25D366', color: 'white', border: 'none', padding: '16px 8px', 
-                        borderRadius: 'var(--radius-md)', fontSize: '1rem', fontWeight: 600, cursor: biodata.paid ? 'pointer' : 'not-allowed',
-                        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, opacity: biodata.paid ? 1 : 0.5
-                    }} disabled={!biodata.paid}>
+                        borderRadius: 'var(--radius-md)', fontSize: '1rem', fontWeight: 600, cursor: 'pointer',
+                        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6
+                    }}>
                         <span style={{ fontSize: '1.4rem' }}>💬</span>
-                        <span>{biodata.paid ? 'WhatsApp वर पाठवा' : 'WhatsApp (🔒 Unpaid)'}</span>
+                        <span>WhatsApp वर पाठवा</span>
                     </button>
                 </div>
-
-                {!biodata.paid && (
-                    <div style={{ marginBottom: 32, background: 'rgba(240, 124, 0, 0.05)', border: '1px solid rgba(240, 124, 0, 0.2)', padding: '24px', borderRadius: 'var(--radius-lg)' }} className="animate-fade-up">
-                        <div style={{ textAlign: 'center', marginBottom: 20 }}>
-                            <h3 style={{ color: 'var(--saffron-400)', fontSize: '1.4rem', marginBottom: 8, fontFamily: 'var(--font-devanagari)' }}>🔒 अनलॉक करा</h3>
-                            <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem' }}>वॉटरमार्क काढण्यासाठी आणि उच्च दर्जाचे PDF/Image मिळवण्यासाठी फक्त ₹39 मध्ये बायोडाटा अनलॉक करा.</p>
-                        </div>
-                        <PaywallButton
-                            productType="biodata"
-                            recordId={id as string}
-                            resumeToken={biodata.resume_token}
-                            buyerName={biodata.personal_info?.full_name || 'Biodata User'}
-                            label="बायोडाटा अनलॉक करा (₹39)"
-                            description="मराठी बायोडाटा — उच्च दर्जाचे PDF आणि WhatsApp Image"
-                            pollUrl={`/api/v1/biodatas/${id}`}
-                            onUnlocked={() => window.location.reload()}
-                            fullWidth={true}
-                        />
-                    </div>
-                )}
 
                 {/* Image Preview instead of PDF iframe because PDF iframe is often blocked on mobile devices */}
                 <div style={{ marginTop: 32, border: '2px solid rgba(255,255,255,0.1)', borderRadius: 'var(--radius-lg)', overflow: 'hidden' }} className="animate-fade-up">

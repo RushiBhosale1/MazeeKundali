@@ -329,7 +329,7 @@ async def create_biodata(db: AsyncSession, template_id: str = "traditional", kun
         template_id=template_id,
         kundali_id=kundali_id,
         resume_token=_resume_token(),
-        paid=False,
+        paid=True,
     )
     db.add(biodata)
     await db.flush()

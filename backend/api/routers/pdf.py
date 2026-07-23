@@ -395,8 +395,6 @@ async def _get_biodata_html(db: AsyncSession, biodata_id: str, preview: bool = F
     biodata = await repo.get_biodata(db, uid)
     if not biodata:
         raise HTTPException(404, "बायोडाटा सापडला नाही.")
-    if not biodata.paid and not preview:
-        raise HTTPException(402, "PDF/Image फक्त पेड बायोडाटासाठी. प्रथम अनलॉक करा.")
         
     photo_url = biodata.photo_url or ""
     if photo_url and photo_url.startswith("/static/"):

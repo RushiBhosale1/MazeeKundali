@@ -35,10 +35,10 @@ settings = get_settings()
 
 # ── Pricing (paise — 1 INR = 100 paise) ──────────────────────────────────────
 PRICES: dict[str, int] = {
-    "kundali":  9900,   # ₹99
-    "matching": 4900,   # ₹49
-    "biodata":  3900,   # ₹39
-    "bundle":   14900,  # ₹149 (adjusting bundle proportionately if needed, wait user didn't ask for bundle. Let's just do 24900)
+    "kundali":  4900,   # ₹49
+    "matching": 7900,   # ₹79
+    "biodata":  0,      # ₹0 (Free)
+    "bundle":   11900,  # ₹119
 }
 
 

@@ -36,10 +36,10 @@ interface Props {
 type State = 'idle' | 'collecting_info' | 'creating' | 'waiting_payment' | 'polling' | 'error' | 'success';
 
 const PRICE_MAP: Record<ProductType, { inr: number; label: string }> = {
-  kundali:  { inr: 99,  label: '₹99' },
-  matching: { inr: 49,  label: '₹49' },
-  biodata:  { inr: 39,  label: '₹39' },
-  bundle:   { inr: 149, label: '₹149' },
+  kundali:  { inr: 49,  label: '₹49' },
+  matching: { inr: 79,  label: '₹79' },
+  biodata:  { inr: 0,   label: 'मोफत' },
+  bundle:   { inr: 119, label: '₹119' },
 };
 
 
