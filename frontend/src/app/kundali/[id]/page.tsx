@@ -444,6 +444,8 @@ export default function KundaliResultPage() {
             <h2 style={{ fontFamily: 'var(--font-devanagari)', fontSize: '1rem', fontWeight: 700, marginBottom: 14, color: 'var(--text-primary)' }}>
               📝 {mr('विश्लेषण', 'Analysis')}
             </h2>
+
+            {/* Basic analysis sections */}
             {[
               { label: mr('रास विश्लेषण', 'Rashi Analysis'), text: kundali.written_analysis.rashi_analysis_mr },
               { label: mr('नक्षत्र', 'Nakshatra'), text: kundali.written_analysis.nakshatra_analysis_mr },
@@ -452,11 +454,60 @@ export default function KundaliResultPage() {
               { label: mr('नाडी', 'Nadi'), text: kundali.written_analysis.nadi_analysis_mr },
               { label: mr('दशा', 'Dasha'), text: kundali.written_analysis.dasha_analysis_mr },
             ].filter(s => s.text).map(({ label, text }, i) => (
-              <div key={i} style={{ marginBottom: 12, paddingBottom: 12, borderBottom: i < 5 ? '1px solid var(--border-subtle)' : 'none' }}>
+              <div key={i} style={{ marginBottom: 12, paddingBottom: 12, borderBottom: '1px solid var(--border-subtle)' }}>
                 <div style={{ fontFamily: 'var(--font-devanagari)', fontSize: '0.75rem', color: 'var(--saffron-400)', fontWeight: 600, marginBottom: 4 }}>{label}</div>
                 <div style={{ fontFamily: 'var(--font-devanagari)', fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.65 }}>{text}</div>
               </div>
             ))}
+
+            {/* Yoga combinations */}
+            {kundali.written_analysis.yogas_detected_mr && (
+              <div style={{ marginBottom: 12, paddingBottom: 12, borderBottom: '1px solid var(--border-subtle)' }}>
+                <div style={{ fontFamily: 'var(--font-devanagari)', fontSize: '0.75rem', color: 'var(--saffron-400)', fontWeight: 600, marginBottom: 8 }}>
+                  🌟 {mr('विशेष योग', 'Special Yogas')}
+                </div>
+                {kundali.written_analysis.yogas_detected_mr.split('\n').filter(Boolean).map((yoga, idx) => (
+                  <div key={idx} style={{
+                    padding: '8px 12px', marginBottom: 6,
+                    background: yoga.startsWith('🌟') ? 'rgba(201,162,39,0.08)' : 'transparent',
+                    border: yoga.startsWith('🌟') ? '1px solid rgba(201,162,39,0.25)' : 'none',
+                    borderRadius: 8,
+                    fontFamily: 'var(--font-devanagari)', fontSize: '0.83rem', color: 'var(--text-secondary)', lineHeight: 1.6
+                  }}>
+                    {yoga}
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Conclusion / निष्कर्ष */}
+            {kundali.written_analysis.conclusion_mr && (
+              <div style={{ marginTop: 4 }}>
+                <div style={{ fontFamily: 'var(--font-devanagari)', fontSize: '0.75rem', color: 'var(--saffron-400)', fontWeight: 600, marginBottom: 8 }}>
+                  📋 {mr('निष्कर्ष (Conclusion)', 'Conclusion')}
+                </div>
+                <div style={{
+                  padding: '14px 16px',
+                  background: 'linear-gradient(135deg, rgba(240,124,0,0.06) 0%, rgba(201,162,39,0.04) 100%)',
+                  border: '1px solid rgba(240,124,0,0.15)',
+                  borderRadius: 10,
+                }}>
+                  {kundali.written_analysis.conclusion_mr.split('\n\n').filter(Boolean).map((para, idx) => (
+                    <div key={idx} style={{
+                      fontFamily: 'var(--font-devanagari)',
+                      fontSize: '0.84rem',
+                      color: 'var(--text-secondary)',
+                      lineHeight: 1.7,
+                      marginBottom: idx < kundali.written_analysis!.conclusion_mr!.split('\n\n').length - 1 ? 10 : 0,
+                      paddingBottom: idx < kundali.written_analysis!.conclusion_mr!.split('\n\n').length - 1 ? 10 : 0,
+                      borderBottom: idx < kundali.written_analysis!.conclusion_mr!.split('\n\n').length - 1 ? '1px solid rgba(255,255,255,0.06)' : 'none',
+                    }}>
+                      {para}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         ) : locked.written_analysis && (
           <div className="locked-overlay" style={{ marginBottom: 16 }}>

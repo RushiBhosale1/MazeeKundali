@@ -227,6 +227,8 @@ def _ctx_from_result(result, name: str) -> dict:
         "lagna_description": wa.lagna_analysis_mr,
         "dasha_description": wa.dasha_analysis_mr,
         "overall_summary": f"{wa.gana_analysis_mr} {wa.nadi_analysis_mr}",
+        "yogas_detected": wa.yogas_detected_mr,
+        "conclusion": wa.conclusion_mr,
     } if wa else None
 
     # Avakahada Chakra & Full Mahadasha Table for PDF

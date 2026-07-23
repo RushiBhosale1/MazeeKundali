@@ -71,6 +71,8 @@ export interface WrittenAnalysis {
   gana_analysis_mr: string;
   nadi_analysis_mr: string;
   dasha_analysis_mr: string;
+  yogas_detected_mr?: string;   // Special yoga combinations
+  conclusion_mr?: string;        // Final conclusion/निष्कर्ष
 }
 
 export interface KundaliResponse {

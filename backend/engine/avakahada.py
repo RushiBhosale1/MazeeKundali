@@ -103,22 +103,32 @@ NAKSHATRA_VARGA_MR: dict[Nakshatra, str] = {
 }
 
 # ---------------------------------------------------------------------------
-# Yunja (युंजा) — 3 Yunjas (Poorva, Madhya, Uttara)
+# Yunja (युंजा) — 3 Yunjas. Traditional Maharashtrian Jyotish uses:
+# पाद्य (Nakshatras 1-9), मध्य (10-18), अंत्य (19-27)
 # ---------------------------------------------------------------------------
 NAKSHATRA_YUNJA_MR: dict[Nakshatra, str] = {
-    Nakshatra.ASHWINI: "पूर्व", Nakshatra.BHARANI: "पूर्व", Nakshatra.KRITTIKA: "पूर्व",
-    Nakshatra.ROHINI: "पूर्व", Nakshatra.MRIGASHIRA: "पूर्व", Nakshatra.ARDRA: "पूर्व",
-    Nakshatra.PUNARVASU: "पूर्व", Nakshatra.PUSHYA: "पूर्व", Nakshatra.ASHLESHA: "पूर्व",
+    # पाद्य — First 9 nakshatras (Ashwini to Ashlesha)
+    Nakshatra.ASHWINI: "पाद्य", Nakshatra.BHARANI: "पाद्य", Nakshatra.KRITTIKA: "पाद्य",
+    Nakshatra.ROHINI: "पाद्य", Nakshatra.MRIGASHIRA: "पाद्य", Nakshatra.ARDRA: "पाद्य",
+    Nakshatra.PUNARVASU: "पाद्य", Nakshatra.PUSHYA: "पाद्य", Nakshatra.ASHLESHA: "पाद्य",
+    # मध्य — Middle 9 nakshatras (Magha to Jyeshtha)
     Nakshatra.MAGHA: "मध्य", Nakshatra.PURVA_PHALGUNI: "मध्य", Nakshatra.UTTARA_PHALGUNI: "मध्य",
     Nakshatra.HASTA: "मध्य", Nakshatra.CHITRA: "मध्य", Nakshatra.SWATI: "मध्य",
     Nakshatra.VISHAKHA: "मध्य", Nakshatra.ANURADHA: "मध्य", Nakshatra.JYESHTHA: "मध्य",
-    Nakshatra.MULA: "उत्तर", Nakshatra.PURVA_ASHADHA: "उत्तर", Nakshatra.UTTARA_ASHADHA: "उत्तर",
-    Nakshatra.SHRAVANA: "उत्तर", Nakshatra.DHANISHTA: "उत्तर", Nakshatra.SHATABHISHA: "उत्तर",
-    Nakshatra.PURVA_BHADRAPADA: "उत्तर", Nakshatra.UTTARA_BHADRAPADA: "उत्तर", Nakshatra.REVATI: "उत्तर"
+    # अंत्य — Last 9 nakshatras (Mula to Revati)
+    Nakshatra.MULA: "अंत्य", Nakshatra.PURVA_ASHADHA: "अंत्य", Nakshatra.UTTARA_ASHADHA: "अंत्य",
+    Nakshatra.SHRAVANA: "अंत्य", Nakshatra.DHANISHTA: "अंत्य", Nakshatra.SHATABHISHA: "अंत्य",
+    Nakshatra.PURVA_BHADRAPADA: "अंत्य", Nakshatra.UTTARA_BHADRAPADA: "अंत्य", Nakshatra.REVATI: "अंत्य"
 }
 
 # ---------------------------------------------------------------------------
 # Vashya — 5 vashya groups based on Rashi
+# Traditional Maharashtrian Jyotish classification:
+#   चतुष्पाद — Aries, Taurus, first half Sagittarius, Capricorn
+#   नर — Gemini, Virgo, Libra, Aquarius, second half Sagittarius
+#   जलचर — Cancer, Capricorn (part), Pisces
+#   वनचर — Leo
+#   कीट — Scorpio (insect/reptile class)
 # ---------------------------------------------------------------------------
 RASHI_TO_VASHYA_MR: dict[Rashi, str] = {
     Rashi.ARIES:       "चतुष्पाद",
@@ -128,9 +138,9 @@ RASHI_TO_VASHYA_MR: dict[Rashi, str] = {
     Rashi.LEO:         "वनचर",
     Rashi.VIRGO:       "नर",
     Rashi.LIBRA:       "नर",
-    Rashi.SCORPIO:     "जलचर",
-    Rashi.SAGITTARIUS: "नर",
-    Rashi.CAPRICORN:   "जलचर",
+    Rashi.SCORPIO:     "कीट",       # Scorpio = insect/reptile (कीट) — NOT जलचर
+    Rashi.SAGITTARIUS: "चतुष्पाद",  # Sagittarius front = horse (चतुष्पाद)
+    Rashi.CAPRICORN:   "चतुष्पाद",  # Capricorn = sea-goat but classified as चतुष्पाद in Maharashtrian
     Rashi.AQUARIUS:    "नर",
     Rashi.PISCES:      "जलचर",
 }
@@ -138,33 +148,34 @@ RASHI_TO_VASHYA_EN: dict[Rashi, str] = {
     Rashi.ARIES: "Quadruped", Rashi.TAURUS: "Quadruped",
     Rashi.GEMINI: "Human", Rashi.CANCER: "Aquatic",
     Rashi.LEO: "Wild", Rashi.VIRGO: "Human",
-    Rashi.LIBRA: "Human", Rashi.SCORPIO: "Aquatic",
-    Rashi.SAGITTARIUS: "Human", Rashi.CAPRICORN: "Aquatic",
+    Rashi.LIBRA: "Human", Rashi.SCORPIO: "Insect/Reptile (Keeta)",
+    Rashi.SAGITTARIUS: "Quadruped", Rashi.CAPRICORN: "Quadruped",
     Rashi.AQUARIUS: "Human", Rashi.PISCES: "Aquatic",
 }
 
 # ---------------------------------------------------------------------------
-# Tatva (Element) — Fire, Earth, Air, Water based on Rashi element
+# Tatva (Element) — Traditional Maharashtrian Jyotish uses Sanskrit terms:
+#   अग्नि (Fire), भूमि (Earth), वायु (Air), वारि (Water — traditional term)
 # ---------------------------------------------------------------------------
 RASHI_TO_TATVA_MR: dict[Rashi, str] = {
     Rashi.ARIES:       "अग्नि",
     Rashi.LEO:         "अग्नि",
     Rashi.SAGITTARIUS: "अग्नि",
-    Rashi.TAURUS:      "भूमि (पृथ्वी)",
-    Rashi.VIRGO:       "भूमि (पृथ्वी)",
-    Rashi.CAPRICORN:   "भूमि (पृथ्वी)",
+    Rashi.TAURUS:      "भूमि",
+    Rashi.VIRGO:       "भूमि",
+    Rashi.CAPRICORN:   "भूमि",
     Rashi.GEMINI:      "वायु",
     Rashi.LIBRA:       "वायु",
     Rashi.AQUARIUS:    "वायु",
-    Rashi.CANCER:      "जल",
-    Rashi.SCORPIO:     "जल",
-    Rashi.PISCES:      "जल",
+    Rashi.CANCER:      "वारि",   # Traditional Marathi: वारि (not जल)
+    Rashi.SCORPIO:     "वारि",
+    Rashi.PISCES:      "वारि",
 }
 RASHI_TO_TATVA_EN: dict[Rashi, str] = {
     Rashi.ARIES: "Fire", Rashi.LEO: "Fire", Rashi.SAGITTARIUS: "Fire",
     Rashi.TAURUS: "Earth", Rashi.VIRGO: "Earth", Rashi.CAPRICORN: "Earth",
     Rashi.GEMINI: "Air", Rashi.LIBRA: "Air", Rashi.AQUARIUS: "Air",
-    Rashi.CANCER: "Water", Rashi.SCORPIO: "Water", Rashi.PISCES: "Water",
+    Rashi.CANCER: "Water (Vari)", Rashi.SCORPIO: "Water (Vari)", Rashi.PISCES: "Water (Vari)",
 }
 
 # ---------------------------------------------------------------------------

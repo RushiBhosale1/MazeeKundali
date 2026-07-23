@@ -195,6 +195,8 @@ class WrittenAnalysis(BaseModel):
     gana_analysis_mr: str
     nadi_analysis_mr: str
     dasha_analysis_mr: str
+    yogas_detected_mr: str = ""   # Special yoga combinations (Rajayoga, Gajakesari etc)
+    conclusion_mr: str = ""        # Final conclusion/निष्कर्ष paragraph
 
 
 class KundaliPaidResponse(KundaliFreeResponse):
