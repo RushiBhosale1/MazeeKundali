@@ -34,6 +34,7 @@ export interface PlanetPosition {
   planet_mr: string;
   rashi: RashiInfo;
   degree_in_rashi: number;
+  dms?: string;
   house: number;
   nakshatra: NakshatraInfo;
   retrograde: boolean;
@@ -116,20 +117,27 @@ export interface AvakahadaInfo {
   rashi_en: string;
   lagna_mr: string;
   lagna_en: string;
-  karana_mr: string;
-  karana_en: string;
-  varna_mr: string;
-  varna_en: string;
-  vashya_mr: string;
-  vashya_en: string;
-  tatva_mr: string;
-  tatva_en: string;
-  gana_mr: string;
-  gana_en: string;
-  nadi_mr: string;
-  nadi_en: string;
-  yoni_mr: string;
-  yoni_en: string;
+  karana_mr?: string;
+  karana_en?: string;
+  yoga_mr?: string;
+  yoga_en?: string;
+  tithi_mr?: string;
+  varna_mr?: string;
+  varna_en?: string;
+  vashya_mr?: string;
+  vashya_en?: string;
+  tatva_mr?: string;
+  tatva_en?: string;
+  varga_mr?: string;
+  varga_en?: string;
+  yunja_mr?: string;
+  yunja_en?: string;
+  gana_mr?: string;
+  gana_en?: string;
+  nadi_mr?: string;
+  nadi_en?: string;
+  yoni_mr?: string;
+  yoni_en?: string;
 }
 
 export interface MahadashaPeriodInfo {
