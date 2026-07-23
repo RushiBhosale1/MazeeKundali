@@ -279,30 +279,36 @@
   </div>
 </div>
 
-<!-- Avakahada Chakra Table -->
+<!-- Avakahada Chakra Table (अवकहडा चक्र - 10 Attributes) -->
 {% if avakahada %}
 <h3 class="section-title">अवकहडा चक्र (Avakahada Chakra)</h3>
 <table style="margin-bottom: 14px;">
   <thead>
     <tr>
+      <th>योग</th>
+      <th>करण</th>
       <th>वर्ण</th>
-      <th>वश्य</th>
       <th>तत्व</th>
+      <th>वश्य</th>
+      <th>वर्ग</th>
       <th>योनि</th>
       <th>गण</th>
+      <th>युंजा</th>
       <th>नाडी</th>
-      <th>करण</th>
     </tr>
   </thead>
   <tbody>
     <tr>
+      <td>{{ avakahada.yoga_mr or "—" }}</td>
+      <td>{{ avakahada.karana_mr or "—" }}</td>
       <td>{{ avakahada.varna_mr or "—" }}</td>
-      <td>{{ avakahada.vashya_mr or "—" }}</td>
       <td>{{ avakahada.tatva_mr or "—" }}</td>
+      <td>{{ avakahada.vashya_mr or "—" }}</td>
+      <td>{{ avakahada.varga_mr or "—" }}</td>
       <td>{{ avakahada.yoni_mr or "—" }}</td>
       <td>{{ avakahada.gana_mr or "—" }}</td>
+      <td>{{ avakahada.yunja_mr or "—" }}</td>
       <td>{{ avakahada.nadi_mr or "—" }}</td>
-      <td>{{ avakahada.karana_mr or "—" }}</td>
     </tr>
   </tbody>
 </table>
@@ -339,16 +345,17 @@
   {% endif %}
 </div>
 
-<!-- Planet Table -->
-<h3 class="section-title">ग्रह स्थिती</h3>
+<!-- Nirayana Spashta Graha Table (निरयन स्पष्ट ग्रह) -->
+<h3 class="section-title">निरयन स्पष्ट ग्रह</h3>
 {% if planet_positions %}
 <table>
   <thead>
     <tr>
       <th>ग्रह</th>
       <th>राशी</th>
-      <th>घर</th>
-      <th>अंश</th>
+      <th>अंश:कला:विकला</th>
+      <th>नक्षत्र</th>
+      <th>चरण</th>
       <th>स्थिती</th>
     </tr>
   </thead>
@@ -357,12 +364,13 @@
     <tr>
       <td style="font-weight:600">{{ pp.planet_mr }}</td>
       <td>{{ pp.rashi.name_mr }}</td>
-      <td>{{ pp.house }}वे</td>
-      <td style="font-family:'Inter',sans-serif">{{ "%.2f"|format(pp.degree_in_rashi) }}°</td>
+      <td style="font-family:'Inter',sans-serif; font-weight: 500;">{{ pp.dms or ("%.2f°"|format(pp.degree_in_rashi)) }}</td>
+      <td>{{ pp.nakshatra_mr or "—" }}</td>
+      <td>{{ pp.pada or "—" }}</td>
       <td>
-        {% if pp.retrograde %}<span class="retro chip chip-r">वक्री</span>{% endif %}
-        {% if pp.is_exalted %}<span class="exalted chip chip-g">उच्च</span>{% endif %}
-        {% if pp.is_debilitated %}<span class="debilitated chip chip-s">नीच</span>{% endif %}
+        {% if pp.retrograde %}<span class="retro chip chip-r">वक्री (व)</span>{% endif %}
+        {% if pp.is_exalted %}<span class="exalted chip chip-g">उच्च (↑)</span>{% endif %}
+        {% if pp.is_debilitated %}<span class="debilitated chip chip-s">नीच (↓)</span>{% endif %}
         {% if not pp.retrograde and not pp.is_exalted and not pp.is_debilitated %}—{% endif %}
       </td>
     </tr>

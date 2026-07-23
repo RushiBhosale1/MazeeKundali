@@ -159,14 +159,16 @@ export default function KundaliResultPage() {
             </h2>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px 14px' }}>
               {[
-                { label: mr('वर्ण', 'Varna'), val: kundali.avakahada.varna_mr },
-                { label: mr('वश्य', 'Vashya'), val: kundali.avakahada.vashya_mr },
-                { label: mr('तत्व', 'Tatva'), val: kundali.avakahada.tatva_mr },
-                { label: mr('योनि', 'Yoni'), val: kundali.avakahada.yoni_mr },
-                { label: mr('गण', 'Gana'), val: kundali.avakahada.gana_mr },
-                { label: mr('नाडी', 'Nadi'), val: kundali.avakahada.nadi_mr },
+                { label: mr('योग', 'Yoga'), val: kundali.avakahada.yoga_mr || '—' },
                 { label: mr('करण', 'Karana'), val: kundali.avakahada.karana_mr || '—' },
-                { label: mr('लग्न राशी', 'Lagna'), val: kundali.avakahada.lagna_mr || '—' },
+                { label: mr('वर्ण', 'Varna'), val: kundali.avakahada.varna_mr || '—' },
+                { label: mr('तत्व', 'Tatva'), val: kundali.avakahada.tatva_mr || '—' },
+                { label: mr('वश्य', 'Vashya'), val: kundali.avakahada.vashya_mr || '—' },
+                { label: mr('वर्ग', 'Varga'), val: kundali.avakahada.varga_mr || '—' },
+                { label: mr('योनि', 'Yoni'), val: kundali.avakahada.yoni_mr || '—' },
+                { label: mr('गण', 'Gana'), val: kundali.avakahada.gana_mr || '—' },
+                { label: mr('युंजा', 'Yunja'), val: kundali.avakahada.yunja_mr || '—' },
+                { label: mr('नाडी', 'Nadi'), val: kundali.avakahada.nadi_mr || '—' },
               ].map((item, idx) => (
                 <div key={idx} style={{ padding: '8px 10px', background: 'rgba(255,255,255,0.03)', borderRadius: 8, border: '1px solid var(--border-subtle)' }}>
                   <div style={{ fontFamily: 'var(--font-devanagari)', fontSize: '0.72rem', color: 'var(--text-muted)', marginBottom: 2 }}>{item.label}</div>
@@ -180,34 +182,38 @@ export default function KundaliResultPage() {
         {/* ─── Divider ───────────────────────────────────── */}
         <div className="divider-gold" />
 
-        {/* ─── PAID: Planet Table ────────────────────────── */}
+        {/* ─── PAID: Nirayana Spashta Graha Table (निरयन स्पष्ट ग्रह) ────────────────── */}
         {kundali.paid && kundali.planet_positions && kundali.planet_positions.length > 0 ? (
           <div style={{ marginBottom: 16 }}>
             <h2 style={{ fontFamily: 'var(--font-devanagari)', fontSize: '1.1rem', fontWeight: 700, marginBottom: 12, color: 'var(--text-primary)' }}>
-              🪐 {mr('ग्रह स्थिती', 'Planet Positions')}
+              🪐 {mr('निरयन स्पष्ट ग्रह (Nirayana Spashta Graha)', 'Nirayana Spashta Graha Positions')}
             </h2>
-            <div className="card" style={{ overflow: 'hidden', padding: 0 }}>
+            <div className="card" style={{ overflowX: 'auto', padding: 0 }}>
               <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'var(--font-devanagari)', fontSize: '0.82rem' }}>
                 <thead>
                   <tr style={{ background: 'rgba(255,255,255,0.04)', borderBottom: '1px solid var(--border-subtle)' }}>
-                    {[mr('ग्रह', 'Planet'), mr('राशी', 'Sign'), mr('घर', 'House'), mr('नक्षत्र', 'Nakshatra'), mr('वक्री', 'R')].map(h => (
-                      <th key={h} style={{ padding: '10px 10px', textAlign: 'left', color: 'var(--text-muted)', fontWeight: 600, fontSize: '0.75rem', letterSpacing: '0.04em' }}>{h}</th>
+                    {[mr('ग्रह', 'Planet'), mr('राशी', 'Sign'), mr('अंश:कला:विकला', 'Deg:Min:Sec'), mr('नक्षत्र', 'Nakshatra'), mr('पद', 'Pada'), mr('स्थिती', 'Status')].map(h => (
+                      <th key={h} style={{ padding: '10px 8px', textAlign: 'left', color: 'var(--text-muted)', fontWeight: 600, fontSize: '0.75rem', letterSpacing: '0.04em' }}>{h}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
                   {kundali.planet_positions.map((p: PlanetPosition, i) => (
                     <tr key={i} style={{ borderBottom: '1px solid var(--border-subtle)' }}>
-                      <td style={{ padding: '10px 10px', fontWeight: 600, color: p.is_exalted ? 'var(--success)' : p.is_debilitated ? 'var(--danger)' : 'var(--text-primary)' }}>
+                      <td style={{ padding: '10px 8px', fontWeight: 600, color: p.is_exalted ? 'var(--success)' : p.is_debilitated ? 'var(--danger)' : 'var(--text-primary)' }}>
                         {lang === 'mr' ? p.planet_mr : p.planet_en}
-                        {p.is_exalted && <span title={mr('उच्च', 'Exalted')} style={{ fontSize: '0.65rem', marginLeft: 3 }}>⬆</span>}
-                        {p.is_debilitated && <span title={mr('नीच', 'Debilitated')} style={{ fontSize: '0.65rem', marginLeft: 3 }}>⬇</span>}
                       </td>
-                      <td style={{ padding: '10px 10px', color: 'var(--text-secondary)' }}>{lang === 'mr' ? p.rashi.name_mr : p.rashi.name_en}</td>
-                      <td style={{ padding: '10px 10px', color: 'var(--text-secondary)' }}>{p.house}</td>
-                      <td style={{ padding: '10px 10px', color: 'var(--text-secondary)' }}>{lang === 'mr' ? p.nakshatra.name_mr : p.nakshatra.name_en}</td>
-                      <td style={{ padding: '10px 10px', color: p.retrograde ? 'var(--warning)' : 'var(--text-muted)' }}>
-                        {p.retrograde ? mr('वक्री', 'R') : '—'}
+                      <td style={{ padding: '10px 8px', color: 'var(--text-secondary)' }}>{lang === 'mr' ? p.rashi.name_mr : p.rashi.name_en}</td>
+                      <td style={{ padding: '10px 8px', fontFamily: 'var(--font-sans)', color: 'var(--gold-400)', fontWeight: 500 }}>
+                        {p.dms ?? `${p.degree_in_rashi.toFixed(2)}°`}
+                      </td>
+                      <td style={{ padding: '10px 8px', color: 'var(--text-secondary)' }}>{lang === 'mr' ? p.nakshatra.name_mr : p.nakshatra.name_en}</td>
+                      <td style={{ padding: '10px 8px', color: 'var(--text-secondary)' }}>{p.nakshatra.pada}</td>
+                      <td style={{ padding: '10px 8px' }}>
+                        {p.retrograde && <span style={{ color: 'var(--warning)', marginRight: 4 }}>{mr('वक्री (व)', 'Retro')}</span>}
+                        {p.is_exalted && <span style={{ color: 'var(--success)', marginRight: 4 }}>{mr('उच्च (↑)', 'Exalted')}</span>}
+                        {p.is_debilitated && <span style={{ color: 'var(--danger)', marginRight: 4 }}>{mr('नीच (↓)', 'Debilitated')}</span>}
+                        {!p.retrograde && !p.is_exalted && !p.is_debilitated && <span style={{ color: 'var(--text-muted)' }}>—</span>}
                       </td>
                     </tr>
                   ))}

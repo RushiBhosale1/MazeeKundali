@@ -3,16 +3,16 @@ engine/avakahada.py
 Avakahada Chakra (अवकहडा चक्र) computation and full Vimshottari Mahadasha table.
 
 Avakahada Chakra attributes (as shown by Maharashtrian astrologers):
-  1. करण (Karana)
-  2. वर्ण (Varna)
-  3. वश्य (Vashya)
-  4. योनि (Yoni)
-  5. गण (Gana)
-  6. राशि (Rashi)
-  7. नाडी (Nadi)
-  8. तत्व (Tatva / Element)
-  9. पंचशलाका (Panchashalaaka)
- 10. नक्षत्र (Nakshatra) + Pada
+  1. योग (Yoga)
+  2. करण (Karana)
+  3. वर्ण (Varna)
+  4. तत्व (Tatva / Element)
+  5. वश्य (Vashya)
+  6. वर्ग (Varga)
+  7. योनि (Yoni)
+  8. गण (Gana)
+  9. युंजा (Yunja)
+ 10. नाडी (Nadi)
 """
 from __future__ import annotations
 import logging
@@ -30,9 +30,36 @@ logger = logging.getLogger(__name__)
 DAYS_PER_YEAR = 365.25
 
 # ---------------------------------------------------------------------------
-# Karana — 11 Karanas, each = half a tithi
+# 27 Yogas (योग)
 # ---------------------------------------------------------------------------
-# 4 fixed + 7 repeating. In traditional Vedic use: determined by Moon-Sun angle
+YOGA_NAMES_MR = [
+    "विष्कंभ", "प्रीती", "आयुष्मान", "सौभाग्य", "शोभन", "अतिगंड", "सुकर्मा",
+    "धृती", "शूल", "गंड", "वृद्धी", "ध्रुव", "व्याघात", "हर्षण", "वज्र",
+    "सिद्धी", "व्यतिपात", "वरीयान", "परिघ", "शिव", "सिद्ध", "साध्य",
+    "शुभ", "शुक्ल", "ब्रह्म", "इंद्र", "वैधृती"
+]
+YOGA_NAMES_EN = [
+    "Vishkambha", "Priti", "Ayushman", "Saubhagya", "Shobhana", "Atiganda", "Sukarma",
+    "Dhriti", "Shula", "Ganda", "Vriddhi", "Dhruva", "Vyaghata", "Harshana", "Vajra",
+    "Siddhi", "Vyatipata", "Variyan", "Parigha", "Shiva", "Siddha", "Sadhya",
+    "Shubha", "Shukla", "Brahma", "Indra", "Vaidhriti"
+]
+
+# ---------------------------------------------------------------------------
+# 30 Tithis (तिथी)
+# ---------------------------------------------------------------------------
+TITHI_NAMES_MR = [
+    "शुक्ल प्रतिपदा", "शुक्ल द्वितीया", "शुक्ल तृतीया", "शुक्ल चतुर्थी", "शुक्ल पंचमी",
+    "शुक्ल षष्ठी", "शुक्ल सप्तमी", "शुक्ल अष्टमी", "शुक्ल नवमी", "शुक्ल दशमी",
+    "शुक्ल एकादशी", "शुक्ल द्वादशी", "शुक्ल त्रयोदशी", "शुक्ल चतुर्दशी", "पूर्णिमा",
+    "कृष्ण प्रतिपदा", "कृष्ण द्वितीया", "कृष्ण तृतीया", "कृष्ण चतुर्थी", "कृष्ण पंचमी",
+    "कृष्ण षष्ठी", "कृष्ण सप्तमी", "कृष्ण अष्टमी", "कृष्ण नवमी", "कृष्ण दशमी",
+    "कृष्ण एकादशी", "कृष्ण द्वादशी", "कृष्ण त्रयोदशी", "कृष्ण चतुर्दशी", "अमावास्या"
+]
+
+# ---------------------------------------------------------------------------
+# Karana (करण) — 11 Karanas
+# ---------------------------------------------------------------------------
 KARANA_NAMES_MR = [
     "बव", "बालव", "कौलव", "तैतिल", "गर", "वणिज", "विष्टि",  # 7 repeating (0-6)
     "शकुनि", "चतुष्पाद", "नाग", "किंस्तुघ्न",                  # 4 fixed
@@ -43,18 +70,66 @@ KARANA_NAMES_EN = [
 ]
 
 # ---------------------------------------------------------------------------
+# Varga (वर्ग) — 8 Vargas (Garuda, Marjala, Simha, Shvana, Sarpa, Musaka, Gaja, Vrisha)
+# ---------------------------------------------------------------------------
+NAKSHATRA_VARGA_MR: dict[Nakshatra, str] = {
+    Nakshatra.ASHWINI:           "गरुड",
+    Nakshatra.BHARANI:           "मार्जार",
+    Nakshatra.KRITTIKA:          "सिंह",
+    Nakshatra.ROHINI:            "श्वान",
+    Nakshatra.MRIGASHIRA:        "सर्प",
+    Nakshatra.ARDRA:             "मूषक",
+    Nakshatra.PUNARVASU:         "मार्जार",
+    Nakshatra.PUSHYA:            "मूषक",
+    Nakshatra.ASHLESHA:          "मार्जार",
+    Nakshatra.MAGHA:             "मूषक",
+    Nakshatra.PURVA_PHALGUNI:    "मूषक",
+    Nakshatra.UTTARA_PHALGUNI:   "गो (वृषभ)",
+    Nakshatra.HASTA:             "महिष",
+    Nakshatra.CHITRA:            "व्याघ्र",
+    Nakshatra.SWATI:             "महिष",
+    Nakshatra.VISHAKHA:          "व्याघ्र",
+    Nakshatra.ANURADHA:          "मृग",
+    Nakshatra.JYESHTHA:          "मृग",
+    Nakshatra.MULA:              "श्वान",
+    Nakshatra.PURVA_ASHADHA:     "वानर",
+    Nakshatra.UTTARA_ASHADHA:    "मुंगूस",
+    Nakshatra.SHRAVANA:          "वानर",
+    Nakshatra.DHANISHTA:         "सिंह",
+    Nakshatra.SHATABHISHA:       "अश्व",
+    Nakshatra.PURVA_BHADRAPADA:  "सिंह",
+    Nakshatra.UTTARA_BHADRAPADA: "गो (वृषभ)",
+    Nakshatra.REVATI:            "गज",
+}
+
+# ---------------------------------------------------------------------------
+# Yunja (युंजा) — 3 Yunjas (Poorva, Madhya, Uttara)
+# ---------------------------------------------------------------------------
+NAKSHATRA_YUNJA_MR: dict[Nakshatra, str] = {
+    Nakshatra.ASHWINI: "पूर्व", Nakshatra.BHARANI: "पूर्व", Nakshatra.KRITTIKA: "पूर्व",
+    Nakshatra.ROHINI: "पूर्व", Nakshatra.MRIGASHIRA: "पूर्व", Nakshatra.ARDRA: "पूर्व",
+    Nakshatra.PUNARVASU: "पूर्व", Nakshatra.PUSHYA: "पूर्व", Nakshatra.ASHLESHA: "पूर्व",
+    Nakshatra.MAGHA: "मध्य", Nakshatra.PURVA_PHALGUNI: "मध्य", Nakshatra.UTTARA_PHALGUNI: "मध्य",
+    Nakshatra.HASTA: "मध्य", Nakshatra.CHITRA: "मध्य", Nakshatra.SWATI: "मध्य",
+    Nakshatra.VISHAKHA: "मध्य", Nakshatra.ANURADHA: "मध्य", Nakshatra.JYESHTHA: "मध्य",
+    Nakshatra.MULA: "उत्तर", Nakshatra.PURVA_ASHADHA: "उत्तर", Nakshatra.UTTARA_ASHADHA: "उत्तर",
+    Nakshatra.SHRAVANA: "उत्तर", Nakshatra.DHANISHTA: "उत्तर", Nakshatra.SHATABHISHA: "उत्तर",
+    Nakshatra.PURVA_BHADRAPADA: "उत्तर", Nakshatra.UTTARA_BHADRAPADA: "उत्तर", Nakshatra.REVATI: "उत्तर"
+}
+
+# ---------------------------------------------------------------------------
 # Vashya — 5 vashya groups based on Rashi
 # ---------------------------------------------------------------------------
 RASHI_TO_VASHYA_MR: dict[Rashi, str] = {
-    Rashi.ARIES:       "चतुष्पाद",   # Quadruped
+    Rashi.ARIES:       "चतुष्पाद",
     Rashi.TAURUS:      "चतुष्पाद",
-    Rashi.GEMINI:      "नर",          # Human
-    Rashi.CANCER:      "जलचर",        # Aquatic
-    Rashi.LEO:         "वनचर",        # Wild/Forest
+    Rashi.GEMINI:      "नर",
+    Rashi.CANCER:      "जलचर",
+    Rashi.LEO:         "वनचर",
     Rashi.VIRGO:       "नर",
     Rashi.LIBRA:       "नर",
     Rashi.SCORPIO:     "जलचर",
-    Rashi.SAGITTARIUS: "नर",          # Front half human
+    Rashi.SAGITTARIUS: "नर",
     Rashi.CAPRICORN:   "जलचर",
     Rashi.AQUARIUS:    "नर",
     Rashi.PISCES:      "जलचर",
@@ -72,16 +147,16 @@ RASHI_TO_VASHYA_EN: dict[Rashi, str] = {
 # Tatva (Element) — Fire, Earth, Air, Water based on Rashi element
 # ---------------------------------------------------------------------------
 RASHI_TO_TATVA_MR: dict[Rashi, str] = {
-    Rashi.ARIES:       "अग्नि",   # Fire
+    Rashi.ARIES:       "अग्नि",
     Rashi.LEO:         "अग्नि",
     Rashi.SAGITTARIUS: "अग्नि",
-    Rashi.TAURUS:      "पृथ्वी",  # Earth
-    Rashi.VIRGO:       "पृथ्वी",
-    Rashi.CAPRICORN:   "पृथ्वी",
-    Rashi.GEMINI:      "वायु",    # Air
+    Rashi.TAURUS:      "भूमि (पृथ्वी)",
+    Rashi.VIRGO:       "भूमि (पृथ्वी)",
+    Rashi.CAPRICORN:   "भूमि (पृथ्वी)",
+    Rashi.GEMINI:      "वायु",
     Rashi.LIBRA:       "वायु",
     Rashi.AQUARIUS:    "वायु",
-    Rashi.CANCER:      "जल",      # Water
+    Rashi.CANCER:      "जल",
     Rashi.SCORPIO:     "जल",
     Rashi.PISCES:      "जल",
 }
@@ -96,44 +171,63 @@ RASHI_TO_TATVA_EN: dict[Rashi, str] = {
 # Yoni — animal symbol from nakshatra (Marathi)
 # ---------------------------------------------------------------------------
 YONI_NAMES_MR: dict[str, str] = {
-    "Horse": "अश्व", "Elephant": "गज", "Sheep": "मेष/एडका",
+    "Horse": "अश्व", "Elephant": "गज", "Sheep": "मेष",
     "Serpent": "सर्प", "Dog": "श्वान", "Cat": "मार्जार",
     "Rat": "मूषक", "Cow": "गो", "Buffalo": "महिष",
     "Tiger": "व्याघ्र", "Deer": "मृग", "Monkey": "वानर",
     "Mongoose": "मुंगूस", "Lion": "सिंह",
 }
 
+
+def format_dms(deg_float: float) -> str:
+    """Format degrees float into DD:MM:SS format (अंश:कला:विकला)."""
+    deg = int(deg_float)
+    rem_min = (deg_float - deg) * 60
+    minutes = int(rem_min)
+    seconds = int(round((rem_min - minutes) * 60))
+    if seconds >= 60:
+        seconds = 0
+        minutes += 1
+    if minutes >= 60:
+        minutes = 0
+        deg += 1
+    return f"{deg:02d}:{minutes:02d}:{seconds:02d}"
+
+
 # ---------------------------------------------------------------------------
-# Karana calculation from Moon-Sun angle
+# Karana, Yoga, Tithi calculation from Moon-Sun angle
 # ---------------------------------------------------------------------------
 def compute_karana(moon_lon: float, sun_lon: float) -> tuple[str, str]:
-    """
-    Compute Karana from Moon-Sun angle.
-    Karana = half a tithi. Tithi = 12° Moon-Sun separation.
-    Karana = 6° Moon-Sun separation.
-
-    Returns: (name_mr, name_en)
-    """
+    """Compute Karana from Moon-Sun angle."""
     angle = (moon_lon - sun_lon) % 360
-    tithi_num = int(angle / 12)   # 0-29 (30 tithis)
-    half = int((angle % 12) / 6)  # 0=first half, 1=second half
-
-    # First 2 karanas (tithi 1, first half + second half) are Kimstughna and Chatushpada (fixed)
-    # Tithis 1-30, karanas 1-60
-    karana_num = tithi_num * 2 + half  # 0-59
+    tithi_num = int(angle / 12)
+    half = int((angle % 12) / 6)
+    karana_num = tithi_num * 2 + half
 
     if karana_num == 0:
-        return KARANA_NAMES_MR[10], KARANA_NAMES_EN[10]  # Kimstughna (1st)
+        return KARANA_NAMES_MR[10], KARANA_NAMES_EN[10]
     elif karana_num == 57:
-        return KARANA_NAMES_MR[7], KARANA_NAMES_EN[7]   # Shakuni
+        return KARANA_NAMES_MR[7], KARANA_NAMES_EN[7]
     elif karana_num == 58:
-        return KARANA_NAMES_MR[8], KARANA_NAMES_EN[8]   # Chatushpada
+        return KARANA_NAMES_MR[8], KARANA_NAMES_EN[8]
     elif karana_num == 59:
-        return KARANA_NAMES_MR[9], KARANA_NAMES_EN[9]   # Naga
+        return KARANA_NAMES_MR[9], KARANA_NAMES_EN[9]
     else:
-        # Repeating 7 karanas fill positions 1-56
         idx = (karana_num - 1) % 7
         return KARANA_NAMES_MR[idx], KARANA_NAMES_EN[idx]
+
+
+def compute_yoga(moon_lon: float, sun_lon: float) -> tuple[str, str]:
+    """Compute Nitya Yoga from (Moon + Sun) longitude."""
+    yoga_span = 360.0 / 27  # 13.3333°
+    idx = int(((moon_lon + sun_lon) % 360) / yoga_span) % 27
+    return YOGA_NAMES_MR[idx], YOGA_NAMES_EN[idx]
+
+
+def compute_tithi(moon_lon: float, sun_lon: float) -> str:
+    """Compute Tithi from (Moon - Sun) longitude angle."""
+    idx = int(((moon_lon - sun_lon) % 360) / 12.0) % 30
+    return TITHI_NAMES_MR[idx]
 
 
 # ---------------------------------------------------------------------------
@@ -142,8 +236,6 @@ def compute_karana(moon_lon: float, sun_lon: float) -> tuple[str, str]:
 def compute_avakahada(result: KundaliResult, raw_ephemeris: Optional[dict] = None) -> dict:
     """
     Compute the full Avakahada Chakra for a KundaliResult.
-
-    Returns a dict with Marathi and English values for all attributes.
     """
     if result.rashi is None or result.nakshatra is None:
         return {}
@@ -152,16 +244,16 @@ def compute_avakahada(result: KundaliResult, raw_ephemeris: Optional[dict] = Non
     rashi = result.rashi
     lagna = result.lagna
 
-    # Varna (from Moon rashi)
+    # Varna
     varna = RASHI_TO_VARNA.get(rashi)
     varna_mr = varna.name_mr if varna else ""
     varna_en = varna.value if varna else ""
 
-    # Vashya (from Moon rashi)
+    # Vashya
     vashya_mr = RASHI_TO_VASHYA_MR.get(rashi, "")
     vashya_en = RASHI_TO_VASHYA_EN.get(rashi, "")
 
-    # Tatva (from Moon rashi)
+    # Tatva
     tatva_mr = RASHI_TO_TATVA_MR.get(rashi, "")
     tatva_en = RASHI_TO_TATVA_EN.get(rashi, "")
 
@@ -185,6 +277,10 @@ def compute_avakahada(result: KundaliResult, raw_ephemeris: Optional[dict] = Non
     yoni_gender_en = yoni_data[1] if yoni_data else ""
     yoni_mr = YONI_NAMES_MR.get(yoni_animal_en, yoni_animal_en)
     yoni_en = f"{yoni_animal_en} ({yoni_gender_en})"
+
+    # Varga & Yunja
+    varga_mr = NAKSHATRA_VARGA_MR.get(nakshatra, "")
+    yunja_mr = NAKSHATRA_YUNJA_MR.get(nakshatra, "")
 
     # Nakshatra name
     NAKSHATRA_MR = {
@@ -213,19 +309,23 @@ def compute_avakahada(result: KundaliResult, raw_ephemeris: Optional[dict] = Non
     rashi_mr = RASHI_MR.get(rashi, rashi.name_en)
     lagna_mr = RASHI_MR.get(lagna, lagna.name_en) if lagna else ""
 
-    # Karana — needs Sun & Moon longitudes
+    # Karana, Yoga, Tithi
     karana_mr, karana_en = "", ""
+    yoga_mr, yoga_en = "", ""
+    tithi_mr = ""
     if raw_ephemeris:
         try:
             planets_raw = raw_ephemeris.get("planets", {})
             moon_data = planets_raw.get(Planet.MOON)
             sun_data = planets_raw.get(Planet.SUN)
             if moon_data and sun_data:
-                karana_mr, karana_en = compute_karana(
-                    moon_data["longitude"], sun_data["longitude"]
-                )
+                m_lon = moon_data["longitude"]
+                s_lon = sun_data["longitude"]
+                karana_mr, karana_en = compute_karana(m_lon, s_lon)
+                yoga_mr, yoga_en = compute_yoga(m_lon, s_lon)
+                tithi_mr = compute_tithi(m_lon, s_lon)
         except Exception as ke:
-            logger.warning("Karana computation failed: %s", ke)
+            logger.warning("Karana/Yoga/Tithi computation failed: %s", ke)
 
     return {
         "nakshatra_mr": nakshatra_mr,
@@ -237,12 +337,19 @@ def compute_avakahada(result: KundaliResult, raw_ephemeris: Optional[dict] = Non
         "lagna_en": lagna.name_en if lagna else "",
         "karana_mr": karana_mr,
         "karana_en": karana_en,
+        "yoga_mr": yoga_mr,
+        "yoga_en": yoga_en,
+        "tithi_mr": tithi_mr,
         "varna_mr": varna_mr,
         "varna_en": varna_en,
         "vashya_mr": vashya_mr,
         "vashya_en": vashya_en,
         "tatva_mr": tatva_mr,
         "tatva_en": tatva_en,
+        "varga_mr": varga_mr,
+        "varga_en": varga_mr,
+        "yunja_mr": yunja_mr,
+        "yunja_en": yunja_mr,
         "gana_mr": gana_mr,
         "gana_en": gana_en,
         "nadi_mr": nadi_mr,
@@ -260,22 +367,7 @@ def compute_full_mahadasha_table(
     moon_longitude_sidereal: float,
     birth_date: date,
 ) -> list[dict]:
-    """
-    Compute ALL 9 Mahadasha periods (complete life table) from birth.
-
-    Returns list of dicts:
-        [
-            {
-                "lord": Planet,
-                "lord_mr": str,  # Marathi planet name
-                "lord_en": str,  # English planet name
-                "start_date": date,
-                "end_date": date,
-                "years": int,    # Mahadasha duration in years
-            },
-            ...
-        ]
-    """
+    """Compute ALL 9 Mahadasha periods from birth."""
     from engine.dasha import compute_dasha_balance, DASHA_DURATION_DAYS, SEQUENCE_ORDER
 
     PLANET_MR = {

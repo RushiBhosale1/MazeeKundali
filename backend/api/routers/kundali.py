@@ -144,6 +144,7 @@ def _build_paid_response(record: dict, result: KundaliResult) -> KundaliPaidResp
     free = _build_free_response(record, result)
 
     # Planet positions
+    from engine.avakahada import format_dms
     planet_positions = []
     for pp in result.planet_positions:
         planet_positions.append(PlanetPositionResponse(
@@ -151,6 +152,7 @@ def _build_paid_response(record: dict, result: KundaliResult) -> KundaliPaidResp
             planet_mr=pp.planet.name_mr,
             rashi=_rashi_info(pp.rashi),
             degree_in_rashi=round(pp.degree_in_rashi, 2),
+            dms=format_dms(pp.degree_in_rashi),
             house=pp.house,
             nakshatra=_nakshatra_info(pp.nakshatra, pp.pada),
             retrograde=pp.retrograde,

@@ -159,6 +159,7 @@ class PlanetPositionResponse(BaseModel):
     planet_mr: str          # "चंद्र"
     rashi: RashiInfo
     degree_in_rashi: float  # 0–29.99
+    dms: Optional[str] = None  # "04:46:28" (Degrees:Minutes:Seconds)
     house: int              # 1–12
     nakshatra: NakshatraInfo
     retrograde: bool
@@ -227,20 +228,27 @@ class AvakahadadResponse(BaseModel):
     rashi_en: str
     lagna_mr: str
     lagna_en: str
-    karana_mr: str
-    karana_en: str
-    varna_mr: str
-    varna_en: str
-    vashya_mr: str
-    vashya_en: str
-    tatva_mr: str
-    tatva_en: str
-    gana_mr: str
-    gana_en: str
-    nadi_mr: str
-    nadi_en: str
-    yoni_mr: str
-    yoni_en: str
+    karana_mr: str = ""
+    karana_en: str = ""
+    yoga_mr: str = ""
+    yoga_en: str = ""
+    tithi_mr: str = ""
+    varna_mr: str = ""
+    varna_en: str = ""
+    vashya_mr: str = ""
+    vashya_en: str = ""
+    tatva_mr: str = ""
+    tatva_en: str = ""
+    varga_mr: str = ""
+    varga_en: str = ""
+    yunja_mr: str = ""
+    yunja_en: str = ""
+    gana_mr: str = ""
+    gana_en: str = ""
+    nadi_mr: str = ""
+    nadi_en: str = ""
+    yoni_mr: str = ""
+    yoni_en: str = ""
 
 
 class MahadashaPeriod(BaseModel):

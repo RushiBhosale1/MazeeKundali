@@ -107,6 +107,23 @@ def _ctx_from_result(result, name: str) -> dict:
     pr: dict[str, int] = {}
     rr: set[str] = set()
     plist = []
+    from engine.avakahada import format_dms
+    plist = []
+    if result.lagna:
+        raw_ep = getattr(result, '_raw_ephemeris', None)
+        lagna_deg = (raw_ep['lagna_longitude'] % 30.0) if raw_ep else 0.0
+        plist.append({
+            "planet_mr": "लग्न",
+            "rashi": {"name_mr": result.lagna.name_mr},
+            "house": 1,
+            "degree_in_rashi": round(lagna_deg, 2),
+            "dms": format_dms(lagna_deg),
+            "nakshatra_mr": result.nakshatra.name_mr if result.nakshatra else "—",
+            "pada": result.pada or "—",
+            "retrograde": False,
+            "is_exalted": False,
+            "is_debilitated": False,
+        })
     for pp in (result.planet_positions or []):
         pr[pp.planet.value] = pp.rashi.value
         if pp.retrograde:
@@ -116,6 +133,9 @@ def _ctx_from_result(result, name: str) -> dict:
             "rashi": {"name_mr": pp.rashi.name_mr},
             "house": pp.house,
             "degree_in_rashi": round(pp.degree_in_rashi, 2),
+            "dms": format_dms(pp.degree_in_rashi),
+            "nakshatra_mr": pp.nakshatra.name_mr,
+            "pada": pp.pada,
             "retrograde": pp.retrograde,
             "is_exalted": pp.is_exalted,
             "is_debilitated": pp.is_debilitated,
