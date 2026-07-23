@@ -206,6 +206,9 @@ class KundaliPaidResponse(KundaliFreeResponse):
     dasha: Optional[DashaResponse]
     written_analysis: Optional[WrittenAnalysis]
     pdf_url: Optional[str]
+    # New detailed fields
+    avakahada: Optional["AvakahadadResponse"] = None
+    mahadasha_table: List["MahadashaPeriod"] = []
     locked: LockedFields = LockedFields(
         planet_positions=False,
         navamsa_chart=False,
@@ -213,6 +216,40 @@ class KundaliPaidResponse(KundaliFreeResponse):
         dasha=False,
         written_analysis=False,
     )
+
+
+class AvakahadadResponse(BaseModel):
+    """Avakahada Chakra — 10 traditional Vedic attributes from Moon's nakshatra."""
+    nakshatra_mr: str
+    nakshatra_en: str
+    nakshatra_pada: int
+    rashi_mr: str
+    rashi_en: str
+    lagna_mr: str
+    lagna_en: str
+    karana_mr: str
+    karana_en: str
+    varna_mr: str
+    varna_en: str
+    vashya_mr: str
+    vashya_en: str
+    tatva_mr: str
+    tatva_en: str
+    gana_mr: str
+    gana_en: str
+    nadi_mr: str
+    nadi_en: str
+    yoni_mr: str
+    yoni_en: str
+
+
+class MahadashaPeriod(BaseModel):
+    """One entry in the full Vimshottari Mahadasha table."""
+    lord_en: str
+    lord_mr: str
+    start_date: date
+    end_date: date
+    years: int
 
 
 # ---------------------------------------------------------------------------

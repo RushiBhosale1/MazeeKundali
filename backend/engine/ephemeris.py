@@ -163,6 +163,56 @@ def compute_planetary_positions(
     }
 
 
+def compute_outer_planets(
+    utc_dt,
+    ayanamsa: float,
+) -> dict:
+    """
+    Compute sidereal positions for outer (modern) planets: Pluto, Neptune, Uranus.
+    These are used informally by some modern Jyotishi astrologers in Maharashtra.
+
+    Args:
+        utc_dt: Naive UTC datetime of birth.
+        ayanamsa: Already-computed Lahiri ayanamsa value (avoids re-calling swe.get_ayanamsa_ut).
+
+    Returns:
+        dict with planet names ('Pluto', 'Neptune', 'Uranus') mapping to
+        {'longitude': float, 'retrograde': bool, 'rashi': int, 'degree_in_rashi': float}.
+    """
+    if not SWISSEPH_AVAILABLE:
+        return {}
+
+    _setup_ephemeris()
+    jd = _datetime_to_jd(utc_dt)
+    calc_flags = swe.FLG_SWIEPH | swe.FLG_SPEED
+
+    # Swiss Ephemeris codes for outer planets
+    OUTER_MAP = {
+        "Pluto":   9,   # SE_PLUTO
+        "Neptune": 8,   # SE_NEPTUNE
+        "Uranus":  7,   # SE_URANUS
+    }
+
+    outer_results = {}
+    for name, swe_id in OUTER_MAP.items():
+        try:
+            xx, _ = swe.calc_ut(jd, swe_id, calc_flags)
+            tropical_lon = xx[0]
+            speed = xx[3]
+            sidereal_lon = (tropical_lon - ayanamsa) % 360
+            rashi_idx = int(sidereal_lon / 30) % 12
+            outer_results[name] = {
+                "longitude": sidereal_lon,
+                "retrograde": speed < 0,
+                "rashi": rashi_idx,       # 0-11
+                "degree_in_rashi": sidereal_lon % 30,
+            }
+        except Exception:
+            pass  # silently skip if ephemeris data not found
+
+    return outer_results
+
+
 # ---------------------------------------------------------------------------
 # Derived value functions (from sidereal longitudes)
 # ---------------------------------------------------------------------------

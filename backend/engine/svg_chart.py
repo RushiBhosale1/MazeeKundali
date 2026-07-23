@@ -26,6 +26,10 @@ PLANET_FULL_MR: dict[str, str] = {
     "Saturn":  "शनि",
     "Rahu":    "राहू",
     "Ketu":    "केतु",
+    # Outer planets (modern, used by some Maharashtrian astrologers)
+    "Pluto":   "प्लु",
+    "Neptune": "नेप",
+    "Uranus":  "हर्ष",
 }
 
 # Planet English short names
@@ -39,6 +43,9 @@ PLANET_FULL_EN: dict[str, str] = {
     "Saturn":  "Sat",
     "Rahu":    "Rah",
     "Ketu":    "Ket",
+    "Pluto":   "Plu",
+    "Neptune": "Nep",
+    "Uranus":  "Ura",
 }
 
 # Planet color coding (used only in dark/light theme)
@@ -52,6 +59,10 @@ PLANET_COLOR: dict[str, str] = {
     "Saturn":  "#64748b",
     "Rahu":    "#94a3b8",
     "Ketu":    "#78716c",
+    # Outer planets — muted gray (less prominent than classical 9)
+    "Pluto":   "#8b5cf6",
+    "Neptune": "#06b6d4",
+    "Uranus":  "#10b981",
 }
 
 

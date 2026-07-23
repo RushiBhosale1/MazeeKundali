@@ -103,7 +103,41 @@ export interface KundaliResponse {
   mangal_dosha?: MangalDoshaInfo;
   dasha?: DashaInfo;
   written_analysis?: WrittenAnalysis;
+  avakahada?: AvakahadaInfo | null;
+  mahadasha_table?: MahadashaPeriodInfo[];
   pdf_url?: string | null;
+}
+
+export interface AvakahadaInfo {
+  nakshatra_mr: string;
+  nakshatra_en: string;
+  nakshatra_pada: number;
+  rashi_mr: string;
+  rashi_en: string;
+  lagna_mr: string;
+  lagna_en: string;
+  karana_mr: string;
+  karana_en: string;
+  varna_mr: string;
+  varna_en: string;
+  vashya_mr: string;
+  vashya_en: string;
+  tatva_mr: string;
+  tatva_en: string;
+  gana_mr: string;
+  gana_en: string;
+  nadi_mr: string;
+  nadi_en: string;
+  yoni_mr: string;
+  yoni_en: string;
+}
+
+export interface MahadashaPeriodInfo {
+  lord_en: string;
+  lord_mr: string;
+  start_date: string;
+  end_date: string;
+  years: number;
 }
 
 export interface KundaliCreatePayload {

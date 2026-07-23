@@ -87,6 +87,14 @@ def _build_free_response(record: dict, result: KundaliResult) -> KundaliFreeResp
             ex = {pp.planet.value for pp in result.planet_positions if pp.is_exalted}
             de = {pp.planet.value for pp in result.planet_positions if pp.is_debilitated}
             dg = {pp.planet.value: pp.degree_in_rashi for pp in result.planet_positions}
+            # Add outer planets (Pluto, Neptune, Uranus) to D1 chart
+            raw_ep = getattr(result, '_raw_ephemeris', None)
+            outer = (raw_ep or {}).get("outer_planets", {})
+            for op_name, op_data in outer.items():
+                pr[op_name] = op_data["rashi"]
+                dg[op_name] = op_data.get("degree_in_rashi", 0.0)
+                if op_data.get("retrograde"):
+                    rr.add(op_name)
             chart_svg = render_north_indian_svg(
                 lagna_rashi=result.lagna.value,
                 planet_rashis=pr,
@@ -229,6 +237,13 @@ def _build_paid_response(record: dict, result: KundaliResult) -> KundaliPaidResp
             rr_d1 = {pp.planet.value for pp in result.planet_positions if pp.retrograde}
             ex_d1 = {pp.planet.value for pp in result.planet_positions if pp.is_exalted}
             de_d1 = {pp.planet.value for pp in result.planet_positions if pp.is_debilitated}
+            # Add outer planets to moon chart
+            raw_ep2 = getattr(result, '_raw_ephemeris', None)
+            outer2 = (raw_ep2 or {}).get("outer_planets", {})
+            for op_name, op_data in outer2.items():
+                pr_d1[op_name] = op_data["rashi"]
+                if op_data.get("retrograde"):
+                    rr_d1.add(op_name)
             moon_chart_svg = render_north_indian_svg(
                 lagna_rashi=result.rashi.value,
                 planet_rashis=pr_d1,
@@ -263,6 +278,30 @@ def _build_paid_response(record: dict, result: KundaliResult) -> KundaliPaidResp
         except Exception as chalit_err:
             logger.warning("Chalit SVG generation failed: %s", chalit_err)
 
+    # Avakahada Chakra & Full Mahadasha Table
+    avakahada_resp = None
+    mahadasha_table_resp = []
+    try:
+        from engine.avakahada import compute_avakahada, compute_full_mahadasha_table
+        raw_ep = getattr(result, '_raw_ephemeris', None)
+        avk = compute_avakahada(result, raw_ep)
+        if avk:
+            from api.schemas import AvakahadadResponse
+            avakahada_resp = AvakahadadResponse(**avk)
+        if result.nakshatra and result.planet_positions:
+            moon_pp = next((p for p in result.planet_positions if p.planet.value == "Moon"), None)
+            if moon_pp:
+                from api.schemas import MahadashaPeriod
+                table_raw = compute_full_mahadasha_table(
+                    moon_nakshatra=result.nakshatra,
+                    moon_longitude_sidereal=moon_pp.longitude,
+                    birth_date=result.dob,
+                )
+                for item in table_raw:
+                    mahadasha_table_resp.append(MahadashaPeriod(**item))
+    except Exception as avk_err:
+        logger.warning("Avakahada/Mahadasha table computation failed: %s", avk_err)
+
     return KundaliPaidResponse(
         **free.model_dump(),
         planet_positions=planet_positions,
@@ -272,6 +311,8 @@ def _build_paid_response(record: dict, result: KundaliResult) -> KundaliPaidResp
         mangal_dosha=mangal_resp,
         dasha=dasha_resp,
         written_analysis=analysis,
+        avakahada=avakahada_resp,
+        mahadasha_table=mahadasha_table_resp,
         pdf_url=record.get("pdf_url"),
     )
 

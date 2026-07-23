@@ -213,6 +213,16 @@ def _fill_paid_fields(
 
     result.planet_positions = planet_positions
 
+    # Outer planets (Pluto, Neptune, Uranus) — used by some Maharashtrian astrologers
+    try:
+        from engine.ephemeris import compute_outer_planets
+        outer = compute_outer_planets(utc_datetime, raw["ayanamsa"])
+        # Store in raw ephemeris so SVG renderer and API layer can access
+        raw["outer_planets"] = outer  # type: ignore[index]
+    except Exception as op_err:
+        logger.warning("Outer planet computation failed: %s", op_err)
+        raw["outer_planets"] = {}  # type: ignore[index]
+
     # Dasha
     if result.nakshatra is not None:
         moon_lon = planets_raw[Planet.MOON]["longitude"]

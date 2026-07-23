@@ -209,6 +209,24 @@ def _ctx_from_result(result, name: str) -> dict:
         "overall_summary": f"{wa.gana_analysis_mr} {wa.nadi_analysis_mr}",
     } if wa else None
 
+    # Avakahada Chakra & Full Mahadasha Table for PDF
+    avakahada = None
+    mahadasha_table = []
+    try:
+        from engine.avakahada import compute_avakahada, compute_full_mahadasha_table
+        raw_ep = getattr(result, '_raw_ephemeris', None)
+        avakahada = compute_avakahada(result, raw_ep)
+        if result.nakshatra and result.planet_positions:
+            moon_pp = next((p for p in result.planet_positions if p.planet.value == "Moon"), None)
+            if moon_pp:
+                mahadasha_table = compute_full_mahadasha_table(
+                    moon_nakshatra=result.nakshatra,
+                    moon_longitude_sidereal=moon_pp.longitude,
+                    birth_date=result.dob,
+                )
+    except Exception as avk_err:
+        logger.warning("PDF Avakahada/Mahadasha table failed: %s", avk_err)
+
     return {
         "name": result.name,
         "gender": result.gender,
@@ -234,6 +252,8 @@ def _ctx_from_result(result, name: str) -> dict:
         "dasha": dc,
         "mangal_dosha": mc,
         "written_analysis": wc,
+        "avakahada": avakahada,
+        "mahadasha_table": mahadasha_table,
         "generated_date": datetime.now().strftime("%d %B %Y, %H:%M IST"),
     }
 

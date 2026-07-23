@@ -151,6 +151,32 @@ export default function KundaliResultPage() {
           ))}
         </div>
 
+        {/* ─── Avakahada Chakra (अवकहडा चक्र) ────────────────────── */}
+        {kundali.avakahada && (
+          <div className="card animate-fade-up" style={{ padding: '18px 20px', marginBottom: 16 }}>
+            <h2 style={{ fontFamily: 'var(--font-devanagari)', fontSize: '1rem', fontWeight: 700, marginBottom: 14, color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: 8 }}>
+              ☸️ {mr('अवकहडा चक्र (Avakahada Chakra)', 'Avakahada Chakra')}
+            </h2>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px 14px' }}>
+              {[
+                { label: mr('वर्ण', 'Varna'), val: kundali.avakahada.varna_mr },
+                { label: mr('वश्य', 'Vashya'), val: kundali.avakahada.vashya_mr },
+                { label: mr('तत्व', 'Tatva'), val: kundali.avakahada.tatva_mr },
+                { label: mr('योनि', 'Yoni'), val: kundali.avakahada.yoni_mr },
+                { label: mr('गण', 'Gana'), val: kundali.avakahada.gana_mr },
+                { label: mr('नाडी', 'Nadi'), val: kundali.avakahada.nadi_mr },
+                { label: mr('करण', 'Karana'), val: kundali.avakahada.karana_mr || '—' },
+                { label: mr('लग्न राशी', 'Lagna'), val: kundali.avakahada.lagna_mr || '—' },
+              ].map((item, idx) => (
+                <div key={idx} style={{ padding: '8px 10px', background: 'rgba(255,255,255,0.03)', borderRadius: 8, border: '1px solid var(--border-subtle)' }}>
+                  <div style={{ fontFamily: 'var(--font-devanagari)', fontSize: '0.72rem', color: 'var(--text-muted)', marginBottom: 2 }}>{item.label}</div>
+                  <div style={{ fontFamily: 'var(--font-devanagari)', fontSize: '0.9rem', fontWeight: 600, color: 'var(--gold-400)' }}>{item.val}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* ─── Divider ───────────────────────────────────── */}
         <div className="divider-gold" />
 
@@ -233,6 +259,37 @@ export default function KundaliResultPage() {
                 </div>
               </div>
             </div>
+
+            {/* Full Vimshottari Mahadasha Table */}
+            {kundali.mahadasha_table && kundali.mahadasha_table.length > 0 && (
+              <div style={{ marginTop: 18, paddingTop: 14, borderTop: '1px solid var(--border-subtle)' }}>
+                <div style={{ fontFamily: 'var(--font-devanagari)', fontSize: '0.88rem', fontWeight: 700, marginBottom: 10, color: 'var(--text-secondary)' }}>
+                  📜 {mr('विंशोत्तरी महादशा सारणी (पूर्ण आयुष्य)', 'Vimshottari Mahadasha Table (Full Life)')}
+                </div>
+                <div style={{ overflowX: 'auto' }}>
+                  <table style={{ width: '100%', fontSize: '0.8rem', borderCollapse: 'collapse' }}>
+                    <thead>
+                      <tr style={{ borderBottom: '1px solid var(--border-subtle)', color: 'var(--text-muted)', textAlign: 'left' }}>
+                        <th style={{ padding: '6px 4px' }}>{mr('स्वामी', 'Lord')}</th>
+                        <th style={{ padding: '6px 4px' }}>{mr('वर्षे', 'Years')}</th>
+                        <th style={{ padding: '6px 4px' }}>{mr('प्रारंभ', 'Start')}</th>
+                        <th style={{ padding: '6px 4px' }}>{mr('समाप्ती', 'End')}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {kundali.mahadasha_table.map((m, idx) => (
+                        <tr key={idx} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)', color: m.lord_mr === kundali.dasha?.mahadasha_lord_mr ? 'var(--gold-400)' : 'var(--text-secondary)', fontWeight: m.lord_mr === kundali.dasha?.mahadasha_lord_mr ? 700 : 400 }}>
+                          <td style={{ padding: '6px 4px' }}>{lang === 'mr' ? m.lord_mr : m.lord_en}</td>
+                          <td style={{ padding: '6px 4px' }}>{m.years}y</td>
+                          <td style={{ padding: '6px 4px' }}>{m.start_date}</td>
+                          <td style={{ padding: '6px 4px' }}>{m.end_date}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
           </div>
         ) : locked.dasha && (
           <div className="locked-overlay" style={{ marginBottom: 16 }}>

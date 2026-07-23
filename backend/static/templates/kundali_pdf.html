@@ -277,11 +277,36 @@
     <span class="val">{{ nadi_mr }}</span>
     <span class="lbl">नाडी</span>
   </div>
-  <div class="summary-box">
-    <span class="val">{{ varna_mr or "—" }}</span>
-    <span class="lbl">वर्ण</span>
-  </div>
 </div>
+
+<!-- Avakahada Chakra Table -->
+{% if avakahada %}
+<h3 class="section-title">अवकहडा चक्र (Avakahada Chakra)</h3>
+<table style="margin-bottom: 14px;">
+  <thead>
+    <tr>
+      <th>वर्ण</th>
+      <th>वश्य</th>
+      <th>तत्व</th>
+      <th>योनि</th>
+      <th>गण</th>
+      <th>नाडी</th>
+      <th>करण</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>{{ avakahada.varna_mr or "—" }}</td>
+      <td>{{ avakahada.vashya_mr or "—" }}</td>
+      <td>{{ avakahada.tatva_mr or "—" }}</td>
+      <td>{{ avakahada.yoni_mr or "—" }}</td>
+      <td>{{ avakahada.gana_mr or "—" }}</td>
+      <td>{{ avakahada.nadi_mr or "—" }}</td>
+      <td>{{ avakahada.karana_mr or "—" }}</td>
+    </tr>
+  </tbody>
+</table>
+{% endif %}
 
 <hr class="gold-divider">
 
@@ -369,6 +394,31 @@
     </div>
   </div>
 </div>
+{% endif %}
+
+<!-- Full Vimshottari Mahadasha Table -->
+{% if mahadasha_table %}
+<h3 class="section-title" style="margin-top: 14px;">विंशोत्तरी महादशा सारणी (Vimshottari Mahadasha Table)</h3>
+<table style="margin-bottom: 14px;">
+  <thead>
+    <tr>
+      <th>दशा स्वामी</th>
+      <th>कालावधी (वर्षे)</th>
+      <th>प्रारंभ तारीख</th>
+      <th>समाप्ती तारीख</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for m in mahadasha_table %}
+    <tr>
+      <td style="font-weight:600">{{ m.lord_mr }} ({{ m.lord_en }})</td>
+      <td>{{ m.years }} वर्षे</td>
+      <td>{{ m.start_date }}</td>
+      <td>{{ m.end_date }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
 {% endif %}
 
 <!-- Mangal Dosha -->
