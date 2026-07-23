@@ -38,7 +38,7 @@ export default function KundaliResultPage() {
   const router = useRouter();
   const id = params?.id as string;
   const [lang, setLang] = useState<Lang>('mr');
-  const [activeChart, setActiveChart] = useState<'d1' | 'd9' | 'moon'>('d1');
+  const [activeChart, setActiveChart] = useState<'d1' | 'd9' | 'chalit' | 'moon'>('d1');
   const [kundali, setKundali] = useState<KundaliResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -280,27 +280,27 @@ export default function KundaliResultPage() {
           </div>
         )}
 
-        {/* ─── Kundali Charts (D1, D9, Moon) ────────────────── */}
-        {(kundali.chart_d1_svg || kundali.navamsa_chart_svg || kundali.moon_chart_svg) && (
+        {/* ─── Kundali Charts (D1, D9, Chalit, Moon) ─────────── */}
+        {(kundali.chart_d1_svg || kundali.navamsa_chart_svg || kundali.chalit_chart_svg || kundali.moon_chart_svg) && (
           <div className="card animate-fade-up" style={{ padding: '20px', marginBottom: 16, textAlign: 'center' }}>
             <h3 style={{ fontFamily: 'var(--font-devanagari)', fontSize: '1rem', fontWeight: 700, marginBottom: 12, color: 'var(--text-primary)' }}>
               🌌 {mr('कुंडली तक्ते (Horoscope Charts)', 'Horoscope Charts')}
             </h3>
 
             {/* Tab selector */}
-            <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginBottom: 16 }}>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: 6, flexWrap: 'wrap', marginBottom: 16 }}>
               {kundali.chart_d1_svg && (
                 <button
                   className={`btn-tab ${activeChart === 'd1' ? 'active' : ''}`}
                   onClick={() => setActiveChart('d1')}
                   style={{
-                    padding: '6px 14px', borderRadius: 20, border: '1px solid var(--border-subtle)',
+                    padding: '6px 12px', borderRadius: 20, border: '1px solid var(--border-subtle)',
                     background: activeChart === 'd1' ? 'var(--saffron-500)' : 'rgba(255,255,255,0.05)',
                     color: activeChart === 'd1' ? '#fff' : 'var(--text-secondary)',
-                    fontFamily: 'var(--font-devanagari)', fontSize: '0.82rem', cursor: 'pointer', fontWeight: 600
+                    fontFamily: 'var(--font-devanagari)', fontSize: '0.8rem', cursor: 'pointer', fontWeight: 600
                   }}
                 >
-                  {mr('D1 लग्न कुंडली', 'D1 Lagna')}
+                  {mr('लग्न कुंडली', 'Lagna')}
                 </button>
               )}
               {kundali.navamsa_chart_svg && (
@@ -308,13 +308,27 @@ export default function KundaliResultPage() {
                   className={`btn-tab ${activeChart === 'd9' ? 'active' : ''}`}
                   onClick={() => setActiveChart('d9')}
                   style={{
-                    padding: '6px 14px', borderRadius: 20, border: '1px solid var(--border-subtle)',
+                    padding: '6px 12px', borderRadius: 20, border: '1px solid var(--border-subtle)',
                     background: activeChart === 'd9' ? 'var(--saffron-500)' : 'rgba(255,255,255,0.05)',
                     color: activeChart === 'd9' ? '#fff' : 'var(--text-secondary)',
-                    fontFamily: 'var(--font-devanagari)', fontSize: '0.82rem', cursor: 'pointer', fontWeight: 600
+                    fontFamily: 'var(--font-devanagari)', fontSize: '0.8rem', cursor: 'pointer', fontWeight: 600
                   }}
                 >
-                  {mr('D9 नवमांश', 'D9 Navamsha')}
+                  {mr('नवमांश कुंडली', 'Navamsha')}
+                </button>
+              )}
+              {kundali.chalit_chart_svg && (
+                <button
+                  className={`btn-tab ${activeChart === 'chalit' ? 'active' : ''}`}
+                  onClick={() => setActiveChart('chalit')}
+                  style={{
+                    padding: '6px 12px', borderRadius: 20, border: '1px solid var(--border-subtle)',
+                    background: activeChart === 'chalit' ? 'var(--saffron-500)' : 'rgba(255,255,255,0.05)',
+                    color: activeChart === 'chalit' ? '#fff' : 'var(--text-secondary)',
+                    fontFamily: 'var(--font-devanagari)', fontSize: '0.8rem', cursor: 'pointer', fontWeight: 600
+                  }}
+                >
+                  {mr('चलित कुंडली', 'Chalit')}
                 </button>
               )}
               {kundali.moon_chart_svg && (
@@ -322,13 +336,13 @@ export default function KundaliResultPage() {
                   className={`btn-tab ${activeChart === 'moon' ? 'active' : ''}`}
                   onClick={() => setActiveChart('moon')}
                   style={{
-                    padding: '6px 14px', borderRadius: 20, border: '1px solid var(--border-subtle)',
+                    padding: '6px 12px', borderRadius: 20, border: '1px solid var(--border-subtle)',
                     background: activeChart === 'moon' ? 'var(--saffron-500)' : 'rgba(255,255,255,0.05)',
                     color: activeChart === 'moon' ? '#fff' : 'var(--text-secondary)',
-                    fontFamily: 'var(--font-devanagari)', fontSize: '0.82rem', cursor: 'pointer', fontWeight: 600
+                    fontFamily: 'var(--font-devanagari)', fontSize: '0.8rem', cursor: 'pointer', fontWeight: 600
                   }}
                 >
-                  {mr('चंद्र कुंडली', 'Moon Chart')}
+                  {mr('चंद्र राशी', 'Moon')}
                 </button>
               )}
             </div>
@@ -348,6 +362,8 @@ export default function KundaliResultPage() {
               dangerouslySetInnerHTML={{ 
                 __html: (activeChart === 'd9' && kundali.navamsa_chart_svg) 
                   ? kundali.navamsa_chart_svg 
+                  : (activeChart === 'chalit' && kundali.chalit_chart_svg)
+                  ? kundali.chalit_chart_svg
                   : (activeChart === 'moon' && kundali.moon_chart_svg)
                   ? kundali.moon_chart_svg
                   : (kundali.chart_d1_svg || '')

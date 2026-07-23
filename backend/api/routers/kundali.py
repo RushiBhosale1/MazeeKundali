@@ -213,11 +213,34 @@ def _build_paid_response(record: dict, result: KundaliResult) -> KundaliPaidResp
         except Exception as moon_err:
             logger.warning("Moon SVG generation failed: %s", moon_err)
 
+    # Bhava Chalit chart SVG — Bhava placements
+    chalit_chart_svg: Optional[str] = None
+    if result.lagna is not None and result.planet_positions:
+        try:
+            from engine.svg_chart import render_north_indian_svg
+            from engine.chalit import compute_bhava_chalit_houses
+            raw = getattr(result, '_raw_ephemeris', None)
+            lagna_deg = raw['lagna_longitude'] if raw else (result.lagna.value * 30.0 + 15.0)
+            chalit_houses = compute_bhava_chalit_houses(lagna_deg, result.planet_positions)
+            rr_d1 = {pp.planet.value for pp in result.planet_positions if pp.retrograde}
+            chalit_chart_svg = render_north_indian_svg(
+                lagna_rashi=result.lagna.value,
+                planet_rashis={},
+                retrogrades=rr_d1,
+                width=360,
+                lang="mr",
+                is_bhava_chalit=True,
+                planet_houses=chalit_houses,
+            )
+        except Exception as chalit_err:
+            logger.warning("Chalit SVG generation failed: %s", chalit_err)
+
     return KundaliPaidResponse(
         **free.model_dump(),
         planet_positions=planet_positions,
         navamsa_chart_svg=navamsa_chart_svg,
         moon_chart_svg=moon_chart_svg,
+        chalit_chart_svg=chalit_chart_svg,
         mangal_dosha=mangal_resp,
         dasha=dasha_resp,
         written_analysis=analysis,

@@ -124,6 +124,7 @@ def _ctx_from_result(result, name: str) -> dict:
     svg_d1 = ""
     svg_d9 = ""
     svg_moon = ""
+    svg_chalit = ""
     if pr:
         try:
             if result.lagna:
@@ -137,6 +138,22 @@ def _ctx_from_result(result, name: str) -> dict:
 
             if result.rashi:
                 svg_moon = render_north_indian_svg(result.rashi.value, pr, rr, width=260, lang="mr", theme="bw")
+
+            if result.lagna and result.planet_positions:
+                from engine.chalit import compute_bhava_chalit_houses
+                raw = getattr(result, '_raw_ephemeris', None)
+                lagna_deg = raw['lagna_longitude'] if raw else (result.lagna.value * 30.0 + 15.0)
+                chalit_houses = compute_bhava_chalit_houses(lagna_deg, result.planet_positions)
+                svg_chalit = render_north_indian_svg(
+                    lagna_rashi=result.lagna.value,
+                    planet_rashis={},
+                    retrogrades=rr,
+                    width=260,
+                    lang="mr",
+                    theme="bw",
+                    is_bhava_chalit=True,
+                    planet_houses=chalit_houses,
+                )
         except Exception as e:
             logger.warning("SVG render failed: %s", e)
 
@@ -193,6 +210,7 @@ def _ctx_from_result(result, name: str) -> dict:
         "varna_mr": VARNA_MR.get(result.varna.value, result.varna.value) if result.varna else None,
         "chart_svg": svg_d1,
         "navamsa_svg": svg_d9,
+        "chalit_svg": svg_chalit,
         "moon_svg": svg_moon,
         "planet_positions": plist,
         "dasha": dc,

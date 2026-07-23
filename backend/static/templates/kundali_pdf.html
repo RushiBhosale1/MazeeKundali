@@ -285,24 +285,30 @@
 
 <hr class="gold-divider">
 
-<!-- Kundali Charts (3 Diagrams) -->
+<!-- Kundali Charts (4 Diagrams - 2x2 Grid) -->
 <h3 class="section-title">कुंडली तक्ते (Horoscope Charts)</h3>
-<div style="display: flex; gap: 10px; margin-bottom: 14px; justify-content: space-between;">
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
   {% if chart_svg %}
-  <div style="flex: 1; text-align: center; background: #fff; padding: 6px; border: 1px solid rgba(240,124,0,0.2); border-radius: 8px;">
-    <div style="font-size: 8.5pt; font-weight: 700; color: #0d1b2a; margin-bottom: 4px;">D1 लग्न कुंडली</div>
+  <div style="text-align: center; background: #fff; padding: 8px; border: 1.5px solid rgba(240,124,0,0.25); border-radius: 8px;">
+    <div style="font-size: 9.5pt; font-weight: 700; color: #0d1b2a; margin-bottom: 6px;">लग्न कुंडली</div>
     <div style="width: 100%; text-align: center;">{{ chart_svg | safe }}</div>
   </div>
   {% endif %}
   {% if navamsa_svg %}
-  <div style="flex: 1; text-align: center; background: #fff; padding: 6px; border: 1px solid rgba(240,124,0,0.2); border-radius: 8px;">
-    <div style="font-size: 8.5pt; font-weight: 700; color: #0d1b2a; margin-bottom: 4px;">D9 नवमांश कुंडली</div>
+  <div style="text-align: center; background: #fff; padding: 8px; border: 1.5px solid rgba(240,124,0,0.25); border-radius: 8px;">
+    <div style="font-size: 9.5pt; font-weight: 700; color: #0d1b2a; margin-bottom: 6px;">नवमांश कुंडली</div>
     <div style="width: 100%; text-align: center;">{{ navamsa_svg | safe }}</div>
   </div>
   {% endif %}
+  {% if chalit_svg %}
+  <div style="text-align: center; background: #fff; padding: 8px; border: 1.5px solid rgba(240,124,0,0.25); border-radius: 8px;">
+    <div style="font-size: 9.5pt; font-weight: 700; color: #0d1b2a; margin-bottom: 6px;">चलित कुंडली</div>
+    <div style="width: 100%; text-align: center;">{{ chalit_svg | safe }}</div>
+  </div>
+  {% endif %}
   {% if moon_svg %}
-  <div style="flex: 1; text-align: center; background: #fff; padding: 6px; border: 1px solid rgba(240,124,0,0.2); border-radius: 8px;">
-    <div style="font-size: 8.5pt; font-weight: 700; color: #0d1b2a; margin-bottom: 4px;">चंद्र कुंडली</div>
+  <div style="text-align: center; background: #fff; padding: 8px; border: 1.5px solid rgba(240,124,0,0.25); border-radius: 8px;">
+    <div style="font-size: 9.5pt; font-weight: 700; color: #0d1b2a; margin-bottom: 6px;">चंद्र राशी कुंडली</div>
     <div style="width: 100%; text-align: center;">{{ moon_svg | safe }}</div>
   </div>
   {% endif %}
