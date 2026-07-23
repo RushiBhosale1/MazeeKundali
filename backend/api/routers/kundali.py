@@ -84,10 +84,16 @@ def _build_free_response(record: dict, result: KundaliResult) -> KundaliFreeResp
             from engine.svg_chart import render_north_indian_svg
             pr = {pp.planet.value: pp.rashi.value for pp in result.planet_positions}
             rr = {pp.planet.value for pp in result.planet_positions if pp.retrograde}
+            ex = {pp.planet.value for pp in result.planet_positions if pp.is_exalted}
+            de = {pp.planet.value for pp in result.planet_positions if pp.is_debilitated}
+            dg = {pp.planet.value: pp.degree_in_rashi for pp in result.planet_positions}
             chart_svg = render_north_indian_svg(
                 lagna_rashi=result.lagna.value,
                 planet_rashis=pr,
                 retrogrades=rr,
+                exaltations=ex,
+                debilitations=de,
+                planet_degrees=dg,
                 width=360,
                 lang="mr",
             )
@@ -184,23 +190,30 @@ def _build_paid_response(record: dict, result: KundaliResult) -> KundaliPaidResp
             from engine.ephemeris import longitude_to_navamsa_rashi as _nav_rashi
             pr_d9: dict[str, int] = {}
             rr_d9: set[str] = set()
+            ex_d9: set[str] = set()
+            de_d9: set[str] = set()
             for pp in result.planet_positions:
                 pr_d9[pp.planet.value] = _nav_rashi(pp.longitude).value
                 if pp.retrograde:
                     rr_d9.add(pp.planet.value)
+                if pp.is_exalted:
+                    ex_d9.add(pp.planet.value)
+                if pp.is_debilitated:
+                    de_d9.add(pp.planet.value)
             # Navamsa Lagna — from raw ephemeris if available
             raw = getattr(result, '_raw_ephemeris', None)
             nav_lagna_rashi = None
             if raw:
                 nav_lagna_rashi = _nav_rashi(raw['lagna_longitude']).value
             elif result.lagna is not None:
-                # Fall back: use lagna longitude approximation
                 nav_lagna_rashi = result.lagna.value
             if nav_lagna_rashi is not None:
                 navamsa_chart_svg = render_north_indian_svg(
                     lagna_rashi=nav_lagna_rashi,
                     planet_rashis=pr_d9,
                     retrogrades=rr_d9,
+                    exaltations=ex_d9,
+                    debilitations=de_d9,
                     width=360,
                     lang="mr",
                 )
@@ -214,10 +227,14 @@ def _build_paid_response(record: dict, result: KundaliResult) -> KundaliPaidResp
             from engine.svg_chart import render_north_indian_svg
             pr_d1 = {pp.planet.value: pp.rashi.value for pp in result.planet_positions}
             rr_d1 = {pp.planet.value for pp in result.planet_positions if pp.retrograde}
+            ex_d1 = {pp.planet.value for pp in result.planet_positions if pp.is_exalted}
+            de_d1 = {pp.planet.value for pp in result.planet_positions if pp.is_debilitated}
             moon_chart_svg = render_north_indian_svg(
                 lagna_rashi=result.rashi.value,
                 planet_rashis=pr_d1,
                 retrogrades=rr_d1,
+                exaltations=ex_d1,
+                debilitations=de_d1,
                 width=360,
                 lang="mr",
             )

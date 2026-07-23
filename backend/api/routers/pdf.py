@@ -128,7 +128,10 @@ def _ctx_from_result(result, name: str) -> dict:
     if pr:
         try:
             if result.lagna:
-                svg_d1 = render_north_indian_svg(result.lagna.value, pr, rr, width=260, lang="mr", theme="bw")
+                ex = {pp.planet.value for pp in (result.planet_positions or []) if pp.is_exalted}
+                de = {pp.planet.value for pp in (result.planet_positions or []) if pp.is_debilitated}
+                svg_d1 = render_north_indian_svg(result.lagna.value, pr, rr, width=260, lang="mr", theme="bw",
+                                                  exaltations=ex, debilitations=de)
             
             from engine.ephemeris import longitude_to_navamsa_rashi as _nav_rashi
             pr_d9 = {pp.planet.value: _nav_rashi(pp.longitude).value for pp in (result.planet_positions or [])}
@@ -140,10 +143,19 @@ def _ctx_from_result(result, name: str) -> dict:
                 nav_lagna = result.lagna.value
             else:
                 nav_lagna = 0
-            svg_d9 = render_north_indian_svg(nav_lagna, pr_d9, rr_d9, width=260, lang="mr", theme="bw")
+            ex_d9 = set()
+            de_d9 = set()
+            for pp in (result.planet_positions or []):
+                if pp.is_exalted: ex_d9.add(pp.planet.value)
+                if pp.is_debilitated: de_d9.add(pp.planet.value)
+            svg_d9 = render_north_indian_svg(nav_lagna, pr_d9, rr_d9, width=260, lang="mr", theme="bw",
+                                              exaltations=ex_d9, debilitations=de_d9)
 
             if result.rashi:
-                svg_moon = render_north_indian_svg(result.rashi.value, pr, rr, width=260, lang="mr", theme="bw")
+                ex_m = {pp.planet.value for pp in (result.planet_positions or []) if pp.is_exalted}
+                de_m = {pp.planet.value for pp in (result.planet_positions or []) if pp.is_debilitated}
+                svg_moon = render_north_indian_svg(result.rashi.value, pr, rr, width=260, lang="mr", theme="bw",
+                                                   exaltations=ex_m, debilitations=de_m)
 
             if result.lagna and result.planet_positions:
                 from engine.chalit import compute_bhava_chalit_houses
