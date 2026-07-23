@@ -133,7 +133,13 @@ def _ctx_from_result(result, name: str) -> dict:
             from engine.ephemeris import longitude_to_navamsa_rashi as _nav_rashi
             pr_d9 = {pp.planet.value: _nav_rashi(pp.longitude).value for pp in (result.planet_positions or [])}
             rr_d9 = {pp.planet.value for pp in (result.planet_positions or []) if pp.retrograde}
-            nav_lagna = result.lagna.value if result.lagna else (result.rashi.value if result.rashi else 0)
+            raw = getattr(result, '_raw_ephemeris', None)
+            if raw and 'lagna_longitude' in raw:
+                nav_lagna = _nav_rashi(raw['lagna_longitude']).value
+            elif result.lagna:
+                nav_lagna = result.lagna.value
+            else:
+                nav_lagna = 0
             svg_d9 = render_north_indian_svg(nav_lagna, pr_d9, rr_d9, width=260, lang="mr", theme="bw")
 
             if result.rashi:
