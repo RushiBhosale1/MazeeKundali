@@ -37,15 +37,26 @@ router = APIRouter()
 _store: dict[str, dict] = {}
 
 
-def _parse_time(time_str: Optional[str]) -> Optional[dtime]:
-    """Parse 'HH:MM' string to time object."""
-    if not time_str:
+def _parse_time(time_val: Any) -> Optional[dtime]:
+    """Parse 'HH:MM', 'HH:MM:SS', or dtime object safely."""
+    if time_val is None:
         return None
-    try:
-        h, m = time_str.split(":")
-        return dtime(int(h), int(m))
-    except (ValueError, AttributeError):
-        return None
+    if isinstance(time_val, dtime):
+        return time_val
+    if isinstance(time_val, str):
+        s = time_val.strip()
+        if not s:
+            return None
+        parts = s.split(":")
+        if len(parts) >= 2:
+            try:
+                h = int(parts[0])
+                m = int(parts[1])
+                sec = int(float(parts[2])) if len(parts) >= 3 else 0
+                return dtime(h, m, sec)
+            except (ValueError, TypeError):
+                return None
+    return None
 
 
 def _rashi_info(rashi) -> Optional[RashiInfo]:

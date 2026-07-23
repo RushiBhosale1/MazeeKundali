@@ -246,14 +246,8 @@ async def generate_kundali_pdf(kundali_id: str, db: AsyncSession = Depends(get_d
     if not profile:
         raise HTTPException(500, "जन्म माहिती उपलब्ध नाही.")
 
-    from datetime import time as dtime
-    birth_time = profile.time_of_birth
-    if isinstance(birth_time, str):
-        try:
-            h, m = birth_time.split(":")
-            birth_time = dtime(int(h), int(m))
-        except Exception:
-            birth_time = None
+    from api.routers.kundali import _parse_time
+    birth_time = _parse_time(profile.time_of_birth)
 
     result = compute_kundali(
         name=profile.name,
@@ -496,16 +490,8 @@ async def generate_matching_pdf(matching_id: str, db: AsyncSession = Depends(get
 
     def _get_time(bp):
         if not bp or not bp.time_of_birth: return None
-        tob = bp.time_of_birth
-        if isinstance(tob, str):
-            try:
-                parts = tob.split(":")
-                return dtime(int(parts[0]), int(parts[1]))
-            except Exception:
-                return None
-        if hasattr(tob, "hour") and hasattr(tob, "minute"):
-            return dtime(tob.hour, tob.minute)
-        return None
+        from api.routers.kundali import _parse_time
+        return _parse_time(bp.time_of_birth)
 
     def _get_time_accuracy(bp) -> str:
         """Get stored time_accuracy from profile, falling back to inference."""
