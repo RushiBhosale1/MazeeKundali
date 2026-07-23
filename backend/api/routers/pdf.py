@@ -249,6 +249,26 @@ def _ctx_from_result(result, name: str) -> dict:
     except Exception as avk_err:
         logger.warning("PDF Avakahada/Mahadasha table failed: %s", avk_err)
 
+    # Lagna position for Nirayana table first row
+    lagna_position_ctx = None
+    try:
+        raw_ep = getattr(result, '_raw_ephemeris', None)
+        if raw_ep and result.lagna is not None:
+            from engine.avakahada import format_dms
+            lagna_lon = raw_ep['lagna_longitude']
+            from engine.models import Nakshatra as NakshatraEnum, Rashi as RashiEnum
+            nak_idx = int(lagna_lon / (360 / 27))
+            nak_list = list(NakshatraEnum)
+            lagna_nak = nak_list[nak_idx % 27]
+            lagna_pada = int((lagna_lon % (360 / 27)) / (360 / 27 / 4)) + 1
+            lagna_position_ctx = {
+                "rashi": {"name_mr": result.lagna.name_mr, "name_en": result.lagna.name_en},
+                "dms": format_dms(lagna_lon % 30),
+                "nakshatra": {"name_mr": lagna_nak.name_mr, "name_en": lagna_nak.name_en, "pada": lagna_pada},
+            }
+    except Exception as lpe:
+        logger.warning("PDF lagna_position failed: %s", lpe)
+
     return {
         "name": result.name,
         "gender": result.gender,
@@ -271,6 +291,7 @@ def _ctx_from_result(result, name: str) -> dict:
         "chalit_svg": svg_chalit,
         "moon_svg": svg_moon,
         "planet_positions": plist,
+        "lagna_position": lagna_position_ctx,
         "dasha": dc,
         "mangal_dosha": mc,
         "written_analysis": wc,

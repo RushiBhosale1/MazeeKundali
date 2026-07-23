@@ -198,6 +198,28 @@ export default function KundaliResultPage() {
                   </tr>
                 </thead>
                 <tbody>
+                  {/* Lagna row — always first, matching expert format */}
+                  {kundali.lagna_position && (
+                    <tr style={{ borderBottom: '1px solid var(--border-subtle)', background: 'rgba(240,124,0,0.04)' }}>
+                      <td style={{ padding: '10px 8px', fontWeight: 700, color: 'var(--saffron-400)' }}>
+                        {mr('लग्न', 'Lagna')}
+                      </td>
+                      <td style={{ padding: '10px 8px', color: 'var(--text-secondary)' }}>
+                        {lang === 'mr' ? kundali.lagna_position.rashi.name_mr : kundali.lagna_position.rashi.name_en}
+                      </td>
+                      <td style={{ padding: '10px 8px', fontFamily: 'var(--font-sans)', color: 'var(--gold-400)', fontWeight: 500 }}>
+                        {kundali.lagna_position.dms}
+                      </td>
+                      <td style={{ padding: '10px 8px', color: 'var(--text-secondary)' }}>
+                        {lang === 'mr' ? kundali.lagna_position.nakshatra.name_mr : kundali.lagna_position.nakshatra.name_en}
+                      </td>
+                      <td style={{ padding: '10px 8px', color: 'var(--text-secondary)' }}>
+                        {kundali.lagna_position.nakshatra.pada}
+                      </td>
+                      <td style={{ padding: '10px 8px', color: 'var(--text-muted)' }}>—</td>
+                    </tr>
+                  )}
+                  {/* Planet rows */}
                   {kundali.planet_positions.map((p: PlanetPosition, i) => (
                     <tr key={i} style={{ borderBottom: '1px solid var(--border-subtle)' }}>
                       <td style={{ padding: '10px 8px', fontWeight: 600, color: p.is_exalted ? 'var(--success)' : p.is_debilitated ? 'var(--danger)' : 'var(--text-primary)' }}>
@@ -220,6 +242,7 @@ export default function KundaliResultPage() {
                 </tbody>
               </table>
             </div>
+
           </div>
         ) : locked.planet_positions && (
           /* Locked planet table teaser */

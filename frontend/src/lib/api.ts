@@ -42,6 +42,12 @@ export interface PlanetPosition {
   is_debilitated: boolean;
 }
 
+export interface LagnaPosition {
+  rashi: RashiInfo;
+  dms: string;
+  nakshatra: NakshatraInfo;
+}
+
 export interface DashaInfo {
   mahadasha_lord_en: string;
   mahadasha_lord_mr: string;
@@ -100,6 +106,7 @@ export interface KundaliResponse {
   created_at: string;
   // Paid fields (only present when paid=true)
   planet_positions?: PlanetPosition[];
+  lagna_position?: LagnaPosition | null;   // For Nirayana table first row
   navamsa_chart_svg?: string | null;
   chalit_chart_svg?: string | null;
   moon_chart_svg?: string | null;

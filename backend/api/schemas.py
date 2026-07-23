@@ -154,6 +154,13 @@ class KundaliFreeResponse(BaseModel):
 # Kundali — Paid-tier additions
 # ---------------------------------------------------------------------------
 
+class LagnaPositionResponse(BaseModel):
+    """Lagna (Ascendant) position for the Nirayana table header row."""
+    rashi: RashiInfo
+    dms: str                    # e.g. "16:38:33"
+    nakshatra: NakshatraInfo    # Nakshatra + Pada
+
+
 class PlanetPositionResponse(BaseModel):
     planet_en: str          # "Moon"
     planet_mr: str          # "चंद्र"
@@ -202,6 +209,7 @@ class WrittenAnalysis(BaseModel):
 class KundaliPaidResponse(KundaliFreeResponse):
     """Extends free response with all paid fields unlocked."""
     planet_positions: List[PlanetPositionResponse]
+    lagna_position: Optional[LagnaPositionResponse] = None   # For Nirayana table first row
     navamsa_chart_svg: Optional[str]
     moon_chart_svg: Optional[str] = None
     chalit_chart_svg: Optional[str] = None

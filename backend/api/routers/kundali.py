@@ -160,6 +160,30 @@ def _build_paid_response(record: dict, result: KundaliResult) -> KundaliPaidResp
             is_debilitated=pp.is_debilitated,
         ))
 
+    # Lagna position — for Nirayana table first row (as shown by expert astrologers)
+    from api.schemas import LagnaPositionResponse
+    lagna_pos_resp = None
+    if result.lagna is not None:
+        try:
+            raw_ep = getattr(result, '_raw_ephemeris', None)
+            if raw_ep:
+                lagna_lon = raw_ep['lagna_longitude']
+                lagna_deg_in_rashi = lagna_lon % 30
+                # Nakshatra from lagna longitude
+                from engine.models import Nakshatra as NakshatraEnum
+                nak_idx = int(lagna_lon / (360 / 27))
+                nak_list = list(NakshatraEnum)
+                lagna_nak = nak_list[nak_idx % 27]
+                lagna_pada = int((lagna_lon % (360 / 27)) / (360 / 27 / 4)) + 1
+                lagna_pos_resp = LagnaPositionResponse(
+                    rashi=_rashi_info(result.lagna),
+                    dms=format_dms(lagna_deg_in_rashi),
+                    nakshatra=_nakshatra_info(lagna_nak, lagna_pada),
+                )
+        except Exception as le:
+            import logging
+            logging.getLogger(__name__).warning("Lagna position computation failed: %s", le)
+
     # Dasha
     dasha_resp = None
     if result.dasha:
@@ -307,6 +331,7 @@ def _build_paid_response(record: dict, result: KundaliResult) -> KundaliPaidResp
     return KundaliPaidResponse(
         **free.model_dump(),
         planet_positions=planet_positions,
+        lagna_position=lagna_pos_resp,
         navamsa_chart_svg=navamsa_chart_svg,
         moon_chart_svg=moon_chart_svg,
         chalit_chart_svg=chalit_chart_svg,

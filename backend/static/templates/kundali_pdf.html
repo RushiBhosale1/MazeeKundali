@@ -360,6 +360,16 @@
     </tr>
   </thead>
   <tbody>
+    {% if lagna_position %}
+    <tr style="background:rgba(240,124,0,0.06); font-weight:700;">
+      <td style="color:#c97a00;">लग्न</td>
+      <td>{{ lagna_position.rashi.name_mr }}</td>
+      <td style="font-family:'Inter',sans-serif; font-weight:600; color:#8a6500;">{{ lagna_position.dms }}</td>
+      <td>{{ lagna_position.nakshatra.name_mr }}</td>
+      <td>{{ lagna_position.nakshatra.pada }}</td>
+      <td>—</td>
+    </tr>
+    {% endif %}
     {% for pp in planet_positions %}
     <tr>
       <td style="font-weight:600">{{ pp.planet_mr }}</td>
